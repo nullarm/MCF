@@ -6,7 +6,7 @@ else
     dirname=$1
 fi
 
-rm ${dirname}/punto_particles.dat 
+rm ${dirname}/punto_particles_no_colloid.dat 
 
 for F in ${dirname}/mcf_*particles*.out; do
     

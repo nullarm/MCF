@@ -1,14 +1,19 @@
 #############################################################
-# Calculate size distribution of colloid-clusters by positions
-# averaged by time.
-# It is the same as colloid_cluster_position.perl
+# Calculate size distribution of colloid-clusters by radial
+# relative velocity averaged by time.
+# It is the same as colloid_cluster_radial_velocity.perl
 # However, there may be two more output from this perl script.
 #          1:) output cluster ID back to colloid files.
 #          2:) output size distribution of colloid-clusters
 #              at any time instant.
+# 
+# dv = (dx*dvx+dy*dvy)/r,
+# we check if |dv|<=v_theta
 #############################################################
 use Math::Trig;
 
+$eta=8.46;
+$gam_dot=0.10575;
 
 #############################################################
 #freq_cluster_output_ID: how frequent is the .out with cluster
@@ -16,7 +21,7 @@ use Math::Trig;
 #                        0: no output at all.
 #############################################################
 $freq_cluster_ID_output = 1;
-$dir_name_cluster_ID_output="cluster_position_ID_output_test/";
+$dir_name_cluster_ID_output="cluster_radial_velocity_ID_output_test/";
 
 #############################################################
 #freq_probability_cluster_output: how frequent to output
@@ -24,7 +29,7 @@ $dir_name_cluster_ID_output="cluster_position_ID_output_test/";
 #                                 at certain time step.
 #############################################################
 $freq_cluster_probability_output = 1;
-$dir_name_cluster_probability_output="cluster_position_probability_output_test/";
+$dir_name_cluster_probability_output="cluster_radial_velocity_probability_output_test/";
 
 $dir_name=$ARGV[0];
 $file_in_prefix="mcf_colloid";
@@ -70,6 +75,7 @@ $cluster_s = 0.05;
 $cluster_s = $ARGV[8];
 print "cluster_s: ", $cluster_s, "\n";
 
+$tol = 0.01;
 #############################################################
 # two dimensional matrix to indicate near-by relation.
 # 1: related
@@ -113,6 +119,8 @@ $num_o_average=0;
 #############################################################
 
 $num_file=0;
+$num_pair_average=0;
+$num_pair_anti_cluster_average=0;
 
 $f_start = $file_in_prefix . stepstring($step_start). ".out";
 $f_end = $file_in_prefix . stepstring($step_end). ".out";
@@ -143,9 +151,10 @@ foreach $f (@file_names_in)
 	    @data = split(' ', $line);
 	    
 	    $num_p++;
-	    $x[$num_p] = $data[0];
-	    $y[$num_p] = $data[1];
-	
+	    $x[$num_p]  = $data[0];
+	    $y[$num_p]  = $data[1];
+	    $vx[$num_p] = $data[2];
+	    $vy[$num_p] = $data[3];
 	}
 	close(IN);
 	#print "num_p : ", $num_p, "\n";
@@ -170,15 +179,17 @@ foreach $f (@file_names_in)
 	    if ( ( $y[$p]>$gap ) && ( $y[$p]< $Ly-$gap) )
 	    {
 		$num_o++;
-		$x_o[$num_o] = $x[$p];
-		$y_o[$num_o] = $y[$p];
-		
-	    }
-	   
+		$x_o[$num_o]  = $x[$p];
+		$y_o[$num_o]  = $y[$p];
+		$vx_o[$num_o] = $vx[$p];
+		$vy_o[$num_o] = $vy[$p];		
+	    }	   
 	}
 	#print "num_o : ", $num_o, "\n";
 	$num_o_average += $num_o;
 	
+	$num_pair              = 0;
+	$num_pair_anti_cluster = 0;
 #############################################################
 # Decide whether a pair is considered as near-by by
 # checking the surface distance.
@@ -193,16 +204,37 @@ foreach $f (@file_names_in)
 # reset near-by to zero, no relation for each pair initially.
 #############################################################
 		$near_by[$i][$j] = 0;
-		
+		$num_pair ++;
 #############################################################
 # check the surface distance of the pair to 
 # decide if they are near-by.
 #############################################################
-		$r_ij = sqrt(($x_o[$i]-$x_o[$j])**2 + ($y_o[$i]-$y_o[$j])**2);
+		$x_ij = $x_o[$i]-$x_o[$j];
+		$y_ij = $y_o[$i]-$y_o[$j];
+		$r_ij = sqrt($x_ij**2 + $y_ij**2);
+		$s_ij = $r_ij - 2.0*$R;
 
-		if ( $r_ij <= 2.0*$R + $cluster_s )
+		if ( $s_ij <= $cluster_s )
 		{
-		    $near_by[$i][$j] = 1;
+		    $ex_ij = $x_ij/$r_ij;
+		    $ey_ij = $y_ij/$r_ij;
+		    $vx_ij = $vx_o[$i]-$vx_o[$j];
+		    $vy_ij = $vy_o[$i]-$vy_o[$j];
+		    
+		    $dv_threshold = $tol* $gam_dot * $r_ij;
+		    $dv_radial = $vx_ij*$ex_ij + $vy_ij*$ey_ij;
+		    
+		    #print "dv_threshold 1: ", $dv_threshold, "\n";
+		    #print "dv_radial    1: ", $dv_radial, "\n";
+		    if ( abs($dv_radial) <= $dv_threshold )
+		    {
+			$near_by[$i][$j] = 1;
+		    }
+		    else
+		    {
+			$num_pair_anti_cluster ++;
+			#print "pair is closely placed but with big radial velocity\n";
+		    }
 		}
 		else
 		{
@@ -211,11 +243,32 @@ foreach $f (@file_names_in)
 # periodic image to decide if they are near-by.
 #############################################################
 
-		    $r_ij = sqrt(($x_o[$i]-$x_o[$j]-$Lx)**2 + ($y_o[$i]-$y_o[$j])**2);
+		    $x_ij = $x_o[$i]-$x_o[$j]-$Lx;
+		    $y_ij = $y_o[$i]-$y_o[$j];
+		    $r_ij = sqrt($x_ij**2 + $y_ij**2);
+		    $s_ij = $r_ij - 2.0*$R;
 		    
-		    if ( $r_ij <= 2.0*$R + $cluster_s )
+		    if ( $s_ij <= $cluster_s )
 		    {
-			$near_by[$i][$j] = 1;
+			$ex_ij = $x_ij/$r_ij;		    
+			$ey_ij = $y_ij/$r_ij;
+			$vx_ij = $vx_o[$i]-$vx_o[$j];
+			$vy_ij = $vy_o[$i]-$vy_o[$j];
+			
+			$dv_threshold = $tol * $gam_dot * $r_ij;
+			$dv_radial = $vx_ij*$ex_ij + $vy_ij*$ey_ij;
+			
+			#print "dv_threshold 2: ", $dv_threshold, "\n";
+			#print "dv_radial    2: ", $dv_radial, "\n";
+			if ( abs($dv_radial) <= $dv_threshold )
+			{
+			    $near_by[$i][$j] = 1;
+			}
+			else
+			{
+			    $num_pair_anti_cluster ++;
+			    #print "pair is closely placed but with big radial velocity\n";
+			}
 		    }
 		    else
 		    {
@@ -224,17 +277,43 @@ foreach $f (@file_names_in)
 # periodic image to decide if they are near-by.
 #############################################################
 			
-			$r_ij = sqrt(($x_o[$i]-$x_o[$j]+$Lx)**2 + ($y_o[$i]-$y_o[$j])**2);
-			
-			if ( $r_ij <= 2.0*$R + $cluster_s )
+			$x_ij = $x_o[$i]-$x_o[$j]+$Lx;
+			$y_ij = $y_o[$i]-$y_o[$j];
+			$r_ij = sqrt($x_ij**2 + $y_ij**2);
+			$s_ij = $r_ij - 2.0*$R;
+
+			if ( $s_ij <= $cluster_s )
 			{
-			    $near_by[$i][$j] = 1;					    
+			    $ex_ij = $x_ij/$r_ij;
+			    $ey_ij = $y_ij/$r_ij;
+			    $vx_ij = $vx_o[$i]-$vx_o[$j];
+			    $vy_ij = $vy_o[$i]-$vy_o[$j];
+			    
+			    $dv_threshold = $tol * $gam_dot * $r_ij;
+			    $dv_radial = $vx_ij*$ex_ij + $vy_ij*$ey_ij;
+			    
+			    #print "dv_threshold 3: ", $dv_threshold, "\n";
+			    #print "dv_radial    3: ", $dv_radial, "\n";
+			    if ( abs($dv_radial) <= $dv_threshold )
+			    {
+				$near_by[$i][$j] = 1;
+			    }
+			    else
+			    {
+				$num_pair_anti_cluster ++;
+				#print "pair is closely placed but with big radial velocity\n";
+			    }
 			}
 		    }
 		}
 	    } # j
 	}# i
-
+	$num_pair_average += $num_pair;
+	$num_pair_anti_cluster_average += $num_pair_anti_cluster;
+	
+	#print "number of pairs              : ", $num_pair, "\n";
+	#print "number of anti cluster pairs : ", $num_pair_anti_cluster, "\n";
+	
 #############################################################
 # Check two dimensional near_by matrix to find cluster.
 # 1: reset each particle as un-assigned to any cluster.
@@ -367,7 +446,12 @@ if ( $num_file < 1 )
 # 
 #############################################################
 $num_o_average /= $num_file;
-print "averaged number of particles used in each file: ", $num_o_average, "\n";
+$num_pair_average /= $num_file;
+$num_pair_anti_cluster_average /= $num_file;
+
+print "averaged number of particles used in each file     : ", $num_o_average, "\n";
+print "averaged number of pairs in each file              : ", $num_pair_average, "\n";
+print "averaged number of anti cluster pairs in each file : ", $num_pair_anti_cluster_average, "\n";
 
 #############################################################
 # Output file name.

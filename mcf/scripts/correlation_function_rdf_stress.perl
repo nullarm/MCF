@@ -63,8 +63,11 @@ for( $n_dt = 0; $n_dt<$num_dt; $n_dt++)
 	$count = $count + 1.0 ;	
     }
 
+    $step=($data[$s1]->[0])-($data[$s0]->[0]);
+    $time=($data[$s1]->[1])-($data[$s0]->[1]);
+    
     $v_prod = $v_prod/$count;
-    print  $n_dt, ' ', $v_prod/$stress_var/$rdf_var, "\n";
+    print  $n_dt, ' ', , $step, ' ', $time, ' ', $v_prod/$stress_var/$rdf_var, "\n";
 }
 
 close(fileinput);

@@ -2,6 +2,7 @@
 # Calculate radial distribution function of colloid pair
 # according to its radial distance, it is averaged over
 # orientation angle theta.
+# It processes only one file.
 #############################################################
 use Math::Trig;
 
@@ -120,14 +121,14 @@ while ($line = <IN>)
     $num_p++;
 }
 close(IN);
-#print "num_p : ", $num_p, "\n";
+print "num_p : ", $num_p, "\n";
 
 ###################################
 # get number denisty.
 ###################################
 $num_density=$num_p/$V;
 $num_density_r=$V/$num_p;
-#print "num density : ", $num_density, "\n";
+print "num density : ", $num_density, "\n";
 	
 #############################################################
 # reset counter to zero. 

@@ -1,11 +1,15 @@
 #############################################################
-# Calculate size distribution of colloid-clusters by positions
-# averaged by time.
+# Calculate size distribution of colloid-clusters by positions.
+# 
 # It is the same as colloid_cluster_position.perl
+#
 # However, there may be two more output from this perl script.
-#          1:) output cluster ID back to colloid files.
+#          1:) output cluster ID to new colloid files,
+#              which is useful for animation.
 #          2:) output size distribution of colloid-clusters
 #              at any time instant.
+#          3:) output size distribution of colloid-clusters
+#              averaged by time. 
 #############################################################
 use Math::Trig;
 
@@ -160,6 +164,7 @@ foreach $f (@file_names_in)
 	
 #############################################################
 # reset counter $num_o to zero. 
+# exclude the ones near the walls and
 # record the ones, which are used for computation.
 #############################################################
 
@@ -192,15 +197,20 @@ foreach $f (@file_names_in)
 #############################################################
 # reset near-by to zero, no relation for each pair initially.
 #############################################################
+
 		$near_by[$i][$j] = 0;
 		
 #############################################################
 # check the surface distance of the pair to 
 # decide if they are near-by.
 #############################################################
-		$r_ij = sqrt(($x_o[$i]-$x_o[$j])**2 + ($y_o[$i]-$y_o[$j])**2);
-
-		if ( $r_ij <= 2.0*$R + $cluster_s )
+		
+		$x_ij = $x_o[$i] - $x_o[$j];
+		$y_ij = $y_o[$i] - $y_o[$j];
+		$r_ij = sqrt($x_ij**2 + $yij**2);
+		$s_ij = $r_ij - 2.0*$R;
+		
+		if ( $s_ij <= $cluster_s )
 		{
 		    $near_by[$i][$j] = 1;
 		}
@@ -211,9 +221,12 @@ foreach $f (@file_names_in)
 # periodic image to decide if they are near-by.
 #############################################################
 
-		    $r_ij = sqrt(($x_o[$i]-$x_o[$j]-$Lx)**2 + ($y_o[$i]-$y_o[$j])**2);
+		    $x_ij = $x_o[$i] - $x_o[$j] - $Lx;
+		    $y_ij = $y_o[$i] - $y_o[$j];
+		    $r_ij = sqrt($x_ij**2 + $yij**2);
+		    $s_ij = $r_ij - 2.0*$R;
 		    
-		    if ( $r_ij <= 2.0*$R + $cluster_s )
+		    if ( $s_ij <= $cluster_s )
 		    {
 			$near_by[$i][$j] = 1;
 		    }
@@ -224,17 +237,20 @@ foreach $f (@file_names_in)
 # periodic image to decide if they are near-by.
 #############################################################
 			
-			$r_ij = sqrt(($x_o[$i]-$x_o[$j]+$Lx)**2 + ($y_o[$i]-$y_o[$j])**2);
+			$x_ij = $x_o[$i] - $x_o[$j] + $Lx;
+			$y_ij = $y_o[$i] - $y_o[$j];
+			$r_ij = sqrt($x_ij**2 + $yij**2);
+			$s_ij = $r_ij - 2.0*$R;
 			
-			if ( $r_ij <= 2.0*$R + $cluster_s )
+			if ( $s_ij <= 2.0*$R + $cluster_s )
 			{
 			    $near_by[$i][$j] = 1;					    
 			}
-		    }
-		}
+		    } # else
+		} # else
 	    } # j
 	}# i
-
+	
 #############################################################
 # Check two dimensional near_by matrix to find cluster.
 # 1: reset each particle as un-assigned to any cluster.
@@ -251,9 +267,15 @@ foreach $f (@file_names_in)
 #   $mark is given the minimum ID to mark each particle
 #   within this cluster.
 #############################################################
-
-	for ( $i=1; $i<=$num_o; $i++ )
+	
+	$num_pair = 0;
+	
+	for ( $i=1; $i<$num_o; $i++ )
 	{
+#############################################################
+# if particle i is assigned, use its cluster ID as current mark.
+# if particle i is not assigned, use its index as current mark.
+#############################################################
 	    if ( $assigned[$i] > 0 )
 	    {
 		$mark = $assigned[$i];
@@ -268,11 +290,32 @@ foreach $f (@file_names_in)
 	    {
 		if ( $near_by[$i][$j] >0 ) 
 		{
-		    $assigned[$j] = $mark;
-		}
-	    }
-	}
+		    $num_pair++;
+		    
+#############################################################
+# if particle j is assigned, use the minimum number of 
+# current mark and $assigned[$j] as cluster ID.
+# if particle j is not assigned, use the current mark
+# as cluster ID.
+#############################################################
+		    if ( $assigned[$j] > 0 ) 
+		    {
+			if ($assigned[$j] < $mark )
+			{
+			    $mark = $assigned[$j];
+			    $assigned[$i] = $mark;
+			}
+			
+		    }
+		    else
+		    {
+			$assigned[$j] = $mark;
+		    }
+		} # near_by
+	    } #j 
+	}# i
 	
+	print "Number of near-by pairs: ", $num_pair, "\n";
 #############################################################	
 # 2.5 write certain snapshot with cluster ID for animation.
 #############################################################	

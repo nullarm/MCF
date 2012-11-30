@@ -2,7 +2,9 @@
 #############################################################
 #############################################################
 # Calculate size distribution of colloid-clusters by positions.
-# 
+#
+# Algorithm of three loops.
+#
 # There are three types of output files:
 #          1:) output colloid with position and cluster ID to
 #              new colloid files in a new sub-folder,
@@ -81,7 +83,7 @@ $N     = $ARGV[6];
 $gap   = $ARGV[7];
 $R     = 1.0;
 $V_eff = $Lx*($Ly-2.0*($gap-$R));
-print "Lx, Ly, N, gap, R: ", $Lx, ', ', $Ly, ', ', $N, ', ', $gap, ', ', $R, ".\n";
+print "Lx, Ly, N, gap, R: ", $Lx, ', ', $Ly, ', ', $N, ', ', $gap, ', ', $R, "\n";
 
 #############################################################
 # Surface distance threshold for defining cluster.
@@ -106,7 +108,7 @@ print "surface distance threshold : ", $sur_dist_threshold, "\n";
 #############################################################
 
 opendir(DIR, $dir_name) || 
-die   ("can not open directory    : ".$dir_name.", as it does not exist !\n");
+die   ("can not open directory    : " . $dir_name . ", as it does not exist !\n");
 print "processing directory       : ", $dir_name, "\n";
 
 #############################################################
@@ -129,6 +131,20 @@ print "number of files inside    : ", scalar(@file_names_in), "\n";
 for ( $i=1; $i<=$N; $i++ )
 {
     $num_cluster[$i]=0.0;
+}
+
+#############################################################
+# reset two dimensional matrix to indicate near-by relation.
+# 1: related
+# 0: unrelated.
+#############################################################
+
+for ( $i=1; $i<=$N; $i++ )
+{
+    for ( $j=1; $j<=$N; $j++ )
+    {
+	$near_by[$i][$j] = 0;
+    }
 }
 
 #############################################################
@@ -215,20 +231,6 @@ foreach $f (@file_names_in)
 	$num_o_average += $num_o;
 
 #############################################################
-# reset two dimensional matrix to indicate near-by relation.
-# 1: related
-# 0: unrelated.
-#############################################################
-
-	for ( $i=1; $i<=$num_o; $i++ )
-	{
-	    for ( $j=1; $j<=$num_o; $j++ )
-	    {
-		$near_by[$i][$j] = 0;
-	    }
-	}
-	
-#############################################################
 # Decide whether a pair is considered as near-by by
 # checking the surface distance.
 #############################################################
@@ -241,8 +243,14 @@ foreach $f (@file_names_in)
 	    {
 		
 #############################################################
+# reset relation to non-related
+#############################################################
+		$near_by[$i][$j] = 0;
+		
+#############################################################
 # check the surface distance of the pair to 
 # decide if they are near-by.
+# We only need up-right part of the matrix.
 #############################################################
 		
 		$x_ij = $x_o[$i] - $x_o[$j];
@@ -253,7 +261,6 @@ foreach $f (@file_names_in)
 		if ( $s_ij <= $sur_dist_threshold )
 		{
 		    $near_by[$i][$j] = 1;
-		    $near_by[$j][$i] = 1;
 		    $num_pair++;
 		    #print "s_ij : ", $s_ij, "\n";
 		}
@@ -272,7 +279,6 @@ foreach $f (@file_names_in)
 		    if ( $s_ij <= $sur_dist_threshold )
 		    {
 			$near_by[$i][$j] = 1;
-			$near_by[$j][$i] = 1;
 			$num_pair++;
 			#print "s_ij : ", $s_ij, "\n";
 		    }
@@ -291,7 +297,6 @@ foreach $f (@file_names_in)
 			if ( $s_ij <= $sur_dist_threshold )
 			{
 			    $near_by[$i][$j] = 1;	
-			    $near_by[$j][$i] = 1;
 			    $num_pair++;
 			    #print "s_ij : ", $s_ij, "\n";
 			}
@@ -300,7 +305,7 @@ foreach $f (@file_names_in)
 	    } # j
 	}# i
 	
-	#print "number of near_by pairs: ", $num_pair, "\n";
+#	print "number of near-by pairs: ", $num_pair, "\n";
 	$num_pair_average+=$num_pair;
 	
 #############################################################
@@ -312,44 +317,97 @@ foreach $f (@file_names_in)
 	{
 	    $assigned[$i] = 0;
 	}
-	
+		
 #############################################################
 #2: assign every particle in each cluster with 
-#   the minimum particle ID within this cluster, i.e.,
-#   $mark is given the minimum ID to mark each particle
-#   within this cluster.
-#   This must be done recursively.
+#   the minimum particle ID within this cluster.
+#   This is done in three loops.
 #############################################################
 	
 	
 	for ( $i=1; $i<=$num_o; $i++ )
 	{
-	    if ( $assigned[$i] == 0 )
+	    if ( $assigned[$i] > 0 )
 	    {
-		$assigned[$i] = $i;
-		$id_current   = $i;
-		recursive_detect($id_current, $i);
+		$id_current = $assigned[$i];
 	    }
-	    #print "calling recursive detection !\n";
+	    else
+	    {
+		$id_current   = $i;
+		$assigned[$i] = $i;
+	    }
+
+	    for ( $j = $i+1; $j<=$num_o; $j++ )
+	    {
+		
+#############################################################
+#  i and j are related.
+#############################################################
+		if ( $near_by[$i][$j] == 1 )
+		{
+#############################################################
+#  j is not assigned.
+#############################################################
+		    if ( $assigned[$j] == 0 )
+		    {
+			$assigned[$j] = $id_current;
+		    }
+#############################################################
+#  j is assigned.
+#############################################################
+		    else
+		    {
+			if ( $assigned[$j] < $id_current )
+			{
+			    $id_small   = $assigned[$j];
+			    $id_big     = $id_current;
+			    $id_current = $id_small;
+			}
+			else
+			{
+			    $id_small = $id_current;
+			    $id_big   = $assigned[$j];
+			}
+			for ( $k=1; $k<=$num_o; $k++ )
+			{
+			    if ( $assigned[$k] == $id_big )
+			    {
+				$assigned[$k] = $id_small
+			    }
+			} #k
+		    } # else $assigned[j]!=0
+		}# if neary_by		
+	    } # j
 	}# i
-	
-    
-	#print "Number of near-by pairs: ", $num_pair, "\n";
-	#print "particle cluster ID in main: ";
-	#for ( $i=1;$i<=$num_o; $i++)
-	#{print $assigned[$i], ' ';}
-	#print "\n";
-	
+	    
+#############################################################	
+# 2.9 to print for test
+#############################################################	
+#	for ( $i=1; $i<=$num_o; $i++ )
+#	{
+#	    for ( $j=$i+1; $j<=$num_o; $j++ )
+#	    {
+#	       print $near_by[$i][$j], ' ';
+#	    }
+#	    print "\n";
+#	}
+
+#	for ( $i=1; $i<=$num_o; $i++ )
+#	{
+#	    print $assigned[$i], "\n";
+#	}
+#	exit;
 
 #############################################################	
 #3 Counter number of particles in each cluster.
 #############################################################
 	
-	for ( $i=1; $i<=$num_o; $i++)
+
+	for ( $i=1; $i<=$num_o; $i++ )
 	{
 	    $num_particle_cluster[$i] = 0;
 	}
-	for ( $i=1; $i<=$num_o; $i++)
+	for ( $i=1; $i<=$num_o; $i++ )
 	{
 	    $num_particle_cluster[$assigned[$i]]++;
 	}
@@ -358,7 +416,9 @@ foreach $f (@file_names_in)
 #4 Change the color scheme.
 #############################################################
 	for ( $i=1; $i<=$num_o; $i++)
-	{$assigned[$i] = $num_particle_cluster[$assigned[$i]];}
+	{
+	    $assigned[$i] = $num_particle_cluster[$assigned[$i]];
+	}
 	
 	#print "cluster ID, number of particles: \n";
 	#for ($i=1;$i<=$num_o;$i++)
@@ -380,7 +440,7 @@ foreach $f (@file_names_in)
 	    $num_cluster_current[$i]=0.0;
 	}
 	
-	for ( $i=1; $i<=$num_o; $i++)
+	for ( $i=1; $i<=$num_o; $i++ )
 	{
 	    $num_cluster_current[$num_particle_cluster[$i]] ++;
 	    $num_cluster[$num_particle_cluster[$i]] ++;
@@ -415,7 +475,7 @@ foreach $f (@file_names_in)
 	    open (OUTPUT_PROB, $file_out_name_probability_stepwise_output);
 	    for ( $i=1; $i<=$num_o; $i++ )
 	    {
-		print OUTPUT_PROB $i, ' ', $num_cluster[$i]/$num_o, "\n";
+		print OUTPUT_PROB $i, ' ', $num_cluster_current[$i] * $i / $num_o, "\n";
 	    }
 	    close(OUTPUT_ID); 
 	    
@@ -483,26 +543,6 @@ for ( $i=1; $i<=$N; $i++ )
 
 print "check sum of probability: ", $check, "\n";
 close(OUT);
-
-sub recursive_detect
-{
-    $id_pass=$_[0];
-    $sp = $_[1];
-    
-    #print "recursive_detect being called ! \n";
-    #print "id_pass, sp : ", $id_pass, ', ', $sp, "\n";
-    
-    for ( $sq=1; $sq<=$num_o; $sq++ )
-    {
-	if ( $near_by[$sp][$sq] == 1 && $assigned[$sq] == 0 )
-	{
-	    $assigned[$sq] = $id_pass;
-	    recursive_detect($id_pass, $sq);
-	}
-    }
-    
-    return;
-}
 
 sub stepstring
 {

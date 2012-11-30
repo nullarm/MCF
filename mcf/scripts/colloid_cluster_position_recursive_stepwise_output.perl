@@ -1,10 +1,9 @@
 #############################################################
 #############################################################
 #############################################################
-# Calculate size distribution of colloid-clusters by positions
-# and radial velocity. 
-#
-# Algorithm of three loops.
+# Calculate size distribution of colloid-clusters by positions.
+# 
+# Algorithm of recursive search.
 #
 # There are three types of output files:
 #          1:) output colloid with position and cluster ID to
@@ -28,13 +27,6 @@ use Math::Trig;
 #############################################################
 
 #############################################################
-# Simulation parameters.
-# gam_dot : shear rate
-#############################################################
-
-$gam_dot=0.10575;
-
-#############################################################
 # dir_name                  :
 #                 directory name with colloid files inside
 # file_in_name_prefix       :
@@ -55,7 +47,7 @@ print "processing directory : ", $dir_name, "\n";
 #############################################################
 
 $freq_ID_output = 1;
-$subdir_name_ID_output="cluster_position_and_radial_velocity_ID_stepwise_output/";
+$subdir_name_ID_output="cluster_position_ID_recursive_stepwise_output/";
 
 #############################################################
 #freq_probability_output:
@@ -65,7 +57,7 @@ $subdir_name_ID_output="cluster_position_and_radial_velocity_ID_stepwise_output/
 #############################################################
 
 $freq_probability_output = 1;
-$subdir_name_probability_output="cluster_position_and_radial_velocity_probability_stepwise_output/";
+$subdir_name_probability_output="cluster_position_probability_recursive_stepwise_output/";
 
 $pi=3.1415926;
 $num_file  = 0;
@@ -103,14 +95,6 @@ $sur_dist_threshold = 0.05;
 $sur_dist_threshold = $ARGV[8];
 print "surface distance threshold : ", $sur_dist_threshold, "\n";
 
-#############################################################
-# Radial velocity threshold coefficient
-#############################################################
-
-$v_radial_threshold_coef = 0.01;
-$v_radial_threshold_coef = $ARGV[9];
-print "velocity radial threshold coef : ", $v_radial_threshold_coef, "\n";
-$v_radial_threshold_coef *= $gam_dot;
 
 #############################################################
 #############################################################
@@ -213,8 +197,6 @@ foreach $f (@file_names_in)
 	    $num_p++;
 	    $x[$num_p] = $data[0];
 	    $y[$num_p] = $data[1];
-	    $vx[$num_p] = $data[2];
-	    $vy[$num_p] = $data[3];
 	    
 	}
 	close(IN);
@@ -243,8 +225,6 @@ foreach $f (@file_names_in)
 		$num_o++;
 		$x_o[$num_o] = $x[$p];
 		$y_o[$num_o] = $y[$p];
-		$vx_o[$num_o] = $vx[$p];
-		$vy_o[$num_o] = $vy[$p];
 	    }
 	}
 	#print "num_o : ", $num_o, "\n";
@@ -261,16 +241,16 @@ foreach $f (@file_names_in)
 	{
 	    for ( $j=$i+1; $j<=$num_o; $j++ )
 	    {
-		
+
 #############################################################
 # reset relation to non-related
 #############################################################
 		$near_by[$i][$j] = 0;
-		
+		$near_by[$j][$i] = 0;
+
 #############################################################
 # check the surface distance of the pair to 
 # decide if they are near-by.
-# We only need up-right part of the matrix.
 #############################################################
 		
 		$x_ij = $x_o[$i] - $x_o[$j];
@@ -280,20 +260,10 @@ foreach $f (@file_names_in)
 		
 		if ( $s_ij <= $sur_dist_threshold )
 		{
-		    $ex_ij = $x_ij/$r_ij;
-		    $ey_ij = $y_ij/$r_ij;
-		    $vx_ij = $vx_o[$i]-$vx_o[$j];
-		    $vy_ij = $vy_o[$i]-$vy_o[$j];
-		    
-		    $v_radial_threshold = $v_radial_threshold_coef * $r_ij;
-		    $v_radial = $vx_ij * $ex_ij + $vy_ij * $ey_ij;
-		    
-		    if ( abs( $v_radial ) <= $v_radial_threshold )
-		    {
-			$near_by[$i][$j] = 1;
-			$num_pair++;
-			#print "s_ij : ", $s_ij, "\n";
-		    }
+		    $near_by[$i][$j] = 1;
+		    $near_by[$j][$i] = 1;
+		    $num_pair++;
+		    #print "s_ij : ", $s_ij, "\n";
 		}
 		else
 		{
@@ -309,19 +279,10 @@ foreach $f (@file_names_in)
 		    
 		    if ( $s_ij <= $sur_dist_threshold )
 		    {
-			$ex_ij = $x_ij/$r_ij;
-			$ey_ij = $y_ij/$r_ij;
-			$vx_ij = $vx_o[$i]-$vx_o[$j];
-			$vy_ij = $vy_o[$i]-$vy_o[$j];
-			
-			$v_radial_threshold = $v_radial_threshold_coef * $r_ij;
-			$v_radial = $vx_ij * $ex_ij + $vy_ij * $ey_ij;
-
-			if ( abs( $v_radial ) <= $v_radial_threshold )
-			{
-			    $near_by[$i][$j] = 1;
-			    $num_pair++;
-			}
+			$near_by[$i][$j] = 1;
+			$near_by[$j][$i] = 1;
+			$num_pair++;
+			#print "s_ij : ", $s_ij, "\n";
 		    }
 		    else
 		    {
@@ -337,19 +298,10 @@ foreach $f (@file_names_in)
 			
 			if ( $s_ij <= $sur_dist_threshold )
 			{
-			    $ex_ij = $x_ij/$r_ij;
-			    $ey_ij = $y_ij/$r_ij;
-			    $vx_ij = $vx_o[$i]-$vx_o[$j];
-			    $vy_ij = $vy_o[$i]-$vy_o[$j];
-			    
-			    $v_radial_threshold = $v_radial_threshold_coef * $r_ij;
-			    $v_radial = $vx_ij * $ex_ij + $vy_ij * $ey_ij;
-			    
-			    if ( abs( $v_radial ) <= $v_radial_threshold )
-			    {
-				$near_by[$i][$j] = 1;	
-				$num_pair++;
-			    }
+			    $near_by[$i][$j] = 1;	
+			    $near_by[$j][$i] = 1;
+			    $num_pair++;
+			    #print "s_ij : ", $s_ij, "\n";
 			}
 		    } # else
 		} # else
@@ -369,80 +321,31 @@ foreach $f (@file_names_in)
 	    $assigned[$i] = 0;
 	}
 	
-	
 #############################################################
 #2: assign every particle in each cluster with 
-#   the minimum particle ID within this cluster, i.e.,
-#   $mark is given the minimum ID to mark each particle
-#   within this cluster.
-#   This must be done recursively.
+#   the minimum particle ID within this cluster.
+#   This is done recursively.
 #############################################################
-	
-	
+		
 	for ( $i=1; $i<=$num_o; $i++ )
 	{
-	    if ( $assigned[$i] > 0 )
+	    if ( $assigned[$i] == 0 )
 	    {
-		$id_current = $assigned[$i];
-	    }
-	    else
-	    {
-		$id_current   = $i;
 		$assigned[$i] = $i;
+		$id_current   = $i;
+		recursive_detect($id_current, $i);
 	    }
-
-	    for ( $j = $i+1; $j<=$num_o; $j++ )
-	    {
-		
-#############################################################
-#  i and j are related.
-#############################################################
-		if ( $near_by[$i][$j] == 1 )
-		{
-#############################################################
-#  j is not assigned.
-#############################################################
-		    if ( $assigned[$j] == 0 )
-		    {
-			$assigned[$j] = $id_current;
-		    }
-#############################################################
-#  j is assigned.
-#############################################################
-		    else
-		    {
-			if ( $assigned[$j] < $id_current )
-			{
-			    $id_small   = $assigned[$j];
-			    $id_big     = $id_current;
-			    $id_current = $id_small;
-			}
-			else
-			{
-			    $id_small = $id_current;
-			    $id_big   = $assigned[$j];
-			}
-			for ( $k=1; $k<=$num_o; $k++ )
-			{
-			    if ( $assigned[$k] == $id_big )
-			    {
-				$assigned[$k] = $id_small
-			    }
-			} #k
-		    } # else $assigned[j]!=0
-		}# if neary_by		
-	    } # j
+	    #print "calling recursive detection !\n";
 	}# i
-	
-    
+	    	
 #############################################################	
 # 2.9 to print for test
 #############################################################	
-	#for ($i=1;$i<=1;$i++)
-	#{
-	 #   for ($j=1;$j<=$num_o;$j++)
-	 #   {
-#		print $near_by[$i][$j], ' ',
+#	for ( $i=1; $i<=$num_o; $i++ )
+#	{
+#	    for ( $j=$i+1; $j<=$num_o; $j++ )
+#	    {
+#		print $near_by[$i][$j], ' ';
 #	    }
 #	    print "\n";
 #	}
@@ -452,16 +355,16 @@ foreach $f (@file_names_in)
 #	    print $assigned[$i], "\n";
 #	}
 #	exit;
+
 #############################################################	
 #3 Counter number of particles in each cluster.
 #############################################################
 	
-
-	for ( $i=1; $i<=$num_o; $i++ )
+	for ( $i=1; $i<=$num_o; $i++)
 	{
 	    $num_particle_cluster[$i] = 0;
 	}
-	for ( $i=1; $i<=$num_o; $i++ )
+	for ( $i=1; $i<=$num_o; $i++)
 	{
 	    $num_particle_cluster[$assigned[$i]]++;
 	}
@@ -469,10 +372,8 @@ foreach $f (@file_names_in)
 #############################################################
 #4 Change the color scheme.
 #############################################################
-	for ( $i=1; $i<=$num_o; $i++)
-	{
-	    $assigned[$i] = $num_particle_cluster[$assigned[$i]];
-	}
+	#for ( $i=1; $i<=$num_o; $i++)
+	#{$assigned[$i] = $num_particle_cluster[$assigned[$i]];}
 	
 	#print "cluster ID, number of particles: \n";
 	#for ($i=1;$i<=$num_o;$i++)
@@ -494,7 +395,7 @@ foreach $f (@file_names_in)
 	    $num_cluster_current[$i]=0.0;
 	}
 	
-	for ( $i=1; $i<=$num_o; $i++ )
+	for ( $i=1; $i<=$num_o; $i++)
 	{
 	    $num_cluster_current[$num_particle_cluster[$i]] ++;
 	    $num_cluster[$num_particle_cluster[$i]] ++;
@@ -597,6 +498,27 @@ for ( $i=1; $i<=$N; $i++ )
 
 print "check sum of probability: ", $check, "\n";
 close(OUT);
+
+sub recursive_detect
+{
+#############################################################
+# 0: id to assigned
+# 1: particle id
+#############################################################
+    my $id_pass = $_[0];
+    my $sp      = $_[1];
+    
+    for ( my $sq=1; $sq<=$num_o; $sq++ )
+    {
+	if ( $near_by[$sp][$sq] == 1 && $assigned[$sq] == 0 )
+	{
+	    $assigned[$sq] = $id_pass;
+	    recursive_detect($id_pass, $sq);
+	}
+    }
+    
+    return;
+}
 
 sub stepstring
 {

@@ -1,19 +1,15 @@
 #############################################################
-# Calculate size distribution of colloid-clusters by radial
-# relative velocity averaged by time.
-# It is the same as colloid_cluster_radial_velocity.perl
+# Calculate size distribution of colloid-clusters by positions
+# averaged by time.
+# It is the same as colloid_cluster_position.perl
 # However, there may be two more output from this perl script.
 #          1:) output cluster ID back to colloid files.
 #          2:) output size distribution of colloid-clusters
 #              at any time instant.
-# 
-# dv = (dx*dvx+dy*dvy)/r,
-# we check if |dv|<=v_theta
+# with new color scheme, namely, size of the cluster tells the color.
 #############################################################
 use Math::Trig;
 
-$eta=8.46;
-$gam_dot=0.10575;
 
 #############################################################
 #freq_cluster_output_ID: how frequent is the .out with cluster
@@ -21,7 +17,7 @@ $gam_dot=0.10575;
 #                        0: no output at all.
 #############################################################
 $freq_cluster_ID_output = 1;
-$dir_name_cluster_ID_output="cluster_radial_velocity_ID_output_tol001/";
+$dir_name_cluster_ID_output="cluster_position_ID_output_new_color_test/";
 
 #############################################################
 #freq_probability_cluster_output: how frequent to output
@@ -29,7 +25,7 @@ $dir_name_cluster_ID_output="cluster_radial_velocity_ID_output_tol001/";
 #                                 at certain time step.
 #############################################################
 $freq_cluster_probability_output = 1;
-$dir_name_cluster_probability_output="cluster_radial_velocity_probability_output_tol001/";
+$dir_name_cluster_probability_output="cluster_position_probability_output_new_color_test/";
 
 $dir_name=$ARGV[0];
 $file_in_prefix="mcf_colloid";
@@ -75,10 +71,6 @@ $cluster_s = 0.05;
 $cluster_s = $ARGV[8];
 print "cluster_s: ", $cluster_s, "\n";
 
-$tol = 0.01;
-$tol = $ARGV[9];
-print "tolerance: ", $tol, "\n";
-
 #############################################################
 # two dimensional matrix to indicate near-by relation.
 # 1: related
@@ -122,8 +114,6 @@ $num_o_average=0;
 #############################################################
 
 $num_file=0;
-$num_pair_average=0;
-$num_pair_anti_cluster_average=0;
 
 $f_start = $file_in_prefix . stepstring($step_start). ".out";
 $f_end = $file_in_prefix . stepstring($step_end). ".out";
@@ -154,10 +144,9 @@ foreach $f (@file_names_in)
 	    @data = split(' ', $line);
 	    
 	    $num_p++;
-	    $x[$num_p]  = $data[0];
-	    $y[$num_p]  = $data[1];
-	    $vx[$num_p] = $data[2];
-	    $vy[$num_p] = $data[3];
+	    $x[$num_p] = $data[0];
+	    $y[$num_p] = $data[1];
+	
 	}
 	close(IN);
 	#print "num_p : ", $num_p, "\n";
@@ -182,17 +171,15 @@ foreach $f (@file_names_in)
 	    if ( ( $y[$p]>$gap ) && ( $y[$p]< $Ly-$gap) )
 	    {
 		$num_o++;
-		$x_o[$num_o]  = $x[$p];
-		$y_o[$num_o]  = $y[$p];
-		$vx_o[$num_o] = $vx[$p];
-		$vy_o[$num_o] = $vy[$p];		
-	    }	   
+		$x_o[$num_o] = $x[$p];
+		$y_o[$num_o] = $y[$p];
+		
+	    }
+	   
 	}
 	#print "num_o : ", $num_o, "\n";
 	$num_o_average += $num_o;
 	
-	$num_pair              = 0;
-	$num_pair_anti_cluster = 0;
 #############################################################
 # Decide whether a pair is considered as near-by by
 # checking the surface distance.
@@ -207,40 +194,16 @@ foreach $f (@file_names_in)
 # reset near-by to zero, no relation for each pair initially.
 #############################################################
 		$near_by[$i][$j] = 0;
-
+		
 #############################################################
 # check the surface distance of the pair to 
 # decide if they are near-by.
 #############################################################
-		$x_ij = $x_o[$i]-$x_o[$j];
-		$y_ij = $y_o[$i]-$y_o[$j];
-		$r_ij = sqrt($x_ij**2 + $y_ij**2);
-		$s_ij = $r_ij - 2.0*$R;
+		$r_ij = sqrt(($x_o[$i]-$x_o[$j])**2 + ($y_o[$i]-$y_o[$j])**2);
 
-		if ( $s_ij <= $cluster_s )
+		if ( $r_ij <= 2.0*$R + $cluster_s )
 		{
-		    
-		    $num_pair ++;
-		    
-		    $ex_ij = $x_ij/$r_ij;
-		    $ey_ij = $y_ij/$r_ij;
-		    $vx_ij = $vx_o[$i]-$vx_o[$j];
-		    $vy_ij = $vy_o[$i]-$vy_o[$j];
-		    
-		    $dv_threshold = $tol* $gam_dot * $r_ij;
-		    $dv_radial = $vx_ij*$ex_ij + $vy_ij*$ey_ij;
-		    
-		    #print "dv_threshold 1: ", $dv_threshold, "\n";
-		    #print "dv_radial    1: ", $dv_radial, "\n";
-		    if ( abs($dv_radial) <= $dv_threshold )
-		    {
-			$near_by[$i][$j] = 1;
-		    }
-		    else
-		    {
-			$num_pair_anti_cluster ++;
-			#print "pair is closely placed but with big radial velocity\n";
-		    }
+		    $near_by[$i][$j] = 1;
 		}
 		else
 		{
@@ -249,34 +212,11 @@ foreach $f (@file_names_in)
 # periodic image to decide if they are near-by.
 #############################################################
 
-		    $x_ij = $x_o[$i]-$x_o[$j]-$Lx;
-		    $y_ij = $y_o[$i]-$y_o[$j];
-		    $r_ij = sqrt($x_ij**2 + $y_ij**2);
-		    $s_ij = $r_ij - 2.0*$R;
+		    $r_ij = sqrt(($x_o[$i]-$x_o[$j]-$Lx)**2 + ($y_o[$i]-$y_o[$j])**2);
 		    
-		    if ( $s_ij <= $cluster_s )
+		    if ( $r_ij <= 2.0*$R + $cluster_s )
 		    {
-			$num_pair ++;
-			
-			$ex_ij = $x_ij/$r_ij;		    
-			$ey_ij = $y_ij/$r_ij;
-			$vx_ij = $vx_o[$i]-$vx_o[$j];
-			$vy_ij = $vy_o[$i]-$vy_o[$j];
-			
-			$dv_threshold = $tol * $gam_dot * $r_ij;
-			$dv_radial = $vx_ij*$ex_ij + $vy_ij*$ey_ij;
-			
-			#print "dv_threshold 2: ", $dv_threshold, "\n";
-			#print "dv_radial    2: ", $dv_radial, "\n";
-			if ( abs($dv_radial) <= $dv_threshold )
-			{
-			    $near_by[$i][$j] = 1;
-			}
-			else
-			{
-			    $num_pair_anti_cluster ++;
-			    #print "pair is closely placed but with big radial velocity\n";
-			}
+			$near_by[$i][$j] = 1;
 		    }
 		    else
 		    {
@@ -285,45 +225,17 @@ foreach $f (@file_names_in)
 # periodic image to decide if they are near-by.
 #############################################################
 			
-			$x_ij = $x_o[$i]-$x_o[$j]+$Lx;
-			$y_ij = $y_o[$i]-$y_o[$j];
-			$r_ij = sqrt($x_ij**2 + $y_ij**2);
-			$s_ij = $r_ij - 2.0*$R;
-
-			if ( $s_ij <= $cluster_s )
+			$r_ij = sqrt(($x_o[$i]-$x_o[$j]+$Lx)**2 + ($y_o[$i]-$y_o[$j])**2);
+			
+			if ( $r_ij <= 2.0*$R + $cluster_s )
 			{
-			    $num_pair ++;
-			    
-			    $ex_ij = $x_ij/$r_ij;
-			    $ey_ij = $y_ij/$r_ij;
-			    $vx_ij = $vx_o[$i]-$vx_o[$j];
-			    $vy_ij = $vy_o[$i]-$vy_o[$j];
-			    
-			    $dv_threshold = $tol * $gam_dot * $r_ij;
-			    $dv_radial = $vx_ij*$ex_ij + $vy_ij*$ey_ij;
-			    
-			    #print "dv_threshold 3: ", $dv_threshold, "\n";
-			    #print "dv_radial    3: ", $dv_radial, "\n";
-			    if ( abs($dv_radial) <= $dv_threshold )
-			    {
-				$near_by[$i][$j] = 1;
-			    }
-			    else
-			    {
-				$num_pair_anti_cluster ++;
-				#print "pair is closely placed but with big radial velocity\n";
-			    }
+			    $near_by[$i][$j] = 1;					    
 			}
 		    }
 		}
 	    } # j
 	}# i
-	$num_pair_average += $num_pair;
-	$num_pair_anti_cluster_average += $num_pair_anti_cluster;
-	
-	#print "number of pairs              : ", $num_pair, "\n";
-	#print "number of anti cluster pairs : ", $num_pair_anti_cluster, "\n";
-	
+
 #############################################################
 # Check two dimensional near_by matrix to find cluster.
 # 1: reset each particle as un-assigned to any cluster.
@@ -333,6 +245,11 @@ foreach $f (@file_names_in)
 	{
 	    $assigned[$i] = 0;
 	}
+
+	for ( $i=1; $i<=$num_o; $i++ )
+	{
+	    $color[$i] = 0;
+	}
 	
 #############################################################
 #2: assign everty particle in each cluster with 
@@ -341,15 +258,25 @@ foreach $f (@file_names_in)
 #   within this cluster.
 #############################################################
 
-	for ( $i=1; $i<=$num_o; $i++ )
+	$num_pair = 0;
+	
+	for ( $i=1; $i<$num_o; $i++ )
 	{
+#############################################################
+#  If particle i is assigned to a cluster,
+#  the current ID mark of cluster is $assigned[$i];
+#############################################################
 	    if ( $assigned[$i] > 0 )
 	    {
 		$mark = $assigned[$i];
 	    }
+#############################################################
+#  If particle i is not assigned to a cluster,
+#  the current ID mark of cluster might be i or not,
+#  it further depends on if j is assigned;
+#############################################################
 	    else
 	    {
-		$assigned[$i]=$i;
 		$mark = $i;
 	    }
 		
@@ -357,10 +284,64 @@ foreach $f (@file_names_in)
 	    {
 		if ( $near_by[$i][$j] >0 ) 
 		{
-		    $assigned[$j] = $mark;
-		}
+		    
+#############################################################
+# increase the number of closed-by pairs.
+#############################################################
+		    
+		    $num_pair ++;
+		    
+#############################################################
+# if j is not assigned, then both i and j have mark as ID.
+# if j is assigned, the ID mark is with the smaller number.
+#############################################################
+		    if ( $assigned[$j] == 0 )
+		    {
+			$assigned[$i] = $mark;
+			$assigned[$j] = $mark;
+			
+			$color[$mark]++;
+		    }		   
+		    else 
+		    {
+			if ( $assigned[$j] != $mark )
+			{
+			    
+			    if ( $assigned[$j] < $mark )
+			    {
+				$mark = $assigned[$j];
+			    }
+			    $color[$mark]++;
+			}
+			
+			$assigned[$i] = $mark;
+			$assigned[$j] = $mark;
+			
+			
+		    }		    
+		}		
+	    }
+	    
+#############################################################
+# if i is not assigned after checking i+1 to N, it must be
+# alone.
+#############################################################
+
+	    if ( $assigned[$i] == 0)
+	    {
+		$assigned[$i] = $i;
+		$color[$i]    = 1;
 	    }
 	}
+	
+	$color_sum = 0;
+	
+	for ( $i=1;$i<=$num_o;$i++)
+	{
+	    $color_sum += $color[$i];
+	}
+	print "numober of colosed-by pairs : ", $num_pair, "\n";
+	print "check sum of color          : ", $color_sum, "\n";
 	
 #############################################################	
 # 2.5 write certain snapshot with cluster ID for animation.
@@ -372,7 +353,13 @@ foreach $f (@file_names_in)
 	    open (OUTPUT_ID, $file_name_cluster_ID_output);
 	    for ( $j=1; $j<=$num_o; $j++ )
 	    {
-		print OUTPUT_ID $x_o[$j], ' ', $y_o[$j], ' ', $assigned[$j], "\n";
+		#print OUTPUT_ID $x_o[$j], ' ', $y_o[$j], ' ', $assigned[$j], "\n";
+		$color_current=$color[$assigned[$j]];
+		if ($color_current <=3)
+		{
+		    #$color_current = -1;
+		}
+		print OUTPUT_ID $x_o[$j], ' ', $y_o[$j], ' ', $color_current, "\n";
 	    }
 	    close(OUTPUT_ID);	     
 	}
@@ -456,20 +443,15 @@ if ( $num_file < 1 )
 # 
 #############################################################
 $num_o_average /= $num_file;
-$num_pair_average /= $num_file;
-$num_pair_anti_cluster_average /= $num_file;
-
-print "averaged number of particles used in each file     : ", $num_o_average, "\n";
-print "averaged number of pairs in each file              : ", $num_pair_average, "\n";
-print "averaged number of anti cluster pairs in each file : ", $num_pair_anti_cluster_average, "\n";
+print "averaged number of particles used in each file: ", $num_o_average, "\n";
 
 #############################################################
 # Output file name.
 #############################################################
 $file_out=">". $file_out. ".dat";
 
-open(OUT, $file_out);
-print OUT "#cluster size, number of this sized cluster \n";
+#open(OUT, $file_out);
+#print OUT "#cluster size, number of this sized cluster \n";
 
 $check=0;
 
@@ -492,11 +474,11 @@ for ( $i=1; $i<=$N; $i++ )
     
     $num_cluster_size[$i] =  $num_cluster_size[$i] * $i / $num_o_average;
     
-   print OUT $i, ' ',$num_cluster_size[$i], "\n";
+    #print OUT $i, ' ',$num_cluster_size[$i], "\n";
 }
 
 print "check sum of probability: ", $check, "\n";
-close(OUT);
+#close(OUT);
 
 sub stepstring
 {

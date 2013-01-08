@@ -175,6 +175,8 @@
         hm_r  = this%cc_repul_cut_on
         F0_repul = this%cc_repul_F0
         
+        !PRINT *, "cc_repul_F0: ", F0_repul
+        
         ALLOCATE(F_repul(dim,num))
         F_repul(:,:) = 0.0_MK
   

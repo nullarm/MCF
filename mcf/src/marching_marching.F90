@@ -217,7 +217,14 @@
         REAL(MK),DIMENSION(:,:),POINTER :: t_f
         INTEGER,DIMENSION(:,:),POINTER  :: t_id
 #endif
-        
+        REAL(MK)                        :: repulsive_force
+        REAL(MK)                        :: repulsive_factor
+        INTEGER                         :: repulsive_count
+
+        repulsive_force  = 0.0_MK
+        repulsive_count  = 0
+        repulsive_factor = 0.1_MK
+
         !----------------------------------------------------
         ! Initialization of variables.
       	!----------------------------------------------------
@@ -1397,6 +1404,36 @@
            CALL physics_set_time_current(this%phys,time_current,&
                 stat_info_sub)
       
+           !-------------------------------------------------
+           ! Test: temporary, change repulsive force gradually
+           !-------------------------------------------------
+
+           IF ( MOD(step_current,75200) == 0 ) THEN
+              
+              repulsive_count  = repulsive_count + 1
+
+              IF ( MOD ( repulsive_count, 6 ) == 0 ) THEN
+                 
+                 repulsive_factor = 10.0_MK
+                 
+                 IF ( MOD ( repulsive_count, 12 ) == 0 ) THEN
+                    
+                    repulsive_factor = 0.1_MK
+                    
+                 END IF
+                 
+              END IF
+              
+              repulsive_force  = colloid_get_cc_repul_F0(colloids,stat_info_sub)
+              repulsive_force  = repulsive_force * repulsive_factor
+              CALL colloid_set_cc_repul_F0(colloids,repulsive_force,stat_info_sub)
+              
+              repulsive_force  = colloid_get_cw_repul_F0(colloids,stat_info_sub)
+              repulsive_force  = repulsive_force * repulsive_factor
+              CALL colloid_set_cw_repul_F0(colloids,repulsive_force,stat_info_sub)
+              
+           END IF
+           
            !-------------------------------------------------
            ! Integrate with time
            !-------------------------------------------------

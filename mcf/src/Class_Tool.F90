@@ -34,6 +34,15 @@
            MODULE PROCEDURE tool_init           
         END INTERFACE
         
+        INTERFACE tool_print_msg
+           MODULE PROCEDURE tool_print_msg_b
+           MODULE PROCEDURE tool_print_msg_f
+           MODULE PROCEDURE tool_print_msg_i
+           MODULE PROCEDURE tool_print_msg_is
+           MODULE PROCEDURE tool_print_msg_s
+           MODULE PROCEDURE tool_print_msg_si
+        END INTERFACE tool_print_msg
+
       CONTAINS
         
 #include "tool_new.F90"
@@ -45,5 +54,6 @@
 #include "tool_L1_norm.F90"
 #include "tool_L2_norm.F90"
 #include "tool_Linfty_norm.F90"
+#include "tool_print_msg.F90"
 
       END MODULE Class_Tool

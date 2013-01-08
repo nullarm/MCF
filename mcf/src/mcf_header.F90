@@ -41,7 +41,9 @@
         ! Default maximum length of string.
         !----------------------------------------------------
         
-        INTEGER, PARAMETER      ::  MAX_CHAR   = 256
+        INTEGER, PARAMETER      ::  MAX_CHAR     = 256
+        INTEGER, PARAMETER      ::  NAME_DISPLAY_CHAR  = 30
+        INTEGER, PARAMETER      ::  VALUE_DISPLAY_CHAR = 30
         
         !----------------------------------------------------
         ! Constant Pi is defined here explicitly.

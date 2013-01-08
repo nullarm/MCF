@@ -24,6 +24,8 @@
         TYPE(Control),INTENT(OUT)       :: this
         INTEGER,INTENT(OUT)             :: stat_info
         
+        INTEGER                         :: stat_info_sub
+
         !----------------------------------------------------
         ! Init values are for flow around cylinder
         ! using
@@ -33,7 +35,8 @@
         ! Euler integration.
         !----------------------------------------------------
         
-        stat_info = 0
+        stat_info     = 0
+        stat_info_sub = 0
         
         this%job_name            = ""
         this%job_submit_date     = ""
@@ -50,8 +53,12 @@
         CALL DATE_AND_TIME(this%job_execute_date, &
              this%job_execute_time, this%job_execute_zone,&
              this%job_execute_values)
-        CALL CPU_TIME(this%job_time_start)
-        
+        !----------------------------------------------------
+        ! Job start time is set to be zero.
+        !----------------------------------------------------
+        !CALL CPU_TIME(this%job_time_start)
+        this%job_time_start      = 0.0_MK
+
         this%debug_flag          = 1
         this%relax_run           = .FALSE.
         this%colloid_relax       = .FALSE.
@@ -81,6 +88,8 @@
         this%adaptive_dt         = 0
         this%write_output        = 1
         this%write_restart       = 0
+
+        CALL tool_new(this%tool,stat_info_sub)
 
         RETURN
           
@@ -112,213 +121,359 @@
         
         TYPE(Control),INTENT(IN)        :: this
         INTEGER,INTENT(OUT)             :: stat_info
+        CHARACTER(100)                  :: string_display
+        CHARACTER(10)                   :: string_format
+
+        INTEGER                         :: stat_info_sub
+        !----------------------------------------------------
+        ! Initialization
+        !----------------------------------------------------
         
-        stat_info = 0
+        stat_info     = 0
+        stat_info_sub = 0
         
-        PRINT *, '------------------Start------------------'
-        PRINT *, '     Control  parameters'
-        PRINT *, '-----------------------------------------'
+        !----------------------------------------------------
+        ! Printing onto standard output device
+        !----------------------------------------------------
         
-        PRINT *, "job_name           : ", &
-             this%job_name(1:LEN_TRIM(this%job_name))
-        PRINT *, "job_submit_date    : ", &
-             this%job_submit_date(1:LEN_TRIM(this%job_submit_date))
-        PRINT *, "job_execute_date   : ", &
-             this%job_execute_date(1:4),"_",&
-             this%job_execute_date(5:6),"_",&
-             this%job_execute_date(7:8)             
-        PRINT *, "job_execute_time   : ", &
-             this%job_execute_time(1:2),":", &
-             this%job_execute_time(3:4),":", &
-             this%job_execute_time(5:10)
-        !PRINT *, "job_execute_zone   : ", &
-        !     this%job_execute_zone(1:LEN_TRIM(this%job_execute_zone))
-        PRINT *, "job_execute_values : ", &
-             this%job_execute_values(1:8)
-        PRINT *, "job_time_start     : ", &
-             this%job_time_start
-        PRINT *, "debug_flag         : ", this%debug_flag
+        PRINT *, '============================================================'
+        PRINT *, '              Control  parameters'
+        PRINT *, '====================Start==================================='
         
-        PRINT *, "relax run          : ", this%relax_run
+        CALL tool_print_msg(this%tool,&
+             "job_name", &
+             this%job_name(1:LEN_TRIM(this%job_name)), &
+             stat_info_sub)
+        CALL tool_print_msg(this%tool,&
+             "job_submit_date", &
+             this%job_submit_date(1:LEN_TRIM(this%job_submit_date)), &
+             stat_info_sub)
+        CALL tool_print_msg(this%tool,&
+             "job_execute_date", &
+             this%job_execute_date(1:4)//"_"//&
+             this%job_execute_date(5:6)//"_"//&
+             this%job_execute_date(7:8), stat_info_sub)
+        CALL tool_print_msg(this%tool,&
+             "job_execute_time", &
+             this%job_execute_time(1:2)//":"//&
+             this%job_execute_time(3:4)//":"//&
+             this%job_execute_time(5:10), stat_info_sub)       
+        CALL tool_print_msg(this%tool,&
+             "job_execute_zone ", &
+             this%job_execute_zone(1:LEN_TRIM(this%job_execute_zone)),&
+             stat_info_sub)
+        !CALL tool_print_msg(this%tool,&
+        !     "job_execute_values     : ", &
+        !     this%job_execute_values(1:8),&
+        !     stat_info_sub)
+        CALL tool_print_msg(this%tool,&
+             "job_time_start", &
+             this%job_time_start, stat_info_sub)
+        CALL tool_print_msg(this%tool,&
+             "debug_flag", &
+             this%debug_flag, stat_info_sub)
+        CALL tool_print_msg(this%tool,&
+             "relax_run", &
+             this%relax_run,stat_info_sub)
 
         IF ( this%relax_run ) THEN
            
-           PRINT *, "colloid relax      : ", this%colloid_relax
+           CALL tool_print_msg(this%tool,&
+                "colloid relax",&
+                this%colloid_relax,stat_info_sub)
            
         END IF
         
-        PRINT *, "read external      : ", this%read_external
+        CALL tool_print_msg(this%tool,&
+             "read external", &
+             this%read_external,stat_info_sub)
         
         SELECT CASE(this%kernel_type)
+           
         CASE (1)
-           PRINT *, "kernel_type        : ", "Quintic Spline"
+           
+           CALL tool_print_msg(this%tool,&
+                "kernel_type", &
+                "Quintic Spline", stat_info_sub)
+           
         CASE (2)
-           PRINT *, "kernel_type        : ", "Lucy kernel"
+           
+           CALL tool_print_msg(this%tool,&
+                "kernel_type", &
+                "Lucy kernel", stat_info_sub)
+           
         CASE DEFAULT
-           PRINT *, "kernel_type        : ", &
-                this%kernel_type, " not available"
+           
+           CALL tool_print_msg(this%tool,&
+                "kernel_type", this%kernel_type, &
+                "not available!", stat_info_sub)
+           
            stat_info = -1
            GOTO 9999
-        END SELECT
+           
+        END SELECT ! kernel_type
         
-        PRINT *, "inter-symmetry     : ", this%symmetry
+        CALL tool_print_msg(this%tool,&
+             "inter-symmetry",&
+             this%symmetry, stat_info_sub)
         
         SELECT CASE(this%rhs_density_type)
+           
         CASE (1)
-           PRINT *, "rhs_density_type   : ", &
-                "Summation of mass density"
+           
+           CALL tool_print_msg(this%tool,&
+                "rhs_density_type", &
+                "Summation of mass density", stat_info_sub)
+           
         CASE (2)
-           PRINT *, "rhs_density_type   : ", &
-                "Summation of number density"
+           
+           CALL tool_print_msg(this%tool,&
+                "rhs_density_type", &
+                "Summation of number density", stat_info_sub)
+           
         CASE DEFAULT
-           PRINT *, "rhs_density_type   : ", &
-                this%rhs_density_type, " not available"
+           
+           CALL tool_print_msg(this%tool,&
+                "rhs_density_type", this%rhs_density_type, &
+                "not available!", stat_info_sub)
            stat_info = -1
            GOTO 9999
-        END SELECT
+           
+        END SELECT ! rhs_density_type
         
-        PRINT *, "dynamic_density_ref: ", this%dynamic_density_ref
+        CALL tool_print_msg(this%tool,&
+             "dynamic_density_ref", &
+             this%dynamic_density_ref, stat_info_sub)
         
         SELECT CASE(this%stateEquation_type)
+           
         CASE (1)
-           PRINT *, "stateEquation_type : ", "Morris et al., 1997"
+           
+           CALL tool_print_msg(this%tool,&
+                "stateEquation_type", &
+                "Morris et al., 1997", stat_info_sub)
+           
         CASE (2)
-           PRINT *, "stateEquation_type : ", "Batchelor. 1967"
+           
+           CALL tool_print_msg(this%tool,&
+                "stateEquation_type", &
+                "Batchelor. 1967", stat_info_sub)
+           
         CASE DEFAULT
-           PRINT *, "stateEquation_type : ", &
-                this%stateEquation_type, " not available"
-        END SELECT
-  
-        PRINT *, "Newtonian fluid    : ", this%Newtonian
-        
-        PRINT *, "Brownian motion    : ", this%Brownian
-        PRINT *, "random seed        : ", this%random_seed
 
+           CALL tool_print_msg(this%tool,&
+                "stateEquation_type", this%stateEquation_type, &
+                "not available!", stat_info_sub)
+           
+        END SELECT
+        
+        CALL tool_print_msg(this%tool,&
+             "Newtonian fluid", &
+             this%Newtonian, stat_info_sub)
+        
+        CALL tool_print_msg(this%tool,&
+             "Brownian motion", &
+             this%Brownian, stat_info_sub)
+        
+        CALL tool_print_msg(this%tool,&
+             "random seed", &
+             this%random_seed, stat_info_sub)
+        
         SELECT CASE(this%rhs_force_type)
+           
         CASE (1)
-           PRINT *, "rhs_force_type     : ", &
-                "Morris et al., J. Comput. Phys. 1997"
+           
+           CALL tool_print_msg(this%tool,&
+                "rhs_force_type", &
+                "Morris et al., J. Comput. Phys. 1997", &
+                stat_info_sub)
+           
         CASE (2)
-           PRINT *, "rhs_force_type     : ", &
-                "Espanol and Revenga, Phys. Rev. E 2003"
-        CASE (3)
-           PRINT *, "rhs_force_type     : ", &
-                "Hu and Adams, J. Comput. Phys. 2006"
-        CASE (4)
-           PRINT *, "rhs_force_type     : ", &
-                "Hu and Adams, Phys. Fluids 2006"
-        CASE DEFAULT
-           PRINT *, "rhs_force_type     : ", &
-                this%rhs_force_type, " not available"           
-        END SELECT
 
-        PRINT *, "pp_interact_cc     : ", this%pp_interact_cc
+           CALL tool_print_msg(this%tool,&
+                "rhs_force_type", &
+                "Espanol and Revenga, Phys. Rev. E 2003", &
+                stat_info_sub)
+           
+        CASE (3)
+           
+           CALL tool_print_msg(this%tool,&
+                "rhs_force_type", &
+                "Hu and Adams, J. Comput. Phys. 2006", &
+                stat_info_sub)
+           
+        CASE (4)
+           
+           CALL tool_print_msg(this%tool,&
+                "rhs_force_type", &
+                "Hu and Adams, Phys. Fluids 2006", &
+                stat_info_sub)
+           
+        CASE DEFAULT
+
+           CALL tool_print_msg(this%tool,&
+                "rhs_force_type", this%rhs_force_type, &
+                "not available!", stat_info_sub)
+           
+        END SELECT ! rhs_force_type
         
-        PRINT *, "pp_interact_cw     : ", this%pp_interact_cw
+
+        CALL tool_print_msg(this%tool,&
+             "pp_interact_cc", &
+             this%pp_interact_cc, stat_info_sub)
         
-        PRINT *, "cc_lub_type        : ", this%cc_lub_type
+        CALL tool_print_msg(this%tool,&
+             "pp_interact_cw", &
+             this%pp_interact_cw, stat_info_sub)
         
-        PRINT *, "cc_repul_type      : ", this%cc_repul_type
+        CALL tool_print_msg(this%tool,&
+             "cc_lub_type", &
+             this%cc_lub_type, stat_info_sub)
         
-        PRINT *, "cw_lub_type        : ", this%cw_lub_type
+        CALL tool_print_msg(this%tool,&
+             "cc_repul_type", &
+             this%cc_repul_type, stat_info_sub)
         
-        PRINT *, "cw_repul_type      : ", this%cw_repul_type
+        CALL tool_print_msg(this%tool,&
+             "cw_lub_type", &
+             this%cw_lub_type, stat_info_sub)
         
-        PRINT *, "stress tensor      : ", this%stress_tensor
+        CALL tool_print_msg(this%tool,&
+             "cw_repul_type", &
+             this%cw_repul_type, stat_info_sub)
         
-        PRINT *, "potential energy   : ", this%p_energy
+        CALL tool_print_msg(this%tool,&
+             "stress tensor", &
+             this%stress_tensor, stat_info_sub)
         
-        PRINT *, "flow velocity fixed: ", this%flow_v_fixed
+        CALL tool_print_msg(this%tool,&
+             "potential energy", &
+             this%p_energy, stat_info_sub)
+        
+        CALL tool_print_msg(this%tool,&
+             "flow velocity fixed", &
+             this%flow_v_fixed, stat_info_sub)
         
         SELECT CASE(this%integrate_type)
+           
         CASE (1)
-           PRINT *, "integrate_type     : ", &
-                "explicit Euler"
+
+           CALL tool_print_msg(this%tool,&
+                "integrate_type", &
+                "explicit Euler", stat_info_sub)
         CASE (2)
-           PRINT *, "integrate_type     : ", &
-                "modified velocity Verlet"
+           
+           CALL tool_print_msg(this%tool,&
+                "integrate_type", &
+                "modified velocity Verlet", stat_info_sub)
+           
         CASE (3)
-           PRINT *, "integrate_type     : ", &
-                "predictor-corrector 2nd order"           
+           
+           CALL tool_print_msg(this%tool,&
+                "integrate_type", &
+                "predictor-corrector 2nd order", stat_info_sub)
+           
         CASE DEFAULT
-           PRINT *, "integrate_type     : ", &
-                this%integrate_type, " not available"
-        END SELECT
+           
+           CALL tool_print_msg(this%tool,&
+                "integrate_type", this%integrate_type, &
+                " not available!", stat_info_sub)
+           
+        END SELECT ! integrate_type
         
         
         SELECT CASE(this%integrate_colloid_type)
            
         CASE (-2)
            
-           PRINT *, "integrate_colloid_type: ", &
-                "implicit velocity for pairwise colloids"
+           CALL tool_print_msg(this%tool,&
+                "integrate_colloid_type", &
+                "implicit velocity for pairwise colloids", &
+                stat_info_sub)
            
         CASE (-1)
            
-           PRINT *, "integrate_colloid_type: ", &
-                "implicit velocity for all colloids"
-       
+           CALL tool_print_msg(this%tool,&
+                "integrate_colloid_type", &
+                "implicit velocity for all colloids", &
+                stat_info_sub)
+           
         CASE (1)
            
-           PRINT *, "integrate_colloid_type: ", &
-                "single step method"
+           CALL tool_print_msg(this%tool,&
+                "integrate_colloid_type", &
+                "single step method", stat_info_sub)
            
            SELECT CASE(this%integrate_colloid_RK)
               
            CASE (1:4)
-              PRINT *, "integrate_colloid_RK:  ", &
+              
+              CALL tool_print_msg(this%tool,&
+                   "integrate_colloid_RK", &
                    "Runge-Kutta order", &
-                   this%integrate_colloid_RK
+                   this%integrate_colloid_RK, stat_info_sub)
               
            CASE DEFAULT
               
-              PRINT *, "integrate_colloid_RK: ", &
-                   this%integrate_colloid_RK, " not available"
+              CALL tool_print_msg(this%tool,&
+                   "integrate_colloid_RK", &
+                   this%integrate_colloid_RK, &
+                   " not available!", stat_info_sub)
+              
               stat_info = -1
               GOTO 9999
               
-           END SELECT
+           END SELECT ! integrate_colloid_RK
            
         CASE (2)
            
-           PRINT *, "integrate_colloid_type: ", &
-                "multiple steps method"
+           CALL tool_print_msg(this%tool,&
+                "integrate_colloid_type", &
+                "multiple steps method", stat_info_sub)
            
            SELECT CASE(this%integrate_colloid_AB)
               
            CASE (1:5)
               
-              PRINT *, "integrate_colloid_AB:  ", &
+              CALL tool_print_msg(this%tool,&
+                   "integrate_colloid_AB", &
                    "Adams-Bashforth order", &
-                   this%integrate_colloid_AB
+                   this%integrate_colloid_AB, stat_info_sub)
               
            CASE DEFAULT
               
-              PRINT *, "integrate_colloid_AB: ", &
-                   this%integrate_colloid_AB, " not available"
+              CALL tool_print_msg(this%tool,&
+                   "integrate_colloid_AB", &
+                   this%integrate_colloid_AB, &
+                   " not available!", stat_info_sub)
+              
               stat_info = -1
               GOTO 9999
               
-           END SELECT
+           END SELECT ! integrate_colloid_AB
            
         CASE DEFAULT
            
-           PRINT *, "integrate_colloid_type: ", &
-                this%integrate_colloid_type, " not available"
+           CALL tool_print_msg(this%tool,&
+                "integrate_colloid_type", &
+                this%integrate_colloid_type, &
+                " not available!", stat_info_sub)
            stat_info = -1
            GOTO 9999
            
-        END SELECT
+        END SELECT ! integrate_colloid_TYPE
         
-        PRINT *, "adaptive dt        : ", this%adaptive_dt
+        CALL tool_print_msg(this%tool,&
+             "adaptive dt", this%adaptive_dt, stat_info_sub)
+        CALL tool_print_msg(this%tool,&
+             "write output", this%write_output, stat_info_sub)
+        CALL tool_print_msg(this%tool,&
+             "write restart", this%write_restart, stat_info_sub)
         
-        PRINT *, "write output       : ", this%write_output
-        
-        PRINT *, "write restart      : ", this%write_restart
-        
-        
-        PRINT *, '-------------------End-------------------'
-        
+        PRINT *, '=====================END===================================='
+        PRINT *, '              Control  parameters'
+        PRINT *, '============================================================'
+  
 9999    CONTINUE
         
         RETURN

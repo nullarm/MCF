@@ -26,6 +26,7 @@
         !----------------------------------------------------
         
         USE mcf_header
+        USE Class_Tool
         
         IMPLICIT NONE
         SAVE
@@ -70,6 +71,8 @@
            INTEGER                    :: write_output
            INTEGER                    :: write_restart
            
+           TYPE(Tool)                 :: tool
+
         END TYPE Control
         
         

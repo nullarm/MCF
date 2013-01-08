@@ -437,8 +437,7 @@
         
         CALL CPU_TIME(elapse)
         
-        control_get_elapsed_wall_time = &
-             (elapse-this%job_time_start)/3600.0_MK
+        control_get_elapsed_wall_time = elapse / 3600.0_MK
         
         RETURN
         

@@ -112,6 +112,14 @@
 
         INTEGER                         :: num_colloid
         TYPE(Colloid),POINTER           :: colloids
+        REAL(MK)                        :: coll_adapt_t_coef
+        INTEGER                         :: coll_sub_time_step
+        INTEGER                         :: coll_implicit_pair_num_sweep
+        LOGICAL                         :: coll_implicit_pair_sweep_adaptive
+        REAL(MK)                        :: coll_implicit_pair_sweep_tolerance
+        INTEGER                         :: coll_implicit_pair_sweep_max
+        INTEGER                         :: coll_explicit_sub_time_step
+        REAL(MK)                        :: coll_rho
         INTEGER                         :: coll_rho_type
         LOGICAL                         :: coll_translate
         LOGICAL                         :: coll_rotate
@@ -258,84 +266,104 @@
         ! Write Comments in the restart physics file.
         !------------------------------------------------------------
         
-        WRITE(cbuf, '(A)') '#---------------------------------------------'
+        WRITE(cbuf, '(A)') '#--------------------------------------------------'
         WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub)  TRIM(cbuf)
         WRITE(cbuf, '(A)') '# The meaning of following variables can be '
         WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub)  TRIM(cbuf)
         WRITE(cbuf, '(A)') '# looked up in original physics_config.mcf file'
         WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub)  TRIM(cbuf)
-        WRITE(cbuf, '(A)') '#---------------------------------------------'
+        WRITE(cbuf, '(A)') '#--------------------------------------------------'
         WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub)  TRIM(cbuf)
         WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub) ' '
         WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub) ' '
 
-        !-------------------------------------------------
+        !----------------------------------------------------
         ! Wirte number of species
-        !-------------------------------------------------
+        !----------------------------------------------------
         
         num_species = physics_get_num_species(d_physics,stat_info_sub)
         WRITE(cbuf, '(A,I2)') 'num_species = ', num_species
         WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub)  TRIM(cbuf)
         WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub) ' '
-
-        !-------------------------------------------------
+        
+        WRITE(cbuf, '(A)') '#--------------------------------------------------'
+        WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub)  TRIM(cbuf)
+        WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub) ' '
+        
+        !----------------------------------------------------
         ! Wirte number of dimensionality
-        !-------------------------------------------------
+        !----------------------------------------------------
         
         num_dim = physics_get_num_dim(d_physics,stat_info_sub)
         WRITE(cbuf, '(A,I2)') 'num_dim = ', num_dim         
         WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub)  TRIM(cbuf)
         WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub) ' '
         
-        !-------------------------------------------------
+        !----------------------------------------------------
         ! Wirte minimum physiscs of the domain
-        !-------------------------------------------------
+        !----------------------------------------------------
         
         CALL physics_get_min_phys(d_physics,min_phys,stat_info_sub)
-        IF(num_dim == 2) THEN
+        
+        IF ( num_dim == 2 ) THEN
+           
            WRITE(cbuf, '(2(A,E16.8))') &
                 'min_phys = ',min_phys(1),',', min_phys(2)
-        ELSE IF (num_dim == 3 ) THEN
+           
+        ELSE IF ( num_dim == 3 ) THEN
+           
            WRITE(cbuf, '(3(A,E16.8))') &
                 'min_phys = ',min_phys(1),&
                 ',', min_phys(2), ',', min_phys(3)
+
         END IF
+        
         WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub)  TRIM(cbuf)
         WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub) ' '
         
-        !-------------------------------------------------
+        !----------------------------------------------------
         ! Wirte maximum physiscs of the domain.
-        !-------------------------------------------------
+        !----------------------------------------------------
         
         CALL physics_get_max_phys(d_physics,max_phys,stat_info_sub)
-        IF(num_dim == 2) THEN
+        
+        IF ( num_dim == 2 ) THEN
+           
            WRITE(cbuf, '(2(A,E16.8))') &
                 'max_phys = ',max_phys(1),',', max_phys(2)
-        ELSE IF (num_dim == 3 ) THEN
+           
+        ELSE IF ( num_dim == 3 ) THEN
+           
            WRITE(cbuf, '(3(A,E16.8))') &
                 'max_phys = ',max_phys(1),&
                 ',', max_phys(2), ',', max_phys(3)
+           
         END IF
+        
         WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub)  TRIM(cbuf)
         WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub) ' '
         
-        !-------------------------------------------------
+        !----------------------------------------------------
         ! Write resolution 
         ! (this doesn't make much sence, since partciles' 
         ! positions are chaotic after simulation started,
         ! not on lattice any more)
-        !-------------------------------------------------
+        !----------------------------------------------------
         
         CALL physics_get_num_part_dim(d_physics,num_part_dim,stat_info_sub)
         
-        IF(num_dim == 2) THEN
+        IF ( num_dim == 2 ) THEN
+           
            WRITE(cbuf, '(2(A,I4))') &
                 'num_part = ',num_part_dim(1),',', num_part_dim(2)
-        ELSE IF (num_dim == 3 ) THEN
+           
+        ELSE IF ( num_dim == 3 ) THEN
+           
            WRITE(cbuf, '(3(A,I4))') &
                 'num_part = ',num_part_dim(1),&
                 ',', num_part_dim(2), ',', num_part_dim(3)
         END IF
+        
         WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub)  TRIM(cbuf)
         WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub) ' '
         
@@ -345,24 +373,27 @@
         !-----------------------------------------------------
         
         cut_off = physics_get_cut_off(d_physics,stat_info_sub)
-        WRITE(cbuf, '(A,E16.8)') 'cut_off = ', cut_off
+        WRITE(cbuf, '(A,E16.8)') 'cut_off  = ', cut_off
         WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub)  TRIM(cbuf)
         WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub) ' '
         WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub) ' '
    
+        WRITE(cbuf, '(A)') '#--------------------------------------------------'
+        WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub)  TRIM(cbuf)
+        WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub) ' '        
         
         !----------------------------------------------------
         ! Write  dt.
         !----------------------------------------------------
         
         dt = physics_get_dt(d_physics,stat_info_sub)
-        WRITE(cbuf, '(A,E16.8)') 'dt = ', dt
+        WRITE(cbuf, '(A,E16.8)') 'dt       = ', dt
         WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub)  TRIM(cbuf)
         WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub) ' '
         
         !----------------------------------------------------
         ! Write step_start
-        !-----------------------------------------------------
+        !----------------------------------------------------
         
         step_start = step
         WRITE(cbuf, '(A,I10)') 'step_start = ', step_start
@@ -371,10 +402,10 @@
    
         !----------------------------------------------------
         ! Write step_end
-        !-----------------------------------------------------
+        !----------------------------------------------------
           
         step_end = physics_get_step_end(d_physics,stat_info_sub)
-        WRITE(cbuf, '(A,I10)') 'step_end = ', step_end
+        WRITE(cbuf, '(A,I10)') 'step_end   = ', step_end
         WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub)  TRIM(cbuf)
         WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub) ' '
    
@@ -392,9 +423,12 @@
         !-----------------------------------------------------
         
         time_end = physics_get_time_end(d_physics,stat_info_sub)
-        WRITE(cbuf, '(A,E16.8)') 'time_end = ', time_end
+        WRITE(cbuf, '(A,E16.8)') 'time_end   = ', time_end
         WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub)  TRIM(cbuf)
         WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub) ' '
+        
+        WRITE(cbuf, '(A)') '#--------------------------------------------------'
+        WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub)  TRIM(cbuf)
         WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub) ' '
         
         !----------------------------------------------------
@@ -410,12 +444,12 @@
         !----------------------------------------------------
         
         rho = physics_get_rho(d_physics,stat_info_sub)        
-        WRITE(cbuf, '(A,E16.8)') 'rho = ', rho
+        WRITE(cbuf, '(A,E16.8)') 'rho      = ', rho
         WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub)  TRIM(cbuf)
         WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub) ' '
         
         eta = physics_get_eta(d_physics,stat_info_sub)        
-        WRITE(cbuf, '(A,E16.8)') 'eta = ', eta
+        WRITE(cbuf, '(A,E16.8)') 'eta      = ', eta
         WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub)  TRIM(cbuf)
         WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub) ' '
         
@@ -425,53 +459,55 @@
         WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub) ' '
      
         ksai = physics_get_ksai(d_physics,stat_info_sub)        
-        WRITE(cbuf, '(A,E16.8)') 'ksai = ', ksai
+        WRITE(cbuf, '(A,E16.8)') 'ksai     = ', ksai
         WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub)  TRIM(cbuf)
         WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub) ' '
    
         kt = physics_get_kt(d_physics,stat_info_sub) 
-        WRITE(cbuf, '(A,E16.8)') 'kt = ', kt
+        WRITE(cbuf, '(A,E16.8)') 'kt       = ', kt
         WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub)  TRIM(cbuf)
         WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub) ' '
         
         c = physics_get_c(d_physics,stat_info_sub) 
-        WRITE(cbuf, '(A,E16.8)') 'c = ', c
+        WRITE(cbuf, '(A,E16.8)') 'c        = ', c
         WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub)  TRIM(cbuf)
         WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub) ' '
         
         rho_ref = physics_get_rho_ref(d_physics,stat_info_sub)        
-        WRITE(cbuf, '(A,E16.8)') 'rho_ref = ', rho_ref
+        WRITE(cbuf, '(A,E16.8)') 'rho_ref  = ', rho_ref
         WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub)  TRIM(cbuf)
         WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub) ' '
         
         gamma = physics_get_gamma(d_physics,stat_info_sub)        
-        WRITE(cbuf, '(A,E16.8)') 'gamma = ', gamma
+        WRITE(cbuf, '(A,E16.8)') 'gamma    = ', gamma
         WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub)  TRIM(cbuf)
         WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub) ' '
+        
+        WRITE(cbuf, '(A)') '#--------------------------------------------------'
+        WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub)  TRIM(cbuf)
         WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub) ' '
-
         
         !--------------------------------------------------
         ! Write relax parameters.
         !--------------------------------------------------
         
         relax_type = physics_get_relax_type(d_physics,stat_info_sub)
-        WRITE(cbuf, '(A,I10)') 'relax_type = ', relax_type
+        WRITE(cbuf, '(A,I10)') 'relax_type     = ', relax_type
         WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub)  TRIM(cbuf)
         WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub) ' '
         
         dt_relax = physics_get_dt_relax(d_physics,stat_info_sub)
-        WRITE(cbuf, '(A,E16.8)') 'dt_relax = ', dt_relax
+        WRITE(cbuf, '(A,E16.8)') 'dt_relax       = ', dt_relax
         WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub)  TRIM(cbuf)
         WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub) ' '
      
         step_relax = physics_get_step_relax(d_physics,stat_info_sub)
-        WRITE(cbuf, '(A,I10)') 'step_relax = ', step_relax
+        WRITE(cbuf, '(A,I10)') 'step_relax     = ', step_relax
         WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub)  TRIM(cbuf)
         WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub) ' '
         
         time_relax = physics_get_time_relax(d_physics,stat_info_sub) 
-        WRITE(cbuf, '(A,E16.8)') 'time_relax = ', time_relax
+        WRITE(cbuf, '(A,E16.8)') 'time_relax     = ', time_relax
         WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub)  TRIM(cbuf)
         WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub) ' '
         
@@ -481,18 +517,19 @@
         WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub) ' '
      
         kt_relax = physics_get_kt_relax(d_physics,stat_info_sub) 
-        WRITE(cbuf, '(A,E16.8)') 'kt_relax = ', kt_relax
+        WRITE(cbuf, '(A,E16.8)') 'kt_relax       = ', kt_relax
         WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub)  TRIM(cbuf)
         WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub) ' '
 
         c_relax = physics_get_c_relax(d_physics,stat_info_sub) 
-        WRITE(cbuf, '(A,E16.8)') 'c_relax = ', c_relax
+        WRITE(cbuf, '(A,E16.8)') 'c_relax        = ', c_relax
         WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub)  TRIM(cbuf)
         WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub) ' '
      
+        WRITE(cbuf, '(A)') '#--------------------------------------------------'
+        WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub)  TRIM(cbuf)
         WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub) ' '
 
-        
         !----------------------------------------------------
         ! Write egenvector dynamics for Non-Newtonian fluids
         ! oldroyd-B model.
@@ -522,12 +559,16 @@
         
            CALL physics_get_eval(d_physics,eval,stat_info_sub)
            
-           IF(num_dim == 2) THEN
+           IF( num_dim == 2 ) THEN
+              
               WRITE(cbuf, '(2(A,E16.8))') &
                    'eval = ',eval(1),',', eval(2)
-           ELSE IF (num_dim == 3 ) THEN
+              
+           ELSE IF ( num_dim == 3 ) THEN
+              
               WRITE(cbuf, '(3(A,E16.8))') &
                    'eval = ',eval(1),',', eval(2),',', eval(3)
+              
            END IF
            
            WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub)  TRIM(cbuf)
@@ -540,14 +581,18 @@
         
            CALL physics_get_evec(d_physics,evec,stat_info_sub)
            
-           IF(num_dim == 2) THEN
+           IF ( num_dim == 2 ) THEN
+              
               WRITE(cbuf, '(4(A,E16.8))') &
                    'evec = ',evec(1,1),',', evec(2,1),&
                    ',', evec(1,2),',', evec(2,2)
-           ELSE IF (num_dim == 3 ) THEN
+              
+           ELSE IF ( num_dim == 3 ) THEN
+              
               WRITE(cbuf, '(9(A,E16.8))') &
                    'evec = ',evec(1,1),',', evec(2,1),',', evec(3,1),&
                    ( (',', evec(i,j),i=1,3),j=2,3 )
+              
            END IF
            
            WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub)  TRIM(cbuf)
@@ -563,13 +608,15 @@
            WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub)  TRIM(cbuf)
            WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub) ' '
            
+           WRITE(cbuf, '(A)') '#--------------------------------------------------'
+           WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub)  TRIM(cbuf)
            WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub) ' '
-           
+                   
         END IF  ! non-Newtonian
         
-        !--------------------------------------------------
+        !----------------------------------------------------
         ! Write external body force
-        !--------------------------------------------------
+        !----------------------------------------------------
         
         body_force_type = physics_get_body_force_type(d_physics,stat_info_sub)
         
@@ -579,48 +626,60 @@
         
         CALL physics_get_body_force(d_physics,body_force,stat_info_sub)
         
-        IF(num_dim == 2) THEN
+        IF( num_dim == 2 ) THEN
+           
            WRITE(cbuf, '(2(A,E16.8))') &
-                'body_force = ',body_force(1),',', body_force(2)
-        ELSE IF (num_dim == 3 ) THEN
+                'body_force      = ',body_force(1),',', body_force(2)
+           
+        ELSE IF ( num_dim == 3 ) THEN
+           
            WRITE(cbuf, '(3(A,E16.8))') &
-                'body_force = ',body_force(1),&
+                'body_force      = ',body_force(1),&
                 ',', body_force(2), ',', body_force(3)
+           
         END IF
+        
         WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub)  TRIM(cbuf)
         WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub) ' '
         
         CALL physics_get_body_force_d(d_physics,body_force_d,stat_info_sub)
         
-        IF(num_dim == 2) THEN
+        IF( num_dim == 2 ) THEN
+           
            WRITE(cbuf, '(2(A,E16.8))') &
-                'body_force_d = ',body_force_d(1),',', body_force_d(2)
-        ELSE IF (num_dim == 3 ) THEN
+                'body_force_d    = ',body_force_d(1),',', body_force_d(2)
+           
+        ELSE IF ( num_dim == 3 ) THEN
+           
            WRITE(cbuf, '(3(A,E16.8))') &
-                'body_force_d = ',body_force_d(1),&
+                'body_force_d    = ',body_force_d(1),&
                 ',', body_force_d(2), ',', body_force_d(3)
+           
         END IF
         
         WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub)  TRIM(cbuf)
         WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub) ' '
-        WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub) ' '
         
-        !--------------------------------------------------
+        WRITE(cbuf, '(A)') '#--------------------------------------------------'
+        WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub)  TRIM(cbuf)
+        WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub) ' '
+
+        !----------------------------------------------------
         ! Write flow velocity parameters
-        !--------------------------------------------------
+        !----------------------------------------------------
         
         flow_direction = physics_get_flow_direction(d_physics,stat_info_sub)        
-        WRITE(cbuf, '(A,I5)') 'flow_direction = ', flow_direction
+        WRITE(cbuf, '(A,I5)') 'flow_direction   = ', flow_direction
         WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub)  TRIM(cbuf)
         WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub) ' '
         
         flow_width = physics_get_flow_width(d_physics,stat_info_sub)        
-        WRITE(cbuf, '(A,E16.8)') 'flow_width = ', flow_width
+        WRITE(cbuf, '(A,E16.8)') 'flow_width       = ', flow_width
         WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub)  TRIM(cbuf)
         WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub) ' '
         
         flow_v = physics_get_flow_v(d_physics,stat_info_sub)        
-        WRITE(cbuf, '(A,E16.8)') 'flow_v = ', flow_v
+        WRITE(cbuf, '(A,E16.8)') 'flow_v           = ', flow_v
         WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub)  TRIM(cbuf)
         WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub) ' '
     
@@ -630,6 +689,8 @@
         WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub) ' '
         WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub) ' '
         
+        WRITE(cbuf, '(A)') '#--------------------------------------------------'
+        WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub)  TRIM(cbuf)
         
         !----------------------------------------------------
         ! Wirte colloids  parameters.
@@ -645,6 +706,22 @@
         
            CALL physics_get_colloid(d_physics,colloids,stat_info_sub)
            
+           coll_adapt_t_coef  = &
+                colloid_get_adapt_t_coef(colloids,stat_info_sub)
+           coll_sub_time_step  = &
+                colloid_get_sub_time_step(colloids,stat_info_sub)
+           coll_implicit_pair_num_sweep = &
+                colloid_get_implicit_pair_num_sweep(colloids,stat_info_sub)
+           coll_implicit_pair_sweep_adaptive = &
+                colloid_get_implicit_pair_sweep_adaptive(colloids,stat_info_sub)
+           coll_implicit_pair_sweep_tolerance = &
+                colloid_get_implicit_pair_sweep_tolerance(colloids,stat_info_sub)
+           coll_implicit_pair_sweep_max = &
+                colloid_get_implicit_pair_sweep_max(colloids,stat_info_sub)
+           coll_explicit_sub_time_step = &
+                colloid_get_explicit_sub_time_step(colloids,stat_info_sub)
+           coll_rho       = &
+                colloid_get_rho(colloids,stat_info_sub)           
            coll_rho_type  = &
                 colloid_get_rho_type(colloids,stat_info_sub)
            coll_translate = &
@@ -691,10 +768,47 @@
            CALL colloid_get_theta(colloids,coll_theta,stat_info_sub)
            CALL colloid_get_omega(colloids,coll_omega,stat_info_sub)
            
-           WRITE(cbuf, '(A,I3)') 'coll_rho_type = ', coll_rho_type
+           WRITE(cbuf, '(A,E16.8)') 'coll_adapt_t_coef = ', &
+                coll_adapt_t_coef
+           WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub)  TRIM(cbuf)
+           WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub) ' '
+      
+           WRITE(cbuf, '(A,I)') 'coll_sub_time_step = ', &
+                coll_sub_time_step
+           WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub)  TRIM(cbuf)
+           WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub) ' '
+          
+           WRITE(cbuf, '(A,I)') 'coll_implicit_pair_num_sweep = ', &
+                coll_implicit_pair_num_sweep
            WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub)  TRIM(cbuf)
            WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub) ' '
            
+           WRITE(cbuf, '(A,L)') 'coll_implicit_pair_sweep_adaptive = ', &
+                coll_implicit_pair_sweep_adaptive
+           WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub)  TRIM(cbuf)
+           WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub) ' '
+          
+           WRITE(cbuf, '(A,E16.8)') 'coll_implicit_pair_sweep_tolerance = ', &
+                coll_implicit_pair_sweep_tolerance
+           WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub)  TRIM(cbuf)
+           WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub) ' '
+          
+           WRITE(cbuf, '(A,I)') 'coll_implicit_pair_sweep_max = ', coll_implicit_pair_sweep_max
+           WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub)  TRIM(cbuf)
+           WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub) ' '
+   
+           WRITE(cbuf, '(A,I)') 'coll_explicit_sub_time_step   = ', coll_explicit_sub_time_step
+           WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub)  TRIM(cbuf)
+           WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub) ' '
+      
+           WRITE(cbuf, '(A,E16.8)') 'coll_rho   = ', coll_rho
+           WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub)  TRIM(cbuf)
+           WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub) ' '
+           
+           WRITE(cbuf, '(A,I3)') 'coll_rho_type = ', coll_rho_type
+           WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub)  TRIM(cbuf)
+           WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub) ' '
+          
            WRITE(cbuf, '(A,L)') 'coll_translate = ', coll_translate
            WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub)  TRIM(cbuf)
            WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub) ' '
@@ -718,21 +832,21 @@
            
            IF(num_dim == 2) THEN
               WRITE(cbuf, '(2(A,E16.8))') &
-                   'coll_body_force = ',coll_body_force(1), ',', coll_body_force(2)
+                   'coll_body_force     = ',coll_body_force(1), ',', coll_body_force(2)
            ELSE IF (num_dim == 3 ) THEN
               WRITE(cbuf, '(3(A,E16.8))') &
-                   'coll_body_force = ',coll_body_force(1), ',', coll_body_force(2), &
+                   'coll_body_force     = ',coll_body_force(1), ',', coll_body_force(2), &
                    ',', coll_body_force(3)
            END IF
            WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub)  TRIM(cbuf)
            WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub) ' '              
            WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub) ' '
    
-           WRITE(cbuf, '(A,E16.8)') 'cc_lub_cut_off = ', coll_cc_lub_cut_off
+           WRITE(cbuf, '(A,E16.8)') 'cc_lub_cut_off   = ', coll_cc_lub_cut_off
            WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub)  TRIM(cbuf)
            WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub) ' '
            
-           WRITE(cbuf, '(A,E16.8)') 'cc_lub_cut_on = ', coll_cc_lub_cut_on
+           WRITE(cbuf, '(A,E16.8)') 'cc_lub_cut_on    = ', coll_cc_lub_cut_on
            WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub)  TRIM(cbuf)
            WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub) ' '
            
@@ -740,19 +854,19 @@
            WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub)  TRIM(cbuf)
            WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub) ' '
        
-           WRITE(cbuf, '(A,E16.8)') 'cc_repul_cut_on = ', coll_cc_repul_cut_on
+           WRITE(cbuf, '(A,E16.8)') 'cc_repul_cut_on  = ', coll_cc_repul_cut_on
            WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub)  TRIM(cbuf)
            WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub) ' '
        
-           WRITE(cbuf, '(A,E16.8)') 'cc_repul_F0 = ', coll_cc_repul_F0
+           WRITE(cbuf, '(A,E16.8)') 'cc_repul_F0      = ', coll_cc_repul_F0
            WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub)  TRIM(cbuf)
            WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub) ' '
        
-           WRITE(cbuf, '(A,E16.8)') 'cw_lub_cut_off = ', coll_cw_lub_cut_off
+           WRITE(cbuf, '(A,E16.8)') 'cw_lub_cut_off   = ', coll_cw_lub_cut_off
            WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub)  TRIM(cbuf)
            WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub) ' '
            
-           WRITE(cbuf, '(A,E16.8)') 'cw_lub_cut_on = ', coll_cw_lub_cut_on
+           WRITE(cbuf, '(A,E16.8)') 'cw_lub_cut_on    = ', coll_cw_lub_cut_on
            WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub)  TRIM(cbuf)
            WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub) ' '
     
@@ -760,11 +874,11 @@
            WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub)  TRIM(cbuf)
            WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub) ' '
        
-           WRITE(cbuf, '(A,E16.8)') 'cw_repul_cut_on = ', coll_cw_repul_cut_on
+           WRITE(cbuf, '(A,E16.8)') 'cw_repul_cut_on  = ', coll_cw_repul_cut_on
            WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub)  TRIM(cbuf)
            WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub) ' '
            
-           WRITE(cbuf, '(A,E16.8)') 'cw_repul_F0 = ', coll_cw_repul_F0
+           WRITE(cbuf, '(A,E16.8)') 'cw_repul_F0      = ', coll_cw_repul_F0
            WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub)  TRIM(cbuf)
            WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub) ' '
            WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub) ' '
@@ -801,29 +915,53 @@
               WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub)  TRIM(cbuf)
               WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub) ' '
               
-              IF(num_dim == 2) THEN
+              IF( num_dim == 2 ) THEN
+                 
                  WRITE(cbuf, '(2(A,E16.8))') &
                       'coll_x = ',coll_x(1,i),',', coll_x(2,i)
-              ELSE IF (num_dim == 3 ) THEN
+                 
+              ELSE IF ( num_dim == 3 ) THEN
+                 
                  WRITE(cbuf, '(3(A,E16.8))') &
                       'coll_x = ',coll_x(1,i),',', coll_x(2,i), ',', coll_x(3,i)
+                 
               END IF
+              
               WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub)  TRIM(cbuf)
               WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub) ' '
               
-              IF(num_dim == 2) THEN
+              IF( num_dim == 2 ) THEN
+                 
                  WRITE(cbuf, '(2(A,E16.8))') &
                       'coll_v = ',coll_v(1,i,1),',', coll_v(2,i,1)
-              ELSE IF (num_dim == 3 ) THEN
+                 
+              ELSE IF ( num_dim == 3 ) THEN
+                 
                  WRITE(cbuf, '(3(A,E16.8))') &
                       'coll_v = ',coll_v(1,i,1),',', coll_v(2,i,1), ',', coll_v(3,i,1)
+                 
               END IF
+              
               WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub)  TRIM(cbuf)
               WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub) ' '
               
-              WRITE(cbuf, '(4(A,E16.8))') &
-                   'coll_rot_vector = ',coll_acc_vector(1,i),',', &
-                   coll_acc_vector(2,i), ',', coll_acc_vector(3,i),',', coll_acc_vector(4,i)
+              IF ( num_dim == 2 ) THEN
+                 
+                 WRITE(cbuf, '(4(A,E16.8))') &
+                      'coll_rot_vector = ',coll_acc_vector(1,i), ',', &
+                      coll_acc_vector(2,i), ',', coll_acc_vector(3,i), ',', &
+                      coll_acc_vector(4,i)
+                 
+              ELSE IF ( num_dim == 3 ) THEN
+                 
+                 WRITE(cbuf, '(9(A,E16.8))') &
+                      'coll_rot_vector = ',coll_acc_vector(1,i),',', &
+                      coll_acc_vector(2,i), ',', coll_acc_vector(3,i), ',', &
+                      coll_acc_vector(4,i), ',', coll_acc_vector(5,i), ',', &
+                      coll_acc_vector(6,i), ',', coll_acc_vector(7,i), ',', &
+                      coll_acc_vector(8,i), ',', coll_acc_vector(9,i)
+              END IF
+
               WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub)  TRIM(cbuf)
               WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub) ' '
               
@@ -840,7 +978,11 @@
               WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub) ' '
               
            END DO ! i = 1, num_colloid
-           
+
+           WRITE(cbuf, '(A)') '#--------------------------------------------------'
+           WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub)  TRIM(cbuf)
+           WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub) ' '
+
         END IF ! num_specis > 1 && num_colloid > 0
         
         !----------------------------------------------------
@@ -849,14 +991,18 @@
         
         CALL physics_get_bcdef(d_physics,bcdef,stat_info_sub)
         
-        IF(num_dim == 2) THEN
+        IF( num_dim == 2 ) THEN
+           
            WRITE(cbuf, '(4(A,I2))') &
-                'bcdef = ',bcdef(1),&
+                'bcdef         = ',bcdef(1),&
                 (',', bcdef(i), i=2,4)
-        ELSE IF (num_dim == 3 ) THEN
+           
+        ELSE IF ( num_dim == 3 ) THEN
+           
            WRITE(cbuf, '(6(A,I2))') &
-                'bcdef = ',bcdef(1),&
+                'bcdef         = ',bcdef(1),&
                 (',', bcdef(i), i=2,6)           
+           
         END IF
         
         WRITE(UNIT=this%restart_physics_unit,&
@@ -864,14 +1010,17 @@
         WRITE(UNIT=this%restart_physics_unit,&
              FMT='(A)',IOSTAT=stat_info_sub) ' '
         
-        IF(num_dim == 2) THEN
+        IF( num_dim == 2 ) THEN
+           
            WRITE(cbuf, '(4(A,I2))') &
-                'shear_type = ',shear_type(1),&
+                'shear_type    = ',shear_type(1),&
                 (',', shear_type(i),i=2,4)
-        ELSE IF (num_dim == 3 ) THEN
+           
+        ELSE IF ( num_dim == 3 ) THEN
            WRITE(cbuf, '(6(A,I2))') &
-                'shear_type = ',shear_type(1),&
+                'shear_type    = ',shear_type(1),&
                 (',', shear_type(i),i=2,6)
+           
         END IF
         
         WRITE(UNIT=this%restart_physics_unit,&
@@ -882,7 +1031,7 @@
         
         IF( num_dim == 2 ) THEN
            WRITE(cbuf, '(4(A,E16.8))') &
-                'shear_v = ',shear_v(2,1), &
+                'shear_v       = ',shear_v(2,1), &
                 ',', shear_v(2,2), &
                 ',', shear_v(1,3), &
                 ',', shear_v(1,4)
@@ -890,7 +1039,7 @@
            
         ELSE IF ( num_dim == 3 ) THEN           
            WRITE(cbuf, '(12(A,E16.8))') &
-                'shear_v = ',shear_v(2,1),&
+                'shear_v       = ',shear_v(2,1),&
                 ',',shear_v(3,1), &
                 ',',shear_v(2,2),',',shear_v(3,2), &
                 ',',shear_v(1,3),',',shear_v(3,3), &
@@ -907,12 +1056,12 @@
         
         IF(num_dim == 2) THEN
            WRITE(cbuf, '(4(A,E16.8))') &
-                'shear_freq = ',shear_freq(1),&
+                'shear_freq    = ',shear_freq(1),&
                 (',', shear_freq(i),i=2,4 ) 
            
         ELSE IF (num_dim == 3 ) THEN
            WRITE(cbuf, '(6(A,E16.8))') &
-                'shear_freq = ',shear_freq(1),&
+                'shear_freq    = ',shear_freq(1),&
                 (',', shear_freq(i),i=2,6 ) 
         END IF
         
@@ -927,7 +1076,7 @@
         WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub) ' '
    
         
-        WRITE(cbuf, '(A,I2)') 'wall_noslip = ', wall_noslip
+        WRITE(cbuf, '(A,I2)') 'wall_noslip   = ', wall_noslip
         
         
         WRITE(UNIT=this%restart_physics_unit,&
@@ -937,15 +1086,15 @@
         WRITE(UNIT=this%restart_physics_unit,&
              FMT='(A)',IOSTAT=stat_info_sub) ' '
 
-        !------------------------------------------
+        !----------------------------------------------------
         ! Write the ending of restart physics file.
-        !------------------------------------------
+        !----------------------------------------------------
         
-        WRITE(cbuf, '(A)') '#---------------------------------------------'
+        WRITE(cbuf, '(A)') '#--------------------------------------------------'
         WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub)  TRIM(cbuf)
         WRITE(cbuf, '(A)') '# The restart physics file ends here '
         WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub)  TRIM(cbuf)
-        WRITE(cbuf, '(A)') '#---------------------------------------------'
+        WRITE(cbuf, '(A)') '#--------------------------------------------------'
         WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub)  TRIM(cbuf)
         
         
@@ -957,7 +1106,7 @@
            stat_info = -1
            GOTO 9999
         END IF
-
+        
         WRITE(cbuf,'(2A)') 'Restart physics config written to ',&
              TRIM(file_name)
         PRINT *, "***", TRIM(cbuf)
@@ -980,7 +1129,7 @@
         IF(ASSOCIATED(body_force)) THEN
            DEALLOCATE(body_force)
         END IF
-
+        
         IF(ASSOCIATED(bcdef)) THEN
            DEALLOCATE(bcdef)
         END IF
@@ -1041,4 +1190,4 @@
         
 	RETURN 
  
-      END SUBROUTINE io_write_restart_physics
+END SUBROUTINE io_write_restart_physics

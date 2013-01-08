@@ -618,7 +618,8 @@
         PRINT *, "particle placement : ", this%place
         PRINT *, "no slip            : ", this%noslip_type
         PRINT *, "body force type    : ", this%body_force_type
-        PRINT *, "body force         : ", this%body_force(1:dim)
+        PRINT *, "body force         : "
+        PRINT *, this%body_force(1:dim)
         
         PRINT *, "cc_lub_type        : ", this%cc_lub_type
         PRINT *, "cc_lub_cut_off     : ", this%cc_lub_cut_off
@@ -650,16 +651,19 @@
            PRINT *, "radius             : ", this%radius(1:dim,i)
            PRINT *, "freq               : ", this%freq(i)
            PRINT *, "m                  : ", this%m(i)
-           PRINT *, "mmi                : ", this%mmi(1:3,i)
-           PRINT *, "x                  : ", this%x(1:dim,i)
-           PRINT *, "v                  : ", this%v(1:dim,i,1)
-           PRINT *, "rotation vector    : ", this%acc_vector(1:4,i)
+           PRINT *, "mmi                : "
+           PRINT *, this%mmi(1:3,i)
+           PRINT *, "x                  : "
+           PRINT *, this%x(1:dim,i)
+           PRINT *, "v                  : "
+           PRINT *, this%v(1:dim,i,1)
+           PRINT *, "rotation vector    : "
+           PRINT *, this%acc_vector(1:4,i)
            !PRINT *, "theta              : ", this%theta(1:3,i)
-           PRINT *, "omega              : ", this%omega(1:3,i,1)
-           PRINT *, "num_physical_part  : ",&
-                this%num_physical_part(i)
-           PRINT *, "num_numerical_part : ", &
-                this%num_numerical_part(i)
+           PRINT *, "omega              : "
+           PRINT *, this%omega(1:3,i,1)
+           PRINT *, "num_physical_part  : ", this%num_physical_part(i)
+           PRINT *, "num_numerical_part : ", this%num_numerical_part(i)
            PRINT *, '   ----------------------------------'
            
         END DO

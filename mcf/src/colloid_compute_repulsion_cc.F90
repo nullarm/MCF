@@ -87,7 +87,6 @@
         hn = this%cc_repul_cut_off
         hm = this%cc_repul_cut_on
         F0 = this%cc_repul_F0
-        
         !----------------------------------------------------
         ! Calculate the gap.
         !----------------------------------------------------

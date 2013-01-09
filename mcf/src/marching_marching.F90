@@ -217,14 +217,10 @@
         REAL(MK),DIMENSION(:,:),POINTER :: t_f
         INTEGER,DIMENSION(:,:),POINTER  :: t_id
 #endif
-        REAL(MK)                        :: repulsive_force
-        REAL(MK)                        :: repulsive_factor
-        INTEGER                         :: repulsive_count
-
-        repulsive_force  = 0.0_MK
-        repulsive_count  = 0
-        repulsive_factor = 0.1_MK
-
+        REAL(MK),DIMENSION(:,:),POINTER :: shear_v0
+        REAL(MK),DIMENSION(3,6)         :: shear_v
+        
+        NULLIFY(shear_v0)
         !----------------------------------------------------
         ! Initialization of variables.
       	!----------------------------------------------------
@@ -1408,30 +1404,23 @@
            ! Test: temporary, change repulsive force gradually
            !-------------------------------------------------
 
-           IF ( MOD(step_current,75200) == 0 ) THEN
+           IF ( step_current == 150400 ) THEN
+           !IF ( step_current == 10 ) THEN
+             
+              CALL boundary_get_shear_v(tboundary,shear_v0,stat_info_sub)
               
-              repulsive_count  = repulsive_count + 1
+              shear_v(1:2,1:4) = 0.0_MK
+              
+              CALL boundary_set_shear_v(tboundary,shear_v(1:2,1:4),stat_info_sub)
+                            
+             
+           END IF
 
-              IF ( MOD ( repulsive_count, 6 ) == 0 ) THEN
-                 
-                 repulsive_factor = 10.0_MK
-                 
-                 IF ( MOD ( repulsive_count, 12 ) == 0 ) THEN
-                    
-                    repulsive_factor = 0.1_MK
-                    
-                 END IF
-                 
-              END IF
-              
-              repulsive_force  = colloid_get_cc_repul_F0(colloids,stat_info_sub)
-              repulsive_force  = repulsive_force * repulsive_factor
-              CALL colloid_set_cc_repul_F0(colloids,repulsive_force,stat_info_sub)
-              
-              repulsive_force  = colloid_get_cw_repul_F0(colloids,stat_info_sub)
-              repulsive_force  = repulsive_force * repulsive_factor
-              CALL colloid_set_cw_repul_F0(colloids,repulsive_force,stat_info_sub)
-              
+           IF ( step_current == 170400 ) THEN
+           !IF ( step_current == 20 ) THEN
+
+              CALL boundary_set_shear_v(tboundary,shear_v0(1:2,1:4),stat_info_sub)                           
+             
            END IF
            
            !-------------------------------------------------

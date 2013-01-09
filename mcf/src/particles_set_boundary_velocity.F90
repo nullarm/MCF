@@ -75,6 +75,8 @@
            ! with solid walls' v.
            !-------------------------------------------------
            
+           !PRINT *, "shear_v: ", shear_v(1:2,1:4)
+
            DO i =1, this%num_part_wall_solid_real
               
               ip  = this%part_wall_solid_real_list(1,i)

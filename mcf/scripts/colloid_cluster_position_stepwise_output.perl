@@ -207,7 +207,14 @@ foreach $f (@file_names_in)
 #############################################################
 
 	$num_density   = $num_p/$V;
-	$num_density_r = $V/$num_p;
+	if ( $num_p !=0 )
+	{
+	    $num_density_r = $V/$num_p;
+	}
+	else
+	{
+	    print "number of particles is zero in this file \n";
+	}
 	#print "num density : ", $num_density, "\n";
 	
 #############################################################

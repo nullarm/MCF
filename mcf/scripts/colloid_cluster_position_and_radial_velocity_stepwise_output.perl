@@ -54,7 +54,7 @@ print "processing directory : ", $dir_name, "\n";
 #                0: no output at all.
 #############################################################
 
-$freq_ID_output = 1;
+$freq_ID_output = 0;
 $subdir_name_ID_output="cluster_position_and_radial_velocity_ID_stepwise_output/";
 
 #############################################################

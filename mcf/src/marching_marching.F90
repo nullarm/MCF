@@ -1404,24 +1404,24 @@
            ! Test: temporary, change repulsive force gradually
            !-------------------------------------------------
 
-           IF ( step_current == 150400 ) THEN
+!           IF ( step_current == 150400 ) THEN
            !IF ( step_current == 10 ) THEN
              
-              CALL boundary_get_shear_v(tboundary,shear_v0,stat_info_sub)
+!              CALL boundary_get_shear_v(tboundary,shear_v0,stat_info_sub)
               
-              shear_v(1:2,1:4) = 0.0_MK
+!              shear_v(1:2,1:4) = 0.0_MK
               
-              CALL boundary_set_shear_v(tboundary,shear_v(1:2,1:4),stat_info_sub)
+!              CALL boundary_set_shear_v(tboundary,shear_v(1:2,1:4),stat_info_sub)
                             
              
-           END IF
+!           END IF
 
-           IF ( step_current == 170400 ) THEN
+!           IF ( step_current == 170400 ) THEN
            !IF ( step_current == 20 ) THEN
 
-              CALL boundary_set_shear_v(tboundary,shear_v0(1:2,1:4),stat_info_sub)                           
+!              CALL boundary_set_shear_v(tboundary,shear_v0(1:2,1:4),stat_info_sub)                           
              
-           END IF
+!           END IF
            
            !-------------------------------------------------
            ! Integrate with time

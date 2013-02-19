@@ -270,10 +270,10 @@
            wall_rho_type = &
                 boundary_get_wall_rho_type(tboundary,stat_info_sub)
         END IF
-
+        
         num_part_wall_solid =  &
              boundary_get_num_part_wall_solid(tboundary,stat_info_sub)
-        
+          
         !----------------------------------------------------
         ! Colloid parameters :
         !----------------------------------------------------

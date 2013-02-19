@@ -192,7 +192,7 @@
               OPEN(UNIT=this%statistic_unit,FILE=this%statistic_file,&
                    STATUS="OLD",FORM=this%statistic_fmt,ACTION="WRITE", &
                    POSITION="APPEND",IOSTAT=stat_info_sub)
-              PRINT *,"exisiting statistic file ", &
+              PRINT *,"Exisiting statistic file ", &
                    TRIM(this%statistic_file), &
                    " being appended !"  
            ELSE
@@ -207,13 +207,13 @@
            OPEN(UNIT=this%statistic_unit,FILE=this%statistic_file,&
                 STATUS="NEW",FORM=this%statistic_fmt,ACTION="WRITE", &
                 IOSTAT=stat_info_sub)
-           PRINT *,"new statistic file ", &
+           PRINT *,"New statistic file ", &
                 TRIM(this%statistic_file), " being created !"
         END IF
         
         IF( stat_info_sub /= 0) THEN
            PRINT *, "io_open_statistic :"
-           PRINT *, "creating/opening the ", &
+           PRINT *, "Creating/Opening the ", &
                 TRIM(this%statistic_file), " has error!"
            stat_info = -1
            GOTO 9999
@@ -305,7 +305,7 @@
               
            ELSE
               PRINT *,"io_open_statistic_relax : "
-              PRINT *,"old statistic_relax file ", &
+              PRINT *,"Old statistic_relax file ", &
                    TRIM(this%statistic_relax_file), &
                    " is still there!"
               stat_info = -1
@@ -321,7 +321,7 @@
                 ACTION="WRITE", &
                 IOSTAT=stat_info_sub)
            
-           PRINT *,"new statistic_relax file ", &
+           PRINT *,"New statistic_relax file ", &
                 TRIM(this%statistic_relax_file), &
                 " being created !"
            
@@ -450,7 +450,7 @@
               
               IF(stat_info_sub /= 0) THEN
                  PRINT *,"io_open_colloid :"
-                 PRINT *,"creating/opening file ", &
+                 PRINT *,"Creating/Opening file ", &
                       TRIM(file_name), " has error!"
                  stat_info = -1
                  GOTO 9999

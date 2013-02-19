@@ -767,7 +767,7 @@
                 0,stat_info_sub)
            
         END IF ! rank == 0
-        
+
         !----------------------------------------------------
         ! Decompose the domain of all the particles,
         ! broadcast them from root to all processes.
@@ -824,7 +824,7 @@
            ! conformation tensor C also has been
            ! read already, is not needed to create.
            !-------------------------------------------------
-           
+
            CALL particles_init_partial_exter(mcf_particles,&
                 stat_info_sub)
            
@@ -886,7 +886,7 @@
            END IF
            
         END IF ! read_external
-        
+
         !----------------------------------------------------
         ! Display physics parameters on root process after 
         ! decomposing, since for internally generated particles, 
@@ -918,7 +918,7 @@
         !----------------------------------------------------
         ! Sychronize every process.
         !----------------------------------------------------
-        
+
         CALL MPI_Barrier(comm,stat_info_sub)
         
         !----------------------------------------------------
@@ -944,7 +944,7 @@
         !----------------------------------------------------
 
         CALL marching_marching(mcf_marching,stat_info_sub)
-        
+
         IF( stat_info_sub /=0 ) THEN
            PRINT *, "mcf : ", &
                 "Marching integration failed!"

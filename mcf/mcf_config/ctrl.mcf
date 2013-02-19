@@ -210,7 +210,7 @@ mcf_io_config_file      = io_config.mcf
 #                          according to
 #                          1: simulation step
 #                          2: simulation time.
-#                          3: wall time.
+#                          3: wall time, in hours.
 #----------------------------------------------------------------------
 
 debug_flag             = 1

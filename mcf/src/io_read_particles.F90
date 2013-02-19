@@ -43,7 +43,7 @@
         REAL(MK), DIMENSION(:,:), POINTER       :: v
         REAL(MK), DIMENSION(:), POINTER         :: rho
         REAL(MK), DIMENSION(:), POINTER         :: m
-        INTEGER, DIMENSION(:,:), POINTER        :: id
+        INTEGER,  DIMENSION(:,:), POINTER       :: id
         REAL(MK), DIMENSION(:), POINTER         :: inter_id
         
         INTEGER                                 :: ilenread
@@ -208,7 +208,7 @@
            !-------------------------------------------------
            
            id(1:num_id,iline) = INT(inter_id(1:num_id))
-           
+
         END DO
         
 200     CONTINUE
@@ -238,6 +238,14 @@
            
            CALL particles_init_global_exter(d_particles,&
                 x,v,rho,m,id,num_part,stat_info_sub)
+           
+           IF ( stat_info_sub /= 0 ) THEN
+              
+              PRINT *, __FILE__, __LINE__, &
+                   "particles_init_global_exter has problem"
+              stat_info =  -1
+              
+           END IF
            
         END IF
         

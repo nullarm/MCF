@@ -337,8 +337,8 @@
            PRINT *, &
                 "particles_init_particles_exter : ", &
                 "Found collocating particles !"
-           stat_info = -1
-           GOTO 9999
+           !stat_info = -1
+           !GOTO 9999
         END IF
         
         !----------------------------------------------------

@@ -47,8 +47,8 @@ print "processing directory : ", $dir_name, "\n";
 #############################################################
 
 $freq_ID_output = 1;
-$subdir_name_ID_output="cluster_position_ID_stepwise_output/";
-
+$subdir_name_ID_output="cluster_position_ID_s005_stepwise_output/";
+mkdir $dir_name.$subdir_name_ID_output;
 #############################################################
 #freq_probability_output:
 #                 how frequent to output probability of
@@ -57,7 +57,8 @@ $subdir_name_ID_output="cluster_position_ID_stepwise_output/";
 #############################################################
 
 $freq_probability_output = 1;
-$subdir_name_probability_output="cluster_position_probability_stepwise_output/";
+$subdir_name_probability_output="cluster_position_probability_s005_stepwise_output/";
+mkdir $dir_name.$subdir_name_probability_output;
 
 $pi=3.1415926;
 $num_file  = 0;

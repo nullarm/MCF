@@ -78,14 +78,16 @@ for ($j=0;$j<$num_res;$j++)
 
 $num_file=0;
 
-print "starting step : ", $step_start;
-print "ending  step  : ", $step_end;
+print "starting step : ", $step_start, "\n";
+print "ending  step  : ", $step_end, "\n";
  
 $f_start = $file_in_prefix . stepstring($step_start). ".out";
 $f_end = $file_in_prefix . stepstring($step_end). ".out";
 
 print "starting file : ", $f_start, "\n";
 print "ending file   : ", $f_end, "\n";
+
+$num_particle_tot=0.0;
 
 foreach $f (@file_names_in)
 {
@@ -118,6 +120,7 @@ foreach $f (@file_names_in)
 	    
 	}
 	$num_file ++;
+	$num_particle_tot += $num_particle;
 	
 	close(IN);
 	
@@ -127,13 +130,13 @@ foreach $f (@file_names_in)
 
 print "number of files processed: ", $num_file, "\n";
 
-if ($num_file > 0 ) 
+if ($num_file > 0) 
 {
     for ($j=0; $j<$num_res; $j++)
     {
 	for ($k=0;$k<=$res[$j];$k++)
 	{
-	    $num[$k][$j]=$num[$k][$j]*$res[$j]/$num_file/$num_particle;
+	    $num[$k][$j]=$num[$k][$j]*$res[$j]/$num_particle_tot;
 	}
     }
 }

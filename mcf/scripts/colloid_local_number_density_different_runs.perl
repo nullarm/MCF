@@ -1,5 +1,5 @@
 #############################################################
-# Calculate local volume fraction of colloid according to 
+# Calculate local number density of colloid according to 
 # its distance to top and bottom boundaries.
 #############################################################
 

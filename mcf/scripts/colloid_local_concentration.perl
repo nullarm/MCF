@@ -1,7 +1,11 @@
 #############################################################
-# Calculate local number density colloid according to 
+# Calculate local concentration of colloid according to 
 # its distance to top and bottom boundaries.
+# This routine is different from clolloid_local_number_density,
+# as the latter counts the discrete integer number of colloids.
+# Here we consider also a fraction of a colloid.
 #############################################################
+use Math::Trig;
 
 $dir_name= $ARGV[0];
 $file_in_prefix="mcf_colloid";
@@ -60,7 +64,7 @@ print "\n";
 
 
 #############################################################
-# initialize mid location y and number counter of each layer.
+# initialize mid location y and aera counter of each layer.
 #############################################################
 
 for ($j=0;$j<$num_res;$j++)
@@ -68,7 +72,7 @@ for ($j=0;$j<$num_res;$j++)
     for ($k=0; $k<$res[$j]; $k++)
     {
 	$y[$k][$j] = $k*$h[$j]+ $h[$j]/2.0;
-	$num[$k][$j] = 0.0;
+	$area[$k][$j] = 0.0;
     }
 }
 
@@ -97,7 +101,13 @@ foreach $f (@file_names_in)
 	print "processing file : ", $file_name, "\n";
 	
 #############################################################
-# reset to zero 
+# reset to zero: colloid is assumed be a disk.
+#
+# y_c : y position of the center of the colloid.
+# y_b : y position of the bottom surface
+# y_t : y position of the top surface
+# in  : index of y position in array $aera and $y
+# in_c, in_b, in_t
 #############################################################
 	
 	open (IN, $file_name);
@@ -108,16 +118,73 @@ foreach $f (@file_names_in)
 	{
 	    @data = split(' ', $line);
 	    
-	    $y = $data[1];
+	    $y_c = $data[1];
+	    $y_b = $y_c - $R;
+	    $y_t = $y_c + $R;
 	    
+###################################
+# Loop each resolution h[j]
+###################################
 	    for ($j=0; $j<$num_res; $j++)
 	    {
-		#print "y/h : ", $y/$h, "\n";
-		$num[$y/$h[$j]][$j] += 1.0;
+###################################
+# calculate indices
+###################################
+		$in_c = int($y_c/$h[$j]);
+		$in_b = int($y_b/$h[$j]);
+		$in_t = int($y_t/$h[$j]);
+###################################################
+# Loop each index from bottom to the center of a colloid
+###################################################
+		$d = $y_c-$y_b;
+		$theta = 2.0*acos($d/$R);
+		$area_segment = $R**2*($theta-sin($theta))/2.0;
+		$area[$in_b][$j] += $area_segment;
+		$area_segment_pre = $area_segment;
+		for ($i=$in_b+1;$i<=$in_c;$i++)
+		{
+###################################################
+# Calculate area of fraction in each index:
+# which is the area of a circular segment minus
+# the area of another circular segment,
+# according to Wikipedia:
+###################################################
+		    $d = $y_c-$i*$h[$j];
+		    $theta = 2.0*acos($d/$R);
+		    $area_segment = $R**2*($theta-sin($theta))/2.0;
+		    $area[$i][$j] += ($area_segment-$area_segment_pre);
+		    $area_segment_pre = $area_segment;
+		}
+###################################################
+# Loop each index from top to the center of a colloid
+# Note that the center index is added here the 
+# second times, as the center fraction is divided
+# into two pieces.
+###################################################
+		$d = $y_t-$y_c;
+		$theta = 2.0*acos($d/$R);
+		$area_segment = $R**2*($theta-sin($theta))/2.0;
+		$area[$in_t][$j] += $area_segment;
+		$area_segment_pre = $area_segment;	
+		for ($i=$in_t-1;$i>=$in_c+1;$i--)
+		{
+###################################################
+# Calculate area of fraction in each index:
+# which is the area of a circular segment minus
+# the area of another circular segment,
+# according to Wikipedia:
+###################################################
+		    $d=$i*$h[$j]-$y_c;
+		    $theta=2.0*acos($d/$R);
+		    $area_segment=$R**2*($theta-sin($theta))/2.0;
+		    $area[$i][$j] += ($area_segment-$area_segment_pre);
+		    $area_segment_pre = $area_segment;
+		}
+		$area_segment = $pi*$R**2/2.0;
+		$area[$in_c][$j] += ($area_segment-$area_segment_pre);
 	    }
 	    
-	    $num_particle++;
-	    
+	    $num_particle++;	    
 	}
 	$num_file ++;
 	$num_particle_tot += $num_particle;
@@ -136,7 +203,7 @@ if ($num_file > 0)
     {
 	for ($k=0;$k<=$res[$j];$k++)
 	{
-	    $num[$k][$j]=$num[$k][$j]*$res[$j]/$num_particle_tot;
+	    $area[$k][$j]=$area[$k][$j]/$num_file/($h[$j]*$Lx);
 	}
     }
 }
@@ -148,7 +215,7 @@ for ($j=0; $j<$num_res; $j++)
 
     for ($k=0;$k<$res[$j];$k++)
     {
-	print OUT $y[$k][$j],' ', $num[$k][$j], "\n";
+	print OUT $y[$k][$j],' ', $area[$k][$j], "\n";
     }
     print "writing file : ", $file_out_name, "\n";
     close(OUT);    

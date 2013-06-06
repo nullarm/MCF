@@ -1,5 +1,5 @@
 ###################################################
-#Calculate average stress on the wall in 2D
+#Calculate average force on the wall in 2D
 ###################################################
 
 open (file_in, "mcf_boundary.dat");

@@ -58,6 +58,7 @@
            LOGICAL                    :: pp_interact_cw
            INTEGER                    :: cc_lub_type
            INTEGER                    :: cc_repul_type
+           INTEGER                    :: cc_magnet_type
            INTEGER                    :: cw_lub_type
            INTEGER                    :: cw_repul_type
            LOGICAL                    :: stress_tensor

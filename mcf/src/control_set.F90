@@ -308,6 +308,20 @@
         RETURN
         
       END SUBROUTINE control_set_cc_repul_type
+   
+   
+      SUBROUTINE control_set_cc_magnet_type(this,d_magnet_type,stat_info)
+
+        TYPE(Control), INTENT(INOUT)             :: this
+        INTEGER, INTENT(IN)                      :: d_magnet_type
+        INTEGER, INTENT(out)                     :: stat_info
+        
+        stat_info = 0
+        this%cc_magnet_type = d_magnet_type
+        
+        RETURN
+        
+      END SUBROUTINE control_set_cc_magnet_type
     
       
       SUBROUTINE control_set_cw_lub_type(this,d_lub_type,stat_info)

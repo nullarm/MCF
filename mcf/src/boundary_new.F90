@@ -10,7 +10,10 @@
         TYPE(Boundary), INTENT(INOUT)   :: this
         INTEGER, INTENT(OUT)            :: stat_info
         
+        INTEGER                         :: stat_info_sub
+        
         stat_info = 0
+        stat_info_sub = 0
         
         this%num_dim = 2
         
@@ -82,6 +85,8 @@
         
         this%num_part_wall_solid = 0
         
+        CALL tool_new(this%tool,stat_info_sub)
+        
         RETURN
         
       END SUBROUTINE boundary_init_default
@@ -93,7 +98,10 @@
         INTEGER, INTENT(IN)              :: d_num_dim
         INTEGER, INTENT(OUT)             :: stat_info
         
+        INTEGER                          :: stat_info_sub
+        
         stat_info = 0
+        stat_info_sub = 0
         
         this%num_dim = d_num_dim
         
@@ -165,6 +173,8 @@
                 
         this%num_part_wall_solid = 0
         
+        CALL tool_new(this%tool,stat_info_sub)
+        
         RETURN
         
       END SUBROUTINE boundary_init
@@ -193,61 +203,75 @@
         num_wall  = boundary_get_num_wall(this,stat_info_sub)
         num_shear = boundary_get_num_shear(this,stat_info_sub)
         
-        PRINT *, '---***************Start***************---'
-        PRINT *, '     Boundary parameters'
-        PRINT *, '---***********************************---'
+        PRINT *, '============================================================'
+        PRINT *, '              Boundary  parameters'
+        PRINT *, '====================Start==================================='
         
-        PRINT *, "num_dim          : ", dim
-        PRINT *, "bcdef            : "
-        PRINT *,  this%bcdef(1:2*dim)
+        CALL tool_print_msg(this%tool, "num_dim", &
+             dim, stat_info_sub)
+        DO j = 1, dim
+           CALL tool_print_msg(this%tool, "bcdef", &
+                this%bcdef(2*j-1:2*j), stat_info_sub)
+        END DO
         
         IF ( num_shear > 0 ) THEN
-           
-           PRINT *, "shear type       : "
-           PRINT *, this%shear_type(1:2*dim)
-           PRINT *, "shear rate       : "
+           CALL tool_print_msg(this%tool, "shear type", &
+                this%shear_type(1:2*dim), stat_info_sub)
            IF (dim==2) THEN
-              PRINT *, this%shear_rate(2,1)
-              PRINT *, this%shear_rate(1,2)
+              CALL tool_print_msg(this%tool, "shear rate", &
+                   this%shear_rate(2,1), stat_info_sub)
+              CALL tool_print_msg(this%tool, "shear rate", &
+                   this%shear_rate(1,2), stat_info_sub)
            ELSE IF (dim ==3 ) THEN
-              PRINT *, this%shear_rate(2:3,1)
-              PRINT *, this%shear_rate(1,2),this%shear_rate(3,2)
-              PRINT *, this%shear_rate(1,3),this%shear_rate(2,3)
-           END IF
-           PRINT *, "shear velocity   : " 
-           
-           IF (dim==2) THEN
-              PRINT *, this%shear_v0(2,1:2)
-              PRINT *, this%shear_v0(1,3:4)
-           ELSE IF (dim ==3 ) THEN
-              PRINT *, this%shear_v0(2:3,1)
-              PRINT *, this%shear_v0(2:3,2)
-              PRINT *, this%shear_v0(1,3),this%shear_v0(3,3)
-              PRINT *, this%shear_v0(1,4),this%shear_v0(3,4)
-              PRINT *, this%shear_v0(1:2,5)
-              PRINT *, this%shear_v0(1:2,6)
+              CALL tool_print_msg(this%tool, "shear rate", &
+                   this%shear_rate(2:3,1), stat_info_sub)
+              CALL tool_print_msg(this%tool, "shear rate", &
+                   this%shear_rate(1,2),this%shear_rate(3,2), &
+                   stat_info_sub)
+              CALL tool_print_msg(this%tool, "shear rate", &
+                   this%shear_rate(1,3),this%shear_rate(2,3), &
+                   stat_info_sub)
            END IF
            
-           PRINT *, "shear frequency  : "
-           DO j=1,dim
-              PRINT *, this%shear_freq(j*2-1:j*2)
-           END DO
+           IF (dim==2) THEN
+              CALL tool_print_msg(this%tool, "shear velocity", &
+              this%shear_v0(2,1:2), stat_info_sub)
+              CALL tool_print_msg(this%tool, "shear velocity", &
+              this%shear_v0(1,3:4), stat_info_sub)
+           ELSE IF (dim ==3 ) THEN
+              CALL tool_print_msg(this%tool, "shear velocity", &
+                   this%shear_v0(2:3,1), stat_info_sub)
+              CALL tool_print_msg(this%tool, "shear velocity", &
+                   this%shear_v0(2:3,2), stat_info_sub)
+              CALL tool_print_msg(this%tool, "shear velocity", &
+                   this%shear_v0(1,3),this%shear_v0(3,3), stat_info_sub)
+              CALL tool_print_msg(this%tool, "shear velocity", &
+                   this%shear_v0(1,4),this%shear_v0(3,4), stat_info_sub)
+              CALL tool_print_msg(this%tool, "shear velocity", &
+                   this%shear_v0(1:2,5), stat_info_sub)
+              CALL tool_print_msg(this%tool, "shear velocity", &
+                   this%shear_v0(1:2,6), stat_info_sub)
+           END IF
+           
+           CALL tool_print_msg(this%tool, "shear frequency", &
+                this%shear_freq(1:2*dim), stat_info_sub)
            
            IF ( this%num_wall_solid > 0 ) THEN
-              
-              PRINT *, "wall rho type    : ", this%rho_type
+              CALL tool_print_msg(this%tool, "wall rho type", &
+                   this%rho_type, stat_info_sub)
               
            END IF
 
            IF ( num_wall > 0 ) THEN
-              PRINT *, "no slip          : ", this%noslip_type
+              CALL tool_print_msg(this%tool, "no slip", &
+                   this%noslip_type, stat_info_sub)
            END IF
            
         END IF
         
-        
-        PRINT *, '---****************End****************---'
-        
+        PRINT *, '=====================END===================================='
+        PRINT *, '              Boundary  parameters'
+        PRINT *, '============================================================'
         
 9999    CONTINUE
         

@@ -226,7 +226,7 @@
         INTEGER, PARAMETER      :: mcf_cc_lub_implicit_velocity_sweep_max = 1024
         
         !----------------------------------------------------
-        ! Define repulsive force between how two colloidal
+        ! Define repulsive force between two colloidal
         ! particles.
         ! 0: no repulsive at all.
         ! 1: Hookean spring type repulsive force.
@@ -237,7 +237,19 @@
         INTEGER, PARAMETER      :: mcf_cc_repul_type_no      = 0
         INTEGER, PARAMETER      :: mcf_cc_repul_type_Hookean = 1
         INTEGER, PARAMETER      :: mcf_cc_repul_type_DLVO    = 2
+        INTEGER, PARAMETER      :: mcf_cc_repul_type_LJ      = 3
 
+        !----------------------------------------------------
+        ! Define magnetic force between two colloidal
+        ! particles.
+        ! 0: no magnetism at all.
+        ! 1:Franke type magnetic force.
+        !    ( a colloid - b colloid)
+        !----------------------------------------------------
+        
+        INTEGER, PARAMETER      :: mcf_cc_magnet_type_no      = 0
+        INTEGER, PARAMETER      :: mcf_cc_magnet_type_field   = 1
+        
         !----------------------------------------------------
         ! Define the how colloid interact with wall
         ! 0: no interaction at all.
@@ -260,6 +272,7 @@
         INTEGER, PARAMETER      :: mcf_cw_repul_type_no      = 0
         INTEGER, PARAMETER      :: mcf_cw_repul_type_Hookean = 1
         INTEGER, PARAMETER      :: mcf_cw_repul_type_DLVO    = 2
+        INTEGER, PARAMETER      :: mcf_cw_repul_type_LJ      = 3
 
 
         !----------------------------------------------------

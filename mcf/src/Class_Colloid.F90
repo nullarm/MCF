@@ -124,6 +124,17 @@
            REAL(MK)                           :: cc_repul_cut_off
            REAL(MK)                           :: cc_repul_cut_on
            REAL(MK)                           :: cc_repul_F0
+
+           INTEGER                            :: cc_magnet_type
+           REAL(MK)                           :: cc_magnet_cut_off
+           REAL(MK)                           :: cc_magnet_cut_on
+           REAL(MK)                           :: cc_magnet_F0
+           REAL(MK), DIMENSION(:), POINTER    :: cc_magnet_B
+           REAL(MK), DIMENSION(:), POINTER    :: cc_magnet_mom
+           REAL(MK)                           :: cc_magnet_f
+           REAL(MK)                           :: cc_magnet_chi
+           REAL(MK)                           :: cc_magnet_mu
+  
            
            INTEGER                            :: cw_lub_type
            REAL(MK)                           :: cw_lub_cut_off
@@ -312,6 +323,7 @@
 #include "colloid_compute_lubrication_cw.F90"
 #include "colloid_compute_repulsion_cc.F90"
 #include "colloid_compute_repulsion_cw.F90"
+#include "colloid_compute_magnetism_cc.F90"
 #include "colloid_compute_interaction_implicit_velocity_all.F90"
 #include "colloid_compute_interaction_implicit_velocity_pair.F90"
 #include "colloid_compute_interaction_implicit_velocity_pair_sweep.F90"

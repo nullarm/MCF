@@ -167,42 +167,46 @@
         num_species = physics_get_num_species(this%phys,stat_info_sub)
         rank        = technique_get_rank(this%tech,stat_info_sub)
         
-        PRINT *, '------------------Start------------------'
-        PRINT *, '     Particles parameters'
-        PRINT *, '-----------------------------------------'
-        
+        PRINT *, '============================================================'
+        PRINT *, '              Particles  parameters'
+        PRINT *, '====================Start==================================='
+    
         IF( flag == 0 ) THEN
            
            PRINT *, "before decomposing..."
            
-           WRITE (UNIT=*, FMT=100) &
-                "rank, num_part_real", ": ", rank, this%num_part_real
-           WRITE (UNIT=*, FMT=100) &
-                "rank, num_part_all", ": ", rank, this%num_part_all
-           WRITE (UNIT=*, FMT=100) &
-                "rank, num_part_ghost", ": ", rank, this%num_part_ghost
-           WRITE (UNIT=*, FMT=100) &
-                "rank, num_part_fluid", ": ", rank, this%num_part_fluid
-           WRITE (UNIT=*, FMT=100) &
-                "rank, num_part_wall_solid", ": ", rank, this%num_part_wall_solid
+           CALL tool_print_msg(this%tool, "rank, num_part_real", &
+                rank, this%num_part_real, stat_info_sub)
+           CALL tool_print_msg(this%tool, "rank, num_part_all", &
+                rank, this%num_part_all, stat_info_sub)
+           CALL tool_print_msg(this%tool, "rank, num_part_ghost", &
+                rank, this%num_part_ghost, stat_info_sub)
+           CALL tool_print_msg(this%tool, "rank, num_part_fluid", &
+                rank, this%num_part_fluid, stat_info_sub)
+           CALL tool_print_msg(this%tool, "rank, num_part_wall_solid", &
+                rank, this%num_part_wall_solid, stat_info_sub)
            
         ELSE
            
            PRINT *, "after decomposing..."
            
-           WRITE (UNIT=*, FMT=100) &
-                "rank, num_part_real", ": ", rank, this%num_part_real
-           WRITE (UNIT=*, FMT=100) &
-                "rank, num_part_all", ": ", rank, this%num_part_all
-           WRITE (UNIT=*, FMT=100) &
-                "rank, num_part_ghost", ": ", rank, this%num_part_ghost    
+           CALL tool_print_msg(this%tool, "rank, num_part_real", &
+                rank, this%num_part_real, stat_info_sub)
+           CALL tool_print_msg(this%tool, "rank, num_part_all", &
+                rank, this%num_part_all, stat_info_sub)
+           CALL tool_print_msg(this%tool, "rank, num_part_ghost", &
+                rank, this%num_part_ghost, stat_info_sub)
            
         END IF
         
-        WRITE (UNIT=*, FMT=100) &
-             "rank, num_part_colloid", ": ", rank, this%num_part_colloid
+        CALL tool_print_msg(this%tool, "rank, num_part_colloid", &
+             rank, this%num_part_colloid, stat_info_sub)
         
-        PRINT *, '-------------------End-------------------'
+        PRINT *, '=====================END===================================='
+        PRINT *, '              Particles  parameters'
+        PRINT *, '============================================================'
+     
+     
         
 100     FORMAT (A25,A3,I4,I7)
         

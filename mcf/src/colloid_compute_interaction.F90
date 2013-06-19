@@ -154,6 +154,7 @@
         
         IF ( this%cc_lub_type == mcf_cc_lub_type_first .OR. &
              this%cc_repul_type >= mcf_cc_repul_type_Hookean .OR. &
+             this%cc_magnet_type == mcf_cc_magnet_type_field .OR. &
              this%cw_lub_type == mcf_cw_lub_type_first .OR. &
              this%cw_repul_type >= mcf_cw_repul_type_Hookean ) THEN
            
@@ -231,11 +232,15 @@
            ! 2D, 3D lurication theory formulations are different.
            !
            ! 2: if repusive force is needed,
-           !    add it up to prevent overlaps between colloids.   
+           !    add it up to prevent overlaps between colloids.
+           !
+           ! 3: if magnetic field is present,
+           !    consider magnetic force between colloids.
            !-------------------------------------------------
            
            IF ( this%cc_lub_type == mcf_cc_lub_type_first .OR. &
-                this%cc_repul_type >= mcf_cc_repul_type_Hookean ) THEN
+                this%cc_repul_type >= mcf_cc_repul_type_Hookean .OR. &
+                this%cc_magnet_type == mcf_cc_magnet_type_field ) THEN
               
               !----------------------------------------------
               ! Set cut off, thereafter ghost zone size,
@@ -254,6 +259,13 @@
                    this%cc_repul_cut_off > cut_off) THEN
                  
                  cut_off = this%cc_repul_cut_off
+                 
+              END IF
+
+              IF ( this%cc_magnet_type == mcf_cc_magnet_type_field .AND. &
+                   this%cc_magnet_cut_off > cut_off) THEN
+                 
+                 cut_off = this%cc_magnet_cut_off
                  
               END IF
               
@@ -563,6 +575,17 @@
                        F_p(1:dim,j) = F_p(1:dim,j) - F_ij(1:dim)
                        
                     END IF
+
+                    IF ( this%cc_magnet_type == mcf_cc_magnet_type_field ) THEN
+                       
+                       CALL colloid_compute_magnetism_cc(this,&
+                            x_p(1:dim,i),x_p(1:dim,j),&
+                            sid_p(i),sid_p(j),F_ij(1:dim),stat_info_sub)
+                       
+                       F_p(1:dim,i) = F_p(1:dim,i) + F_ij(1:dim)
+                       F_p(1:dim,j) = F_p(1:dim,j) - F_ij(1:dim)
+                       
+                    END IF
                     
                  END DO  ! j = i+1, num_p
                  
@@ -605,12 +628,23 @@
                        F_p(1:dim,i) = F_p(1:dim,i) + F_ij(1:dim)
                        
                     END IF
+
+                    IF ( this%cc_magnet_type == mcf_cc_magnet_type_field ) THEN
+                       
+                       CALL colloid_compute_magnetism_cc(this,&
+                            x_p(1:dim,i), x_p_ghost(1:dim,j),&
+                            sid_p(i),sid_p_ghost(j),&
+                            F_ij(1:dim),stat_info_sub)
+                       
+                       F_p(1:dim,i) = F_p(1:dim,i) + F_ij(1:dim)
+                       
+                    END IF
                     
                  END DO ! j = 1, num_p_ghost
                  
               END DO ! i = 1, num_p
               
-           END IF ! cc_lub_type == 1 OR cc_repul_type == 1
+           END IF ! cc_lub_type == 1 OR cc_repul_type == 1 OR cc_magnet_type == 1
            
            
            !-------------------------------------------------

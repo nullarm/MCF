@@ -29,6 +29,7 @@
         !----------------------------------------------------
            
         USE mcf_header
+        USE Class_Tool
         
         IMPLICIT NONE
         SAVE
@@ -39,7 +40,8 @@
            REAL(MK)             :: p0
            REAL(MK)             :: rho_ref
            REAL(MK)             :: gamma
-
+           
+           TYPE(Tool)           :: tool                      
         END TYPE StateEquation
         
         INTERFACE stateEquation_new

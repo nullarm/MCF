@@ -24,11 +24,14 @@
         TYPE(Technique),INTENT(OUT)             :: this 
         INTEGER,INTENT(OUT)                     :: stat_info
         
+        INTEGER                                 :: stat_info_sub
+        
         !----------------------------------------------------
         ! Init values using basic ppm functionality
         !----------------------------------------------------
         
         stat_info = 0
+        stat_info_sub = 0
         
         NULLIFY(this%min_phys_t)
         NULLIFY(this%max_phys_t)
@@ -88,6 +91,8 @@
         
         this%ppm_log_unit  = 99    
         
+        
+        CALL tool_new(this%tool,stat_info_sub)
         
 9999    CONTINUE
         
@@ -468,72 +473,98 @@
         TYPE(Technique),INTENT(IN)      :: this
         INTEGER,INTENT(OUT)             :: stat_info
         
-        INTEGER                         :: num_dim, j
+        INTEGER                         :: num_dim, i, j
         INTEGER                         :: num_sub_tot
         
         
+        INTEGER                         :: stat_info_sub
+
+        stat_info_sub = 0
         num_dim     = this%num_dim
         num_sub_tot = this%num_sub_tot
         
         stat_info = 0
    
-        PRINT *, '------------------Start------------------'
-        PRINT *, '     Technique  parameters'
-        PRINT *, '-----------------------------------------'
-        
-        PRINT *, "igroup           : ", this%igroup
-        PRINT *, "ngroup           : ", this%ngroup
-        PRINT *, "comm             : ", this%comm
-        PRINT *, "rank             : ", this%rank
-        PRINT *, "num_proc         : ", this%num_proc
-        PRINT *, "name_proc        : ", TRIM(this%name_proc)
-        PRINT *, "MPI_precision    : ", TRIM(this%name_MPI_PREC)
-        PRINT *, "decomp           : ", this%decomp
-        PRINT *, "assig            : ", this%assig
-        PRINT *, "ghost_size       : ", this%ghost_size
-        PRINT *, "topo_id          : ", this%topo_id
-        PRINT *, "min_sub          : "
+        PRINT *, '============================================================'
+        PRINT *, '              Technique parameters'
+        PRINT *, '====================Start==================================='
+      
+        CALL tool_print_msg(this%tool,&
+             "igroup", this%igroup, stat_info_sub)
+        CALL tool_print_msg(this%tool,&
+             "ngroup", this%ngroup, stat_info_sub)
+        CALL tool_print_msg(this%tool,&
+             "comm", this%comm, stat_info_sub)
+        CALL tool_print_msg(this%tool,&
+             "rank", this%rank, stat_info_sub)
+        CALL tool_print_msg(this%tool,&
+             "num_proc", this%num_proc, stat_info_sub)
+        CALL tool_print_msg(this%tool,&
+             "name_proc", this%name_proc, stat_info_sub)
+        CALL tool_print_msg(this%tool,&
+             "MPI_precision", this%name_MPI_PREC, stat_info_sub)
+        CALL tool_print_msg(this%tool,&
+             "decomp", this%decomp, stat_info_sub)
+        CALL tool_print_msg(this%tool,&
+             "assig", this%assig, stat_info_sub)
+        CALL tool_print_msg(this%tool,&
+             "ghost_size", this%ghost_size, stat_info_sub)
+        CALL tool_print_msg(this%tool,&
+             "topo_id", this%topo_id, stat_info_sub)
         DO j = 1, num_sub_tot
-           PRINT *, this%min_sub(1:num_dim,j)
+           CALL tool_print_msg(this%tool, "min_sub", &
+                this%min_sub(1:num_dim,j), stat_info_sub)
         END DO
-        PRINT *, "max_sub          : "
         DO j = 1, num_sub_tot
-           PRINT *, this%max_sub(1:num_dim,j)
+           CALL tool_print_msg(this%tool, "max_sub", &
+                this%max_sub(1:num_dim,j), stat_info_sub)
         END DO
         
-        PRINT *, "sub2proc         :"
         DO j = 1, SIZE(this%sub2proc,1)
-           PRINT *, j, this%sub2proc(j)
+           CALL tool_print_msg(this%tool, "sub2proc", &
+                j, this%sub2proc(j), stat_info_sub)
         END DO
         
-        PRINT *, "proc2sub         :"
         DO j = 0, SIZE(this%proc2sub,1)-1
-           PRINT *, j, this%proc2sub(j)
+           CALL tool_print_msg(this%tool, "proc2sub", &
+                j, this%proc2sub(j), stat_info_sub)
         END DO
         
-        PRINT *, "num_sub_tot      : ", num_sub_tot
-        PRINT *, "num_sub          : ", this%num_sub
-        
-        PRINT *, "sub_list         : ", this%sub_list(1:this%num_sub)
-        
-        PRINT *, "sub_bcdef        : ", &
-             this%sub_bcdef(1:2*num_dim,1:this%num_sub)
+        CALL tool_print_msg(this%tool, "num_sub_tot", &
+             this%num_sub_tot, stat_info_sub)
+        CALL tool_print_msg(this%tool, "num_sub", &
+             this%num_sub, stat_info_sub)
+        CALL tool_print_msg(this%tool, "sub_list", &
+             this%sub_list(1:this%num_sub), stat_info_sub)
+        DO j = 1, this%num_sub
+           DO i = 1, num_dim
+              CALL tool_print_msg(this%tool, "sub_bcdef", &
+                   this%sub_bcdef(2*i-1:2*i,j), stat_info_sub)
+           END DO
+        END DO
         
         SELECT CASE (this%neighbor_list)
            
         CASE (1)
-           PRINT *, "neighbor_list    : ", "Verlet List"
+           
+           CALL tool_print_msg(this%tool,&
+                "neigbor_list", "Verlet List", stat_info_sub)
            
         CASE (2)
-           PRINT *, "neighbor_list    : ", "Cell List"
+           CALL tool_print_msg(this%tool,&
+                "neigbor_list", "Cell List", stat_info_sub)
            
         END SELECT
         
-        PRINT *, "ppm_debug        : ", this%ppm_debug
+        CALL tool_print_msg(this%tool,&
+             "ppm_debug", this%ppm_debug, stat_info_sub)
+
         !PRINT *, "ppm_log_unit     : ", this%ppm_log_unit
         
-        PRINT *, '-------------------End-------------------'
-        
+        PRINT *, '=====================END===================================='
+        PRINT *, '              Technique  parameters'
+        PRINT *, '============================================================'
+   
         RETURN
         
       END SUBROUTINE technique_display_parameters

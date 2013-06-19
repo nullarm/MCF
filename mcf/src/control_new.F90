@@ -76,6 +76,7 @@
         this%pp_interact_cw      = .FALSE.
         this%cc_lub_type         = 0
         this%cc_repul_type       = 0
+        this%cc_magnet_type      = 0
         this%cw_lub_type         = 0
         this%cw_repul_type       = 0
         this%stress_tensor       = .FALSE.
@@ -333,6 +334,10 @@
         CALL tool_print_msg(this%tool,&
              "cc_repul_type", &
              this%cc_repul_type, stat_info_sub)
+
+        CALL tool_print_msg(this%tool,&
+             "cc_magnet_type", &
+             this%cc_magnet_type, stat_info_sub)
         
         CALL tool_print_msg(this%tool,&
              "cw_lub_type", &

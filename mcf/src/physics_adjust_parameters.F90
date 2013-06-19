@@ -47,6 +47,7 @@
         LOGICAL                         :: Brownian
         INTEGER                         :: cc_lub_type
         INTEGER                         :: cc_repul_type
+        INTEGER                         :: cc_magnet_type
         INTEGER                         :: cw_repul_type
         INTEGER                         :: cw_lub_type
         INTEGER                         :: adaptive_dt
@@ -301,19 +302,59 @@
                 control_get_cc_lub_type(this%ctrl,stat_info_sub) 
            cc_repul_type = &
                 control_get_cc_repul_type(this%ctrl,stat_info_sub)
+           cc_magnet_type = &
+                control_get_cc_magnet_type(this%ctrl,stat_info_sub)
            cw_lub_type = &
                 control_get_cw_lub_type(this%ctrl,stat_info_sub)
            cw_repul_type = &
                 control_get_cw_repul_type(this%ctrl,stat_info_sub)
+           
            CALL colloid_set_cc_lub_type(this%colloids,&
                 cc_lub_type,stat_info_sub)
+           
+           IF ( stat_info_sub /= 0 ) THEN
+              PRINT *, __FILE__, __LINE__, &
+                   "wrong cc_lub_type!"
+              stat_info = -1
+           END IF
+           
            CALL colloid_set_cc_repul_type(this%colloids,&
-                cc_repul_type,stat_info_sub)          
+                cc_repul_type,stat_info_sub)
+           
+           IF ( stat_info_sub /= 0 ) THEN
+              PRINT *, __FILE__, __LINE__, &
+                   "wrong cc_repul_type!"
+              stat_info = -1
+           END IF
+           
+           CALL colloid_set_cc_magnet_type(this%colloids,&
+                cc_magnet_type,stat_info_sub)          
+
+           IF ( stat_info_sub /= 0 ) THEN
+              PRINT *, __FILE__, __LINE__, &
+                   "wrong cc_magnet_type!"
+              stat_info = -1
+           END IF
+           
            CALL colloid_set_cw_lub_type(this%colloids,&
                 cw_lub_type,stat_info_sub)
+
+           IF ( stat_info_sub /= 0 ) THEN
+              PRINT *, __FILE__, __LINE__, &
+                   "wrong cw_lub_type!"
+              stat_info = -1
+           END IF
+           
            CALL colloid_set_cw_repul_type(this%colloids,&
                 cw_repul_type,stat_info_sub)
-            CALL colloid_set_min_phys_t(this%colloids, &
+
+           IF ( stat_info_sub /= 0 ) THEN
+              PRINT *, __FILE__, __LINE__, &
+                   "wrong cw_repul_type!"
+              stat_info = -1
+           END IF
+           
+           CALL colloid_set_min_phys_t(this%colloids, &
                 min_phys_t,stat_info_sub)
            CALL colloid_set_max_phys_t(this%colloids, &
                 max_phys_t,stat_info_sub)

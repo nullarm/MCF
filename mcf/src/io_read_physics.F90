@@ -127,6 +127,15 @@
         REAL(MK)                                :: cc_repul_cut_off
         REAL(MK)                                :: cc_repul_cut_on
         REAL(MK)                                :: cc_repul_F0
+
+        REAL(MK)                                :: cc_magnet_cut_off
+        REAL(MK)                                :: cc_magnet_cut_on
+        REAL(MK)                                :: cc_magnet_F0
+        REAL(MK), DIMENSION(3)                  :: cc_magnet_B
+        REAL(MK), DIMENSION(3)                  :: cc_magnet_mom
+        REAL(MK)                                :: cc_magnet_f
+        REAL(MK)                                :: cc_magnet_chi
+        REAL(MK)                                :: cc_magnet_mu
         
         REAL(MK)                                :: cw_lub_cut_off
         REAL(MK)                                :: cw_lub_cut_on
@@ -370,7 +379,7 @@
           ! Convert all arguments to capital letter.
           !--------------------------------------------------
           
-          CALL tool_uppercase(this%io_tool,carg,idx-1,stat_info)
+          CALL tool_uppercase(this%tool,carg,idx-1,stat_info)
           
 #ifdef __DEBUG
           IF ( debug_threshold < 1) THEN
@@ -936,6 +945,14 @@
              cc_repul_cut_off = 0.0_MK
              cc_repul_cut_on  = 0.0_MK
              cc_repul_F0      = 0.0_MK
+             cc_magnet_cut_off = 0.0_MK
+             cc_magnet_cut_on  = 0.0_MK
+             cc_magnet_F0      = 0.0_MK
+             cc_magnet_B(:)    = 0.0_MK
+             cc_magnet_mom(:)  = 0.0_MK
+             cc_magnet_f       = 0.0
+             cc_magnet_chi     = 0.0
+             cc_magnet_mu      = 1.0
              cw_lub_cut_off   = 0.0_MK
              cw_lub_cut_on    = 0.0_MK
              cw_repul_cut_off = 0.0_MK
@@ -1185,6 +1202,92 @@
              
              READ(cvalue,*,IOSTAT=ios,ERR=200) cc_repul_F0
              
+             !-----------------------------------------------
+             !  colloid-colloid magnetic force cut off.
+             !-----------------------------------------------
+             
+          ELSE IF(carg == 'CC_MAGNET_CUT_OFF' .AND. &
+               num_species > 1 .AND. &
+               num_colloid > 0) THEN
+             
+             READ(cvalue,*,IOSTAT=ios,ERR=200) cc_magnet_cut_off
+             
+             !-----------------------------------------------
+             !  colloid-colloid magnetic force cut on
+             !-----------------------------------------------
+             
+          ELSE IF(carg == 'CC_MAGNET_CUT_ON' .AND. &
+               num_species > 1 .AND. &
+               num_colloid > 0) THEN
+             
+             READ(cvalue,*,IOSTAT=ios,ERR=200) cc_magnet_cut_on
+             
+             !-----------------------------------------------
+             !  colloid-colloid magnetic force magnitude.
+             !-----------------------------------------------
+             
+          ELSE IF(carg == 'CC_MAGNET_F0' .AND. &
+               num_species > 1 .AND. &
+               num_colloid > 0) THEN
+             
+             READ(cvalue,*,IOSTAT=ios,ERR=200) cc_magnet_F0
+ 
+             !-----------------------------------------------
+             !  magnetic field.
+             !-----------------------------------------------
+             
+
+          ELSE IF (carg == 'CC_MAGNET_B' .AND. &
+               num_species > 1 .AND. &
+               num_colloid > 0 ) THEN
+             
+             READ(cvalue,*,IOSTAT=ios, ERR=200)  &
+                  cc_magnet_B(1:num_dim)
+             
+             !-----------------------------------------------
+             !  magnetic moment.
+             !-----------------------------------------------
+             
+
+          ELSE IF (carg == 'CC_MAGNET_MOM' .AND. &
+               num_species > 1 .AND. &
+               num_colloid > 0 ) THEN
+             
+             READ(cvalue,*,IOSTAT=ios, ERR=200)  &
+                  cc_magnet_mom(1:num_dim)
+        
+             !-----------------------------------------------
+             !  paramagnetic fraction of a colloid.
+             !-----------------------------------------------
+             
+          ELSE IF(carg == 'CC_MAGNET_F' .AND. &
+               num_species > 1 .AND. &
+               num_colloid > 0) THEN
+             
+             READ(cvalue,*,IOSTAT=ios,ERR=200) cc_magnet_f
+
+             !-----------------------------------------------
+             !  magnetic susceptibility difference between
+             !  a colloid and fluid.
+             !-----------------------------------------------
+             
+          ELSE IF(carg == 'CC_MAGNET_CHI' .AND. &
+               num_species > 1 .AND. &
+               num_colloid > 0) THEN
+             
+             READ(cvalue,*,IOSTAT=ios,ERR=200) cc_magnet_chi
+
+
+             !-----------------------------------------------
+             !  magnetic permittivity
+             !-----------------------------------------------
+             
+          ELSE IF(carg == 'CC_MAGNET_MU' .AND. &
+               num_species > 1 .AND. &
+               num_colloid > 0) THEN
+             
+             READ(cvalue,*,IOSTAT=ios,ERR=200) cc_magnet_mu
+
              !-----------------------------------------------
              ! colloid-wall lubrication cut off
              !-----------------------------------------------
@@ -1564,7 +1667,24 @@
                    cc_repul_cut_on,stat_info_sub)            
               CALL colloid_set_cc_repul_F0(colloids, &
                    cc_repul_F0,stat_info_sub)
-              
+
+              CALL colloid_set_cc_magnet_cut_off(colloids, &
+                   cc_magnet_cut_off,stat_info_sub)
+              CALL colloid_set_cc_magnet_cut_on(colloids, &
+                   cc_magnet_cut_on,stat_info_sub)
+              CALL colloid_set_cc_magnet_F0(colloids, &
+                   cc_magnet_F0,stat_info_sub)
+              CALL colloid_set_cc_magnet_B(colloids,&
+                   cc_magnet_B,stat_info_sub)
+              CALL colloid_set_cc_magnet_mom(colloids,&
+                   cc_magnet_mom,stat_info_sub)
+              CALL colloid_set_cc_magnet_f(colloids,&
+                   cc_magnet_f,stat_info_sub)
+              CALL colloid_set_cc_magnet_chi(colloids,&
+                   cc_magnet_chi,stat_info_sub)
+              CALL colloid_set_cc_magnet_mu(colloids,&
+                   cc_magnet_mu,stat_info_sub)
+
               CALL colloid_set_cw_lub_cut_off(colloids, &
                    cw_lub_cut_off,stat_info_sub)
               CALL colloid_set_cw_lub_cut_on(colloids, &

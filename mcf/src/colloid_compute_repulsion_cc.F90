@@ -24,10 +24,15 @@
         !                  vol. 325, pp 53-77. 1996.
         !               4) Sierou and Brady,
         !                  J. Rheol. 46(5), 1031-1056, 2002.
+        !               5) Sing et al, 2009, SI[S3]
+        !                  PNAS
         !                
         !              
         !
-        ! Remarks     : V0.4 18.5.2012, shift 2nd type
+        ! Remarks     : V0.5 19.06.2013, add in Lennard-Jones
+        !               potential for repulsion.
+        !
+        !               V0.4 18.5.2012, shift 2nd type
         !               repulsive force down to have a zero
         !               value at 5*cut off, i.e., 5*hn.
         !
@@ -67,8 +72,8 @@
         !----------------------------------------------------
         
         INTEGER                         :: dim,num
-        REAL(MK)                        :: hn,hm, F0
-        REAL(MK)                        :: aa, r, h
+        REAL(MK)                        :: sm,sn, F0
+        REAL(MK)                        :: a, aa, r, s
         REAL(MK)                        :: F
         REAL(MK), DIMENSION(3)          :: R12
         
@@ -84,8 +89,8 @@
         F_ij(1:dim) = 0.0_MK
         F  = 0.0_MK
                 
-        hn = this%cc_repul_cut_off
-        hm = this%cc_repul_cut_on
+        sn = this%cc_repul_cut_off
+        sm = this%cc_repul_cut_on
         F0 = this%cc_repul_F0
         !----------------------------------------------------
         ! Calculate the gap.
@@ -94,15 +99,16 @@
         R12(1:dim) = x_ip(1:dim) - x_jp(1:dim)
         
         r = SQRT(DOT_PRODUCT(R12(1:dim), R12(1:dim)))
+        a  = this%radius(1,sid_ip)
         aa = this%radius(1,sid_ip) + this%radius(1,sid_jp)
         
-        h = r - aa
+        s = r - aa
         
         !----------------------------------------------------
         ! If gap smaller than repulsion cut off.
         !----------------------------------------------------
         
-        IF ( h < 5.0_MK * hn ) THEN
+        IF ( s < 5.0_MK * sn ) THEN
            
            SELECT CASE (this%cc_repul_type)
               
@@ -112,20 +118,20 @@
               ! at hn.
               !----------------------------------------------
               
-              IF ( h < hn ) THEN
+              IF ( s < sn ) THEN
                  
                  !-------------------------------------------
                  ! If gap smaller than minimal allowed gap, 
                  ! set it to minimum.
                  !-------------------------------------------
                  
-                 IF ( h < hm ) THEN
+                 IF ( s < sm ) THEN
                     
-                    h = hm
+                    s = sm
                     
                  END IF
                  
-                 F = F0 - F0*h/hn
+                 F = F0 - F0*s/sn
                  
               END IF ! h < hn
               
@@ -141,14 +147,33 @@
               ! set it to minimum.
               !----------------------------------------------
               
-              IF ( h < hm ) THEN
+              IF ( s < sm ) THEN
                  
-                 h = hm
+                 s = sm
                  
               END IF
               
-              F = F0 / hn * EXP(-h/hn) /(1.0_MK-EXP(-h/hn)) - &
-                   F0 / hn * EXP(-5.0_MK) /(1.0_MK-EXP(-5.0_MK))
+              F = F0 / sn * EXP(-s/sn) /(1.0_MK-EXP(-s/sn)) - &
+                   F0 / sn * EXP(-5.0_MK) /(1.0_MK-EXP(-5.0_MK))
+              
+           CASE (mcf_cc_repul_type_LJ)
+              
+              IF ( s < sn ) THEN
+                 
+                 !-------------------------------------------
+                 ! If gap smaller than minimal allowed gap, 
+                 ! set it to minimum.
+                 !-------------------------------------------
+                 
+                 IF ( s < sm ) THEN
+                    
+                    s = sm
+                    
+                 END IF
+
+                 F = F0/s * ( (0.1_MK*a/s)**12-(0.1_MK*a/s)**6 )
+                 
+              END IF
               
            CASE DEFAULT
               

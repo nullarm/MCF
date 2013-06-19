@@ -37,9 +37,15 @@
         INTERFACE tool_print_msg
            MODULE PROCEDURE tool_print_msg_b
            MODULE PROCEDURE tool_print_msg_f
+           MODULE PROCEDURE tool_print_msg_f2
+           MODULE PROCEDURE tool_print_msg_ff
+           MODULE PROCEDURE tool_print_msg_fs
            MODULE PROCEDURE tool_print_msg_i
+           MODULE PROCEDURE tool_print_msg_i2
+           MODULE PROCEDURE tool_print_msg_ii
            MODULE PROCEDURE tool_print_msg_is
            MODULE PROCEDURE tool_print_msg_s
+           MODULE PROCEDURE tool_print_msg_s2
            MODULE PROCEDURE tool_print_msg_si
         END INTERFACE tool_print_msg
 

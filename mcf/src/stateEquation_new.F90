@@ -55,6 +55,8 @@
            
         END SELECT
         
+        CALL tool_new(this%tool,stat_info_sub)
+
 9999    CONTINUE
         
         RETURN
@@ -115,36 +117,49 @@
         TYPE(StateEquation),INTENT(IN)        ::this
         INTEGER,INTENT(OUT)                   :: stat_info
         
+        INTEGER                               :: stat_info_sub
+        
         stat_info = 0
+        stat_info_sub = 0
         
-        PRINT *, '------------------Start------------------'
-        PRINT *, '     StateEquation parameters'
-        PRINT *, '-----------------------------------------'
-        
+        PRINT *, '============================================================'
+        PRINT *, '              StateEquation  parameters'
+        PRINT *, '====================Start==================================='
+    
         
         SELECT CASE(this%stateEquation_type) 
            
         CASE (1)
            
-           PRINT *, "stateEquation_type : ", "Morris J. et al. 1997"
-           PRINT *, "p = (c^2) * (rho^gamma-rho_ref)"
-           PRINT *, "c                  : ", this%c
-           PRINT *, "rho_ref            : ", this%rho_ref
-           PRINT *, "gamma              : ", this%gamma
-           
+           CALL tool_print_msg(this%tool, "stateEquation_type", &
+                "p = (c^2) * (rho^gamma-rho_ref)", &
+                stat_info_sub)
+           CALL tool_print_msg(this%tool, "c", &
+                this%c, stat_info_sub)
+           CALL tool_print_msg(this%tool, "rho_ref", &
+                this%rho_ref, stat_info_sub)
+           CALL tool_print_msg(this%tool, "gamma", &
+                this%gamma, stat_info_sub)
            
         CASE (2) 
            
-           PRINT *, "stateEquation_type : ", "Batchelor G. K. 1967" 
-           PRINT *, "p = p0 * { (rho/rho_ref)^gamma - 1 }"
-           PRINT *, "p0                 : ", this%p0
-           PRINT *, "rho_ref            : ", this%rho_ref
-           PRINT *, "gamma              : ", this%gamma
+           CALL tool_print_msg(this%tool, "stateEquation_type", &
+                "p = p0 * { (rho/rho_ref)^gamma - 1 }" , &
+                stat_info_sub)
+           CALL tool_print_msg(this%tool, "p0", &
+                this%p0, stat_info_sub)
+           CALL tool_print_msg(this%tool, "rho_ref", &
+                this%rho_ref, stat_info_sub)
+           CALL tool_print_msg(this%tool, "gamma", &
+                this%gamma, stat_info_sub)
            
         END SELECT
         
-        PRINT *, '-------------------End-------------------'
+        PRINT *, '=====================END===================================='
+        PRINT *, '              StateEquation  parameters'
+        PRINT *, '============================================================'
         
+   
         RETURN          
         
       END SUBROUTINE stateEquation_display_parameters

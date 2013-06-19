@@ -186,7 +186,7 @@
            ! Convert to upper case
            !-------------------------------------------------
            
-           CALL tool_uppercase(this%io_tool,carg,idx-1,stat_info)
+           CALL tool_uppercase(this%tool,carg,idx-1,stat_info)
            
 #ifdef __DEBUG
            IF ( debug_threshold > 2) THEN

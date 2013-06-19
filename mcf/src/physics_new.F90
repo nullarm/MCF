@@ -152,7 +152,8 @@
         this%bcdef(1:4)       = ppm_param_bcdef_periodic
         
         NULLIFY(this%boundary)
-
+        
+        CALL tool_new(this%tool,stat_info_sub)
         
         RETURN
           
@@ -204,125 +205,174 @@
              control_get_Newtonian(this%ctrl,stat_info_sub)
         num_dim   = this%num_dim
         
-        PRINT *, '------------------Start------------------'
-        PRINT *, '     Physics parameters'
-        PRINT *, '-----------------------------------------'
+        PRINT *, '============================================================'
+        PRINT *, '              Physics  parameters'
+        PRINT *, '====================Start==================================='
         
-        PRINT *, "num_species      : ", this%num_species
-        PRINT *, "num_dim          : ", num_dim
-        PRINT *, "min_phys         : "
-        PRINT *, this%min_phys(1:num_dim)
-        PRINT *, "max_phys         : "
-        PRINT *, this%max_phys(1:num_dim)
-        PRINT *, "min_phys_t       : "
-        PRINT *, this%min_phys_t(1:num_dim)
-        PRINT *, "max_phys_t       : "
-        PRINT *, this%max_phys_t(1:num_dim)
-      
+        CALL tool_print_msg(this%tool, &
+             "num_species", this%num_species, stat_info_sub)
+        CALL tool_print_msg(this%tool, &
+             "num_dim", this%num_dim, stat_info_sub)
+        CALL tool_print_msg(this%tool, &
+             "min_phys", this%min_phys(1:num_dim), stat_info_sub)
+        CALL tool_print_msg(this%tool, &
+             "max_phys", this%max_phys(1:num_dim), stat_info_sub)
+        CALL tool_print_msg(this%tool, &
+             "min_phys_t", this%min_phys_t(1:num_dim), stat_info_sub)
+        CALL tool_print_msg(this%tool, &
+             "max_phys_t", this%max_phys_t(1:num_dim), stat_info_sub)
+        
         IF( this%num_dim ==2 ) THEN
            
            SELECT CASE (this%lattice_type)
            CASE (1)
-              PRINT *, "lattice type     : ", "  Square Lattice."
+              CALL tool_print_msg(this%tool, &
+                   "lattice type", "square lattice", stat_info_sub)
            CASE (2)
-              PRINT *, "lattice type     : ", "  Staggered Lattice."
+              CALL tool_print_msg(this%tool, &
+                   "lattice type", "staggered lattice", stat_info_sub)
            CASE (3)
-              PRINT *, "lattice type     : ", "  Hexagonal Lattice."
+              CALL tool_print_msg(this%tool, &
+                   "lattice type", "hexagonal lattice", stat_info_sub)
            END SELECT
            
         ELSE IF( this%num_dim == 3 ) THEN
            
            SELECT CASE (this%lattice_type)
            CASE (1)
-              PRINT *, "lattice type     : ", "  Simple Cubic Lattice."
+              CALL tool_print_msg(this%tool, &
+                   "lattice type", "simple cubic lattice", stat_info_sub)
            CASE (2)
-              PRINT *, "lattice type     : ", "  Body Center Lattice."
+              CALL tool_print_msg(this%tool, &
+                   "lattice type", "body center lattice", stat_info_sub)
            CASE (3)
-              PRINT *, "lattice type     : ", "  Face Center Lattice."       
+              CALL tool_print_msg(this%tool, &
+                   "lattice type", "face center lattice", stat_info_sub)
            END SELECT
            
         END IF
         
-        PRINT *, "num_part_dim     : "
-        PRINT *, this%num_part_dim(1:num_dim)
-        PRINT *, "num_part_dim_t   : "
-        PRINT *, this%num_part_dim_t(1:num_dim)
-        PRINT *, "num_part_tot     : ", this%num_part_tot
-        PRINT *, "dx               : "
-        PRINT *, this%dx(1:num_dim)
-        PRINT *, "cut_off          : ", this%cut_off
-        PRINT *, "smoothing length : ", this%h
-        PRINT *, "dt               : ", this%dt
-        PRINT *, "dt_c             : ", this%dt_c
-        PRINT *, "dt_nu            : ", this%dt_nu
-        PRINT *, "dt_f             : ", this%dt_f
-        PRINT *, "step_start       : ", this%step_start
-        PRINT *, "step_end         : ", this%step_end     
-        PRINT *, "time_start       : ", this%time_start
-        PRINT *, "time_end         : ", this%time_end
-        PRINT *, "rho              : ", this%rho
-        PRINT *, "eta              : ", this%eta
-        PRINT *, "eta_coef         : ", this%eta_coef
-        PRINT *, "ksai             : ", this%ksai
-        PRINT *, "kt               : ", this%kt
-        PRINT *, "c                : ", this%c
-        PRINT *, "rho_ref          : ", this%rho_ref
-        PRINT *, "gamma            : ", this%gamma
-	PRINT *, "tau_sm           : ", this%tau_sm
-	PRINT *, "k_sm             : ", this%k_sm
-        
+        CALL tool_print_msg(this%tool, "num_part_dim", &
+             this%num_part_dim(1:num_dim), stat_info_sub)
+        CALL tool_print_msg(this%tool, "num_part_dim_t", &
+             this%num_part_dim_t(1:num_dim), stat_info_sub)
+        CALL tool_print_msg(this%tool, "num_part_tot", &
+             this%num_part_tot, stat_info_sub)
+        CALL tool_print_msg(this%tool, "dx", &
+             this%dx(1:num_dim), stat_info_sub)
+        CALL tool_print_msg(this%tool,&
+             "cut_off", this%cut_off, stat_info_sub)
+        CALL tool_print_msg(this%tool,&
+             "smoothing length", this%h, stat_info_sub)
+        CALL tool_print_msg(this%tool,&
+             "dt", this%dt, stat_info_sub)
+        CALL tool_print_msg(this%tool,&
+             "dt_c", this%dt_c, stat_info_sub)
+        CALL tool_print_msg(this%tool,&
+             "dt_nu", this%dt_nu, stat_info_sub)
+        CALL tool_print_msg(this%tool,&
+             "dt_f", this%dt_f, stat_info_sub)
+        CALL tool_print_msg(this%tool,&
+             "step_start", this%step_start, stat_info_sub)
+        CALL tool_print_msg(this%tool,&
+             "step_end", this%step_end, stat_info_sub)
+        CALL tool_print_msg(this%tool,&
+             "time_start", this%time_start, stat_info_sub)
+        CALL tool_print_msg(this%tool,&
+             "time_end", this%time_end, stat_info_sub)
+        CALL tool_print_msg(this%tool,&
+             "rho", this%rho, stat_info_sub)
+        CALL tool_print_msg(this%tool,&
+             "eta", this%eta, stat_info_sub)
+        CALL tool_print_msg(this%tool,&
+             "eta_coef", this%eta_coef, stat_info_sub)
+        CALL tool_print_msg(this%tool,&
+             "ksai", this%ksai, stat_info_sub)
+        CALL tool_print_msg(this%tool,&
+             "kt", this%kt, stat_info_sub)
+        CALL tool_print_msg(this%tool,&
+             "c", this%c, stat_info_sub)
+        CALL tool_print_msg(this%tool,&
+             "rho_ref", this%rho_ref, stat_info_sub)
+        CALL tool_print_msg(this%tool,&
+             "gamma", this%gamma, stat_info_sub)
+        CALL tool_print_msg(this%tool,&
+             "tau_sm", this%tau_sm, stat_info_sub)
+        CALL tool_print_msg(this%tool,&
+             "k_sm", this%k_sm, stat_info_sub)
+   
         IF ( relax_run ) THEN
 
-           PRINT *, "relax_type       : ", this%relax_type
-           PRINT *, "dt_relax         : ", this%dt_relax
-           PRINT *, "dt_c_relax       : ", this%dt_c_relax
-           PRINT *, "step_relax       : ", this%step_relax
-           PRINT *, "time_relax       : ", this%time_relax
-           PRINT *, "disorder_level   : ", this%disorder_level
-           PRINT *, "kt_realx         : ", this%kt_relax
-           PRINT *, "c_realx          : ", this%c_relax
-
+           CALL tool_print_msg(this%tool,&
+             "relax_type", this%relax_type, stat_info_sub)
+           CALL tool_print_msg(this%tool,&
+             "dt_relax", this%dt_relax, stat_info_sub)
+           CALL tool_print_msg(this%tool,&
+             "dt_c_relax", this%dt_c_relax, stat_info_sub)
+           CALL tool_print_msg(this%tool,&
+             "step_relax", this%step_relax, stat_info_sub)
+           CALL tool_print_msg(this%tool,&
+             "time_relax", this%time_relax, stat_info_sub)
+           CALL tool_print_msg(this%tool,&
+             "disorder_level", this%disorder_level, stat_info_sub)
+           CALL tool_print_msg(this%tool,&
+             "kt_relax", this%kt_relax, stat_info_sub)
+           CALL tool_print_msg(this%tool,&
+             "c_relax", this%c_relax, stat_info_sub)
+           
         END IF
         
         IF (.NOT. Newtonian ) THEN
            
-           PRINT *, "tau              : ", this%tau
-           PRINT *, "n_p              : ", this%n_p
-           PRINT *, "kt_p             : ", this%kt_p
-           PRINT *, "eigen_dynamics   : ", this%eigen_dynamics
+           CALL tool_print_msg(this%tool,&
+                "tau", this%tau, stat_info_sub)
+           CALL tool_print_msg(this%tool,&
+                "n_p", this%n_p, stat_info_sub)
+           CALL tool_print_msg(this%tool,&
+                "kt_p", this%kt_p, stat_info_sub)
+           CALL tool_print_msg(this%tool,&
+                "eigen_dynamics", this%eigen_dynamics, stat_info_sub)
            IF( this%eigen_dynamics) THEN
               PRINT *, "eigenvalues      : "
               PRINT *, this%eval(1:num_dim)
-              PRINT *, "eval_tolerance   : ", this%eval_tolerance
+              CALL tool_print_msg(this%tool,&
+                   "eval_tolerance", this%eval_tolerance, stat_info_sub)
               PRINT *, "eigenvectors     : "
               DO j = 1, num_dim
                  PRINT *, this%evec(1:num_dim,j)
               END DO
-              PRINT *, "evec_normalize   : ", this%evec_normalize
+              CALL tool_print_msg(this%tool,&
+                   "evec_normalize", this%evec_normalize, stat_info_sub)
               IF ( this%evec_normalize ) THEN
-                 PRINT *, "evec_tolerance : ", this%evec_tolerance
+                 CALL tool_print_msg(this%tool,&
+                      "evec_tolerance", this%evec_tolerance, stat_info_sub)
               END IF
            END IF
            
         END IF
         
-        PRINT *, "body_force_type  : ", this%body_force_type
-        PRINT *, "body_force       : "
-        PRINT *, this%body_force(1:num_dim)
+        CALL tool_print_msg(this%tool, "body_force_type", &
+             this%body_force_type, stat_info_sub)
+        CALL tool_print_msg(this%tool, "body_force", &
+             this%body_force(1:num_dim), stat_info_sub)
         
         IF ( flow_v_fixed ) THEN
            
-           PRINT *, "body_force_d     : "
-           PRINT *,  this%body_force_d(1:num_dim)
-           
-           PRINT *, "flow_direction   : ", this%flow_direction
-           PRINT *, "flow_width       : ", this%flow_width
-           PRINT *, "flow_v           : ", this%flow_v
-           PRINT *, "flow_adjust_freq : ", this%flow_adjust_freq
+           CALL tool_print_msg(this%tool, "body_force_d", &
+                this%body_force_d(1:num_dim), stat_info_sub)           
+           CALL tool_print_msg(this%tool, "flow_directioin", &
+                this%flow_direction, stat_info_sub)
+           CALL tool_print_msg(this%tool, "flow_width", &
+                this%flow_width, stat_info_sub)
+           CALL tool_print_msg(this%tool, "flow_v", &
+                this%flow_v, stat_info_sub)
+           CALL tool_print_msg(this%tool, "flow_adjust_freq", &
+                this%flow_adjust_freq, stat_info_sub)
            
         END IF
         
-        PRINT *, "num_colloid      : ", this%num_colloid
+        CALL tool_print_msg(this%tool, "num_colloid", &
+             this%num_colloid,stat_info_sub)
         
         IF (this%num_colloid > 0) THEN
            
@@ -331,8 +381,10 @@
         END IF
         
         CALL boundary_display_parameters(this%boundary,stat_info_sub)
-
-        PRINT *, '-------------------End-------------------'
+  
+        PRINT *, '=====================END===================================='
+        PRINT *, '              Physics  parameters'
+        PRINT *, '============================================================'
         
         RETURN
         

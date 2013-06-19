@@ -79,7 +79,7 @@
         
         INTEGER                                  :: dim,num
         INTEGER                                  :: j
-        REAL(MK)                                 :: hn,hm,h1,h2
+        REAL(MK)                                 :: a,sn,sm,s1,s2
         REAL(MK)                                 :: F0,Ft
         
         !----------------------------------------------------
@@ -116,9 +116,10 @@
         F(:)    = 0.0_MK
         FB(:,:) = 0.0_MK
         
-        hn = this%cw_repul_cut_off
-        hm = this%cw_repul_cut_on
+        sn = this%cw_repul_cut_off
+        sm = this%cw_repul_cut_on
         F0 = this%cw_repul_F0
+        a  = this%radius(1,sid)
         Ft = 0.0_MK
 
         !----------------------------------------------------
@@ -134,14 +135,14 @@
               ! each wall.
               !----------------------------------------------
               
-              h1 = x(j)-this%min_phys(j)-this%radius(1,sid)
-              h2 = this%max_phys(j)-x(j)-this%radius(1,sid)
+              s1 = x(j)-this%min_phys(j)-a
+              s2 = this%max_phys(j)-x(j)-a
               
               !----------------------------------------------
               ! distance to down wall smaller than 5*hn
               !----------------------------------------------
               
-              IF ( h1 < 5.0_MK * hn ) THEN
+              IF ( s1 < 5.0_MK * sn ) THEN
                  
                  SELECT CASE (this%cw_repul_type)
                     
@@ -151,20 +152,20 @@
                     ! zero at hn and beyond.
                     !----------------------------------------
                     
-                    IF ( h1 < hn ) THEN
+                    IF ( s1 < sn ) THEN
                        
                        !-------------------------------------
                        ! If gap smaller than minimal 
                        ! allowed gap, set it to minimum.
                        !-------------------------------------
                        
-                       IF ( h1 < hm ) THEN
+                       IF ( s1 < sm ) THEN
                           
-                          h1 = hm
+                          s1 = sm
                           
                        END IF
                        
-                       Ft = F0 - F0*h1/hn
+                       Ft = F0 - F0*s1/sn
                        
                     END IF
                     
@@ -180,15 +181,37 @@
                     ! allowed gap, set it to minimum.
                     !----------------------------------------
                     
-                    IF ( h1 < hm ) THEN
+                    IF ( s1 < sm ) THEN
                        
-                       h1 = hm
+                       s1 = sm
                        
                     END IF
                     
                     Ft = &
-                         F0 /hn * EXP(-h1/hn) /(1.0_MK-EXP(-h1/hn)) - &
-                         F0 / hn * EXP(-5.0_MK) /(1.0_MK-EXP(-5.0_MK))
+                         F0 / sn * EXP(-s1/sn) /(1.0_MK-EXP(-s1/sn)) - &
+                         F0 / sn * EXP(-5.0_MK) /(1.0_MK-EXP(-5.0_MK))
+                    
+                 CASE (mcf_cw_repul_type_LJ)
+                    !----------------------------------------
+                    ! For Lennard-Jones potential
+                    !----------------------------------------
+                    
+                    IF ( s1 < sn ) THEN
+                       
+                       !-------------------------------------
+                       ! If gap smaller than minimal 
+                       ! allowed gap, set it to minimum.
+                       !-------------------------------------
+                       
+                       IF ( s1 < sm ) THEN
+                          
+                          s1 = sm
+                          
+                       END IF
+                       
+                       Ft = F0 / s1 * ((0.1_MK*a/s1)**12- (0.1_MK*a/s1)**6)
+                       
+                    END IF
                     
                  CASE DEFAULT
                     
@@ -210,7 +233,7 @@
               END IF ! h1 < 5.0*hn
               
               
-              IF ( h2 < 5.0_MK * hn ) THEN
+              IF ( s2 < 5.0_MK * sn ) THEN
                  
                  SELECT CASE (this%cw_repul_type)
                     
@@ -221,20 +244,20 @@
                     ! zero at hn and beyond.
                     !----------------------------------------
                     
-                    IF ( h2 < hn ) THEN
+                    IF ( s2 < sn ) THEN
                        
                        !-------------------------------------
                        ! If gap smaller than minimal 
                        ! allowed gap, set it to minimum.
                        !-------------------------------------
                        
-                       IF ( h2 < hm ) THEN
+                       IF ( s2 < sm ) THEN
                           
-                          h2 = hm
+                          s2 = sm
                           
                        END IF
                        
-                       Ft = F0 - F0*h2/hn
+                       Ft = F0 - F0*s2/sn
                        
                     END IF
                     
@@ -250,16 +273,39 @@
                     ! allowed gap, set it to minimum.
                     !----------------------------------------
                     
-                    IF ( h2 < hm ) THEN
+                    IF ( s2 < sm ) THEN
                        
-                       h2 = hm
+                       s2 = sm
                        
                     END IF
                     
                     Ft = &
-                         F0 / hn * EXP(-h2/hn) /(1.0_MK-EXP(-h2/hn)) - &
-                         F0 / hn * EXP(-5.0_MK) /(1.0_MK-EXP(-5.0_MK))
+                         F0 / sn * EXP(-s2/sn) /(1.0_MK-EXP(-s2/sn)) - &
+                         F0 / sn * EXP(-5.0_MK) /(1.0_MK-EXP(-5.0_MK))
                     
+
+                 CASE (mcf_cw_repul_type_LJ)
+
+                    !----------------------------------------
+                    ! For Lennard-Jones potential
+                    !----------------------------------------
+                    
+                    IF ( s2 < sn ) THEN
+                       
+                       !-------------------------------------
+                       ! If gap smaller than minimal 
+                       ! allowed gap, set it to minimum.
+                       !-------------------------------------
+                       
+                       IF ( s2 < sm ) THEN
+                          
+                          s2 = sm
+                          
+                       END IF
+                       
+                       Ft = F0 / s2 * ((0.1_MK*a/s2)**12- (0.1_MK*a/s2)**6)
+                       
+                    END IF
                  CASE DEFAULT
                     
                     PRINT *, __FILE__, __LINE__, &
@@ -277,7 +323,7 @@
                  
                  FB(j,2*j) = Ft
                  
-              END IF ! h2 < hn
+              END IF ! s2 < sn
               
            END IF ! bcdef(2j-1)=wall_solid
            

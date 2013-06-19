@@ -82,6 +82,19 @@
         this%cc_repul_cut_on  = 0.0_MK
         this%cc_repul_F0      = 0.0_MK
         
+        this%cc_magnet_type    = 0
+        this%cc_magnet_cut_off = 0.0_MK
+        this%cc_magnet_cut_on  = 0.0_MK        
+        this%cc_magnet_F0      = 0.0_MK
+        NULLIFY(this%cc_magnet_B)
+        ALLOCATE(this%cc_magnet_B(dim))
+        NULLIFY(this%cc_magnet_mom)
+        ALLOCATE(this%cc_magnet_mom(dim))
+        this%cc_magnet_f   = 0.0_MK
+        this%cc_magnet_chi = 0.0_MK
+        this%cc_magnet_mu  = 1.0_MK
+
+        
         this%cw_lub_type    = 0
         this%cw_repul_type  = 0
         this%cw_lub_cut_off = 0.0_MK
@@ -354,6 +367,18 @@
         this%cc_repul_cut_off = 0.0_MK
         this%cc_repul_cut_on  = 0.0_MK
         this%cc_repul_F0      = 0.0_MK
+
+        this%cc_magnet_type    = 0
+        this%cc_magnet_cut_off = 0.0_MK
+        this%cc_magnet_cut_on  = 0.0_MK        
+        this%cc_magnet_F0      = 0.0_MK
+        NULLIFY(this%cc_magnet_B)
+        ALLOCATE(this%cc_magnet_B(d_dim))
+        NULLIFY(this%cc_magnet_mom)
+        ALLOCATE(this%cc_magnet_mom(d_dim))
+        this%cc_magnet_f   = 0.0_MK
+        this%cc_magnet_chi = 0.0_MK
+        this%cc_magnet_mu  = 1.0_MK
         
         this%cw_lub_type = 0
         this%cw_lub_cut_off = 0.0_MK
@@ -580,95 +605,191 @@
         TYPE(Colloid),INTENT(IN)        :: this
         INTEGER,INTENT(OUT)             :: stat_info
         
-        INTEGER                         :: dim
-        INTEGER                         :: i
+        INTEGER                         :: dim, i, j, stat_info_sub
+        
         
         stat_info = 0
+        stat_info_sub = 0
         dim = this%num_dim
         
-        PRINT *, '---***************Start***************---'
-        PRINT *, '     Colloid parameters'
-        PRINT *, '---***********************************---'
         
-        PRINT *, "num_colloid        : ", this%num_colloid
-        PRINT *, "adapt_t_coef       : ", this%adapt_t_coef
-        PRINT *, "sub_time_step      : ", this%sub_time_step
-        PRINT *, "integrate_type     : ", this%integrate_type
+        PRINT *, '============================================================'
+        PRINT *, '              Colloid  parameters'
+        PRINT *, '====================Start==================================='
+    
+        CALL tool_print_msg(this%tool, "num_colloid", &
+             this%num_colloid, stat_info_sub)
+        CALL tool_print_msg(this%tool, "adapt_t_coef", &
+             this%adapt_t_coef, stat_info_sub)
+        CALL tool_print_msg(this%tool, "sub_time_step", &
+             this%sub_time_step, stat_info_sub)
+        CALL tool_print_msg(this%tool, "integrate_type", &
+             this%integrate_type, stat_info_sub)
+        
         SELECT CASE ( this%integrate_type )
         CASE (1)
-           PRINT *, "integrate_RK       : ", this%integrate_RK
+           CALL tool_print_msg(this%tool, "integrate_RK", &
+                this%integrate_RK, stat_info_sub)
         CASE (2)
-           PRINT *, "integrate_AB       : ", this%integrate_AB
+           CALL tool_print_msg(this%tool, "integrate_AB", &
+                this%integrate_AB, stat_info_sub)
         CASE (-2)
-           PRINT *, "implicit pair num sweep : ", this%implicit_pair_num_sweep
-           PRINT *, "implicit pair sweep adaptive  : ", this%implicit_pair_sweep_adaptive
-           PRINT *, "implicit pair sweep tolerance : ", this%implicit_pair_sweep_tolerance
-           PRINT *, "implicit pair sweep max       : ", this%implicit_pair_sweep_max
-           PRINT *, "explicit_sub_time_step  : ", this%explicit_sub_time_step
+           CALL tool_print_msg(this%tool, "implicit pair num sweep", &
+                this%implicit_pair_num_sweep, stat_info_sub)
+           CALL tool_print_msg(this%tool, "implicit pair sweep adaptive", &
+                this%implicit_pair_sweep_adaptive, stat_info_sub)
+           CALL tool_print_msg(this%tool, "implicit pair sweep tolerance", &
+                this%implicit_pair_sweep_tolerance, stat_info_sub)
+           CALL tool_print_msg(this%tool, "implicit pair sweep max", &
+                this%implicit_pair_sweep_max, stat_info_sub)
+           CALL tool_print_msg(this%tool, "explicit_sub_time_step", &
+                this%explicit_sub_time_step, stat_info_sub)
         CASE DEFAULT
            PRINT *, __FILE__, __LINE__, &
                 "colloid integration type not available!"
            stat_info = -1
            GOTO 9999
         END SELECT
-        PRINT *, "rho                : ", this%rho
-        PRINT *, "rho type           : ", this%rho_type
-        PRINT *, "translate          : ", this%translate
-        PRINT *, "rotate             : ", this%rotate
-        PRINT *, "particle placement : ", this%place
-        PRINT *, "no slip            : ", this%noslip_type
-        PRINT *, "body force type    : ", this%body_force_type
-        PRINT *, "body force         : "
-        PRINT *, this%body_force(1:dim)
         
-        PRINT *, "cc_lub_type        : ", this%cc_lub_type
-        PRINT *, "cc_lub_cut_off     : ", this%cc_lub_cut_off
-        PRINT *, "cc_lub_cut_on      : ", this%cc_lub_cut_on
+        CALL tool_print_msg(this%tool, "rho", &
+             this%rho, stat_info_sub)
+        CALL tool_print_msg(this%tool, "rho type", &
+             this%rho_type, stat_info_sub)
+        CALL tool_print_msg(this%tool, "translate", &
+             this%translate, stat_info_sub)
+        CALL tool_print_msg(this%tool, "rotate", &
+             this%rotate, stat_info_sub)
+        CALL tool_print_msg(this%tool, "particle placement", &
+             this%place, stat_info_sub)
+        CALL tool_print_msg(this%tool, "no slip", &
+             this%noslip_type, stat_info_sub)
+        CALL tool_print_msg(this%tool, "body force type", &
+             this%body_force_type, stat_info_sub)
+        CALL tool_print_msg(this%tool, "body force", &
+             this%body_force(1:dim), stat_info_sub)
+        
+        CALL tool_print_msg(this%tool, "cc_lub_type", &
+             this%cc_lub_type, stat_info_sub)
+        
+        IF ( this%cc_lub_type > mcf_cc_lub_type_no ) THEN
+           CALL tool_print_msg(this%tool, "cc_lub_cut_off", &
+                this%cc_lub_cut_off, stat_info_sub)
+           CALL tool_print_msg(this%tool, "cc_lub_cut_on", &
+                this%cc_lub_cut_on, stat_info_sub)
+        END IF
+        
+        CALL tool_print_msg(this%tool, "cc_repul_type", &
+             this%cc_repul_type, stat_info_sub)
+        
+        IF ( this%cc_repul_type > mcf_cc_repul_type_no ) THEN
+           
+           CALL tool_print_msg(this%tool, "cc_repul_cut_off", &
+                this%cc_repul_cut_off, stat_info_sub)
+           CALL tool_print_msg(this%tool, "cc_repul_cut_on", &
+                this%cc_repul_cut_on, stat_info_sub)
+           CALL tool_print_msg(this%tool, "cc_repul_F0", &
+                this%cc_repul_F0, stat_info_sub)
+           
+        END IF
+        
+        CALL tool_print_msg(this%tool, "cc_magnet_type", &
+             this%cc_magnet_type, stat_info_sub)
 
-        PRINT *, "cc_repul_type      : ", this%cc_repul_type
-        PRINT *, "cc_repul_cut_off   : ", this%cc_repul_cut_off
-        PRINT *, "cc_repul_cut_on    : ", this%cc_repul_cut_on
-        PRINT *, "cc_repul_F0        : ", this%cc_repul_F0
+        IF ( this%cc_magnet_type > mcf_cc_magnet_type_no ) THEN
+           
+           CALL tool_print_msg(this%tool, "cc_magnet_cut_off", &
+                this%cc_magnet_cut_off, stat_info_sub)
+           CALL tool_print_msg(this%tool, "cc_magnet_cut_on", &
+                this%cc_magnet_cut_on, stat_info_sub)
+           CALL tool_print_msg(this%tool, "cc_magnet_F0", &
+                this%cc_magnet_F0, stat_info_sub)
+           !CALL tool_print_msg(this%tool, "cc_magnet_B", &
+           !this%cc_magnet_B(1:dim), stat_info_sub)
+           CALL tool_print_msg(this%tool, "cc_magnet_mom", &
+                this%cc_magnet_mom(1:dim), stat_info_sub)
+           !CALL tool_print_msg(this%tool, "cc_magnet_f ", &
+           !this%cc_magnet_f, stat_info_sub)
+           !CALL tool_print_msg(this%tool, "cc_magnet_chi", &
+           !    this%cc_magnet_chi, stat_info_sub)
+           !CALL tool_print_msg(this%tool, "cc_magnet_mu", &
+           !     this%cc_magnet_mu, stat_info_sub)
+           
+        END IF
         
-        PRINT *, "cw_lub_type        : ", this%cw_lub_type
-        PRINT *, "cw_lub_cut_off     : ", this%cw_lub_cut_off
-        PRINT *, "cw_lub_cut_on      : ", this%cw_lub_cut_on
+        CALL tool_print_msg(this%tool, "cw_lub_type", &
+             this%cw_lub_type, stat_info_sub)
 
-        PRINT *, "cw_repul_type      : ", this%cw_repul_type
-        PRINT *, "cw_repul_cut_off   : ", this%cw_repul_cut_off
-        PRINT *, "cw_repul_cut_on    : ", this%cw_repul_cut_on
-        PRINT *, "cw_repul_F0        : ", this%cw_repul_F0
-        PRINT *, "h                  : ", this%h
+        IF ( this%cw_lub_type >= mcf_cw_lub_type_no ) THEN
+           
+           CALL tool_print_msg(this%tool, "cw_lub_cut_off", &
+                this%cw_lub_cut_off, stat_info_sub)
+           CALL tool_print_msg(this%tool, "cw_lub_cut_on", &
+                this%cw_lub_cut_on, stat_info_sub)
+           
+        END IF
         
-        PRINT *, "num_image          : ", this%num_image
+        CALL tool_print_msg(this%tool, "cw_repul_type", &
+             this%cw_repul_type, stat_info_sub)
+
+        IF ( this%cw_repul_type > mcf_cw_repul_type_no ) THEN
+
+           CALL tool_print_msg(this%tool, "cw_repul_cut_off", &
+                this%cw_repul_cut_off, stat_info_sub)
+           CALL tool_print_msg(this%tool, "cw_repul_cut_on", &
+                this%cw_repul_cut_on, stat_info_sub)
+           CALL tool_print_msg(this%tool, "cw_repul_F0", &
+                this%cw_repul_F0, stat_info_sub)
+           
+        END IF
+        
+        CALL tool_print_msg(this%tool, "h", &
+             this%h, stat_info_sub)
+        CALL tool_print_msg(this%tool, "num_image", &
+             this%num_image, stat_info_sub)
         
         
         DO i = 1, this%num_colloid
-           
-           PRINT *, '   ----------------------------------'
-           PRINT *, "colloid index      : ", i
-           PRINT *, "shape              : ", this%shape(i)
-           PRINT *, "radius             : ", this%radius(1:dim,i)
-           PRINT *, "freq               : ", this%freq(i)
-           PRINT *, "m                  : ", this%m(i)
-           PRINT *, "mmi                : "
-           PRINT *, this%mmi(1:3,i)
-           PRINT *, "x                  : "
-           PRINT *, this%x(1:dim,i)
-           PRINT *, "v                  : "
-           PRINT *, this%v(1:dim,i,1)
-           PRINT *, "rotation vector    : "
-           PRINT *, this%acc_vector(1:4,i)
-           !PRINT *, "theta              : ", this%theta(1:3,i)
-           PRINT *, "omega              : "
-           PRINT *, this%omega(1:3,i,1)
-           PRINT *, "num_physical_part  : ", this%num_physical_part(i)
-           PRINT *, "num_numerical_part : ", this%num_numerical_part(i)
-           PRINT *, '   ----------------------------------'
+
+           PRINT *, '      -------------------------------------'
+           PRINT *, '      *************************************'
+           CALL tool_print_msg(this%tool, "colloid index", &
+                i, stat_info_sub)
+           CALL tool_print_msg(this%tool, "shape", &
+             this%shape(i), stat_info_sub)
+           CALL tool_print_msg(this%tool, "radius", &
+                this%radius(1:dim,i), stat_info_sub)
+           CALL tool_print_msg(this%tool, "freq", &
+                this%freq(i), stat_info_sub)
+           CALL tool_print_msg(this%tool, "m", &
+                this%m(i), stat_info_sub)
+           CALL tool_print_msg(this%tool, "mmi", &
+                this%mmi(1:3,i), stat_info_sub)
+           CALL tool_print_msg(this%tool, "x", &
+                this%x(1:dim,i), stat_info_sub)
+           CALL tool_print_msg(this%tool, "v", &
+                this%v(1:dim,i,1), stat_info_sub)
+           DO j = 1, dim
+              CALL tool_print_msg(this%tool, "rotation vector", &
+                   this%acc_vector((j-1)*dim+1:j*dim,i), stat_info_sub)
+           END DO
+           !CALL tool_print_msg(this%tool, "theta: ", &
+           !     this%theta(1:3,i), stat_info_sub)
+           CALL tool_print_msg(this%tool, "omega", &
+                this%omega(1:3,i,1), stat_info_sub)
+           CALL tool_print_msg(this%tool, "num_physical_part", &
+                this%num_physical_part(i), stat_info_sub)
+           CALL tool_print_msg(this%tool, "num_numerical_part", &
+                this%num_numerical_part(i), stat_info_sub) 
+           PRINT *, '      *************************************'          
+           PRINT *, '      -------------------------------------'
            
         END DO
         
-        PRINT *, '---****************End****************---'
+        PRINT *, '=====================END===================================='
+        PRINT *, '              Colloid  parameters'
+        PRINT *, '============================================================'
+    
+    
         
 
 9999    CONTINUE

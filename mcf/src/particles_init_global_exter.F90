@@ -1,7 +1,7 @@
       SUBROUTINE particles_init_global_exter(this,&
            d_x,d_v,d_rho,d_m,d_id, d_num_part,stat_info)
         !----------------------------------------------------
-        ! Subroutine  : particles_init_particles_global_exter
+        ! Subroutine  : particles_init_global_exter
         !----------------------------------------------------
         !
         ! Purpose     :  When the particles' configuration
@@ -109,7 +109,7 @@
         IF(debug_flag >1 .OR. &
              debug_flag > debug_threshold) THEN
            CALL debug_substart(global_debug,rank, &
-                'particles_init_particles_exter', &
+                'particles_init_global_exter', &
                 time_routine_start,stat_info_sub)
         END IF
 #endif
@@ -172,7 +172,7 @@
         
         IF ( dim_x(1)  /= num_dim .OR. &
              dim_x(2)  /= d_num_part ) THEN
-           PRINT *, "particles_init_particles_exter : ", &
+           PRINT *, "particles_init_global_exter : ", &
                 "position dimensions don't match !"
            stat_info = -1
            GOTO 9999
@@ -180,21 +180,21 @@
 
         IF ( dim_v(1)  /= num_dim .OR. &
              dim_v(2)  /= d_num_part ) THEN
-           PRINT *, "particles_init_particles_exter : ", &
+           PRINT *, "particles_init_global_exter : ", &
                 "velocity dimensions don't match !"
            stat_info = -1
            GOTO 9999
         END IF
         
         IF ( dim_rho  /= d_num_part ) THEN
-           PRINT *, "particles_init_particles_exter : ", &
+           PRINT *, "particles_init_global_exter : ", &
                 "rho dimension doesn't match !"
            stat_info = -1
            GOTO 9999
         END IF
         
         IF ( dim_m  /= d_num_part ) THEN
-           PRINT *, "particles_init_particles_exter : ", &
+           PRINT *, "particles_init_global_exter : ", &
                 "mass dimension doesn't match !"
            stat_info = -1
            GOTO 9999
@@ -202,7 +202,7 @@
 
         IF ( dim_id(1)  /= this%num_id .OR. &
              dim_id(2)  /= d_num_part ) THEN
-           PRINT *, "particles_init_particles_exter : ", &
+           PRINT *, "particles_init_global_exter : ", &
                 "IDs dimensions don't match !"
            stat_info = -1
            GOTO 9999
@@ -241,7 +241,7 @@
         ALLOCATE(this%x(dim_x(1),dim_x(2)), STAT=stat_info_sub)
         
         IF( stat_info_sub /= 0 ) THEN
-           PRINT *, "particles_init_particles_exter : " , &
+           PRINT *, "particles_init_global_exter : " , &
                 "Allocating x has problem !"
            stat_info = -1
            GOTO 9999
@@ -250,7 +250,7 @@
         ALLOCATE(this%v(dim_v(1),dim_v(2)), STAT=stat_info_sub)
         
         IF( stat_info_sub /= 0 ) THEN
-           PRINT *, "particles_init_particles_exter : " , &
+           PRINT *, "particles_init_global_exter : " , &
                 "Allocating v has problem !"
            stat_info = -1
            GOTO 9999
@@ -259,7 +259,7 @@
         ALLOCATE(this%rho(dim_rho), STAT=stat_info_sub)
         
         IF( stat_info_sub /= 0 ) THEN
-           PRINT *, "particles_init_particles_exter : " , &
+           PRINT *, "particles_init_global_exter : " , &
                 "Allocating rho has problem !"
            stat_info = -1
            GOTO 9999
@@ -268,7 +268,7 @@
         ALLOCATE(this%m(dim_m), STAT=stat_info_sub)
         
         IF( stat_info_sub /= 0 ) THEN
-           PRINT *, "particles_init_particles_exter : " , &
+           PRINT *, "particles_init_global_exter : " , &
                 "Allocating x has problem !"
            stat_info = -1
            GOTO 9999
@@ -277,7 +277,7 @@
         ALLOCATE(this%id(dim_id(1),dim_id(2)), STAT=stat_info_sub)
         
         IF( stat_info_sub /= 0 ) THEN
-           PRINT *, "particles_init_particles_exter : " , &
+           PRINT *, "particles_init_global_exter : " , &
                 "Allocating id has problem !"
            stat_info = -1
            GOTO 9999
@@ -301,7 +301,7 @@
         END IF
         
         IF( stat_info_sub /= 0 ) THEN
-           PRINT *, "particles_init_particles_exter : " , &
+           PRINT *, "particles_init_global_exter : " , &
                 "Allocating memory for members has problem !"
            stat_info = -1
            GOTO 9999
@@ -326,7 +326,7 @@
              nid,ide,stat_info_sub)
         
         IF (stat_info_sub /= 0) THEN
-           PRINT *, "particles_init_particles_exter : ", &
+           PRINT *, "particles_init_global_exter : ", &
                 "Error by checking duiplicates !"
            stat_info = -1
            GOTO 9999           
@@ -335,7 +335,7 @@
         
         IF ( nid > 0 ) THEN
            PRINT *, &
-                "particles_init_particles_exter : ", &
+                "particles_init_global_exter : ", &
                 "Found collocating particles !"
            !stat_info = -1
            !GOTO 9999
@@ -387,7 +387,7 @@
            IF( sid < -2*num_dim .OR. &
                 sid > num_colloid) THEN
               
-              PRINT *, "particles_init_particles_exter : ",&
+              PRINT *, "particles_init_global_exter : ",&
                    "Species ID is wrong !"
               stat_info = -1
               GOTO 9999
@@ -439,7 +439,7 @@
                 coll_num_numerical_part,stat_info_sub)
            
            IF( stat_info_sub > 0 ) THEN
-              PRINT *, "particles_init_particles_exter : ",&
+              PRINT *, "particles_init_global_exter : ",&
                    "Setting numerical particles is wrong !"
               stat_info = -1
               GOTO 9999
@@ -452,7 +452,7 @@
         !  For debug.
         !----------------------
         CALL debug_write_output(global_debug,rank,&
-             "particles_init_particles_exter",&
+             "particles_init_global_exter",&
              "x_real",0,this%x,1,this%num_part_real,stat_info_sub)
         
 #endif 
@@ -474,7 +474,7 @@
 #ifdef __DEBUG        
         IF(debug_flag >1 .OR. debug_flag > debug_threshold) THEN
            CALL debug_substop(global_debug,rank,&
-                'particles_init_particles_exter',&
+                'particles_init_global_exter',&
                 time_routine_start,stat_info_sub)
         END IF
 #endif        

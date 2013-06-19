@@ -451,6 +451,162 @@
       END FUNCTION colloid_get_cc_repul_F0
 
       
+      REAL(MK) FUNCTION colloid_get_cc_magnet_cut_off(this, stat_info)
+        !----------------------------------------------------
+        ! Return cut off for magnetic interaction
+        ! between colloid-colloid.
+        !----------------------------------------------------
+
+        TYPE(Colloid), INTENT(IN)       :: this
+        INTEGER, INTENT(OUT)            :: stat_info
+        
+        stat_info = 0
+        colloid_get_cc_magnet_cut_off = &
+             this%cc_magnet_cut_off
+        
+        RETURN
+        
+      END FUNCTION colloid_get_cc_magnet_cut_off
+
+      
+      REAL(MK) FUNCTION colloid_get_cc_magnet_cut_on(this, stat_info)
+        !----------------------------------------------------
+        ! Return cut on for magnetic interaction
+        ! between colloid-colloid.
+        !----------------------------------------------------
+
+        TYPE(Colloid), INTENT(IN)       :: this
+        INTEGER, INTENT(OUT)            :: stat_info
+        
+        stat_info = 0
+        colloid_get_cc_magnet_cut_on = &
+             this%cc_magnet_cut_on
+        
+        RETURN
+        
+      END FUNCTION colloid_get_cc_magnet_cut_on
+
+
+      REAL(MK) FUNCTION colloid_get_cc_magnet_F0(this, stat_info)
+        !----------------------------------------------------
+        ! Return maximum magnetic force
+        ! between colloid-colloid.
+        !----------------------------------------------------
+
+        TYPE(Colloid), INTENT(IN)       :: this
+        INTEGER, INTENT(OUT)            :: stat_info
+        
+        stat_info = 0
+        colloid_get_cc_magnet_F0 = &
+             this%cc_magnet_F0
+        
+        RETURN
+        
+      END FUNCTION colloid_get_cc_magnet_F0
+      
+      
+      SUBROUTINE colloid_get_cc_magent_B(this,d_cc_magnet_B,stat_info)
+        !----------------------------------------------------
+        ! Return the magnetic field
+        !----------------------------------------------------
+        
+        TYPE(Colloid), INTENT(IN)               :: this
+        REAL(MK), DIMENSION(:), POINTER         :: d_cc_magnet_B
+        INTEGER, INTENT(OUT)                    :: stat_info
+        
+        stat_info = 0
+        
+        IF(ASSOCIATED(d_cc_magnet_B)) THEN
+           DEALLOCATE(d_cc_magnet_B)
+        END IF
+        
+        ALLOCATE(d_cc_magnet_B(this%num_dim))
+        
+        d_cc_magnet_B(:) = &
+             this%cc_magnet_B(1:this%num_dim)
+        
+        RETURN       
+        
+      END SUBROUTINE colloid_get_cc_magent_B
+
+
+      SUBROUTINE colloid_get_cc_magent_mom(this,d_cc_magnet_mom,stat_info)
+        !----------------------------------------------------
+        ! Return the magnetic moment
+        !----------------------------------------------------
+        
+        TYPE(Colloid), INTENT(IN)               :: this
+        REAL(MK), DIMENSION(:), POINTER         :: d_cc_magnet_mom
+        INTEGER, INTENT(OUT)                    :: stat_info
+        
+        stat_info = 0
+        
+        IF(ASSOCIATED(d_cc_magnet_mom)) THEN
+           DEALLOCATE(d_cc_magnet_mom)
+        END IF
+        
+        ALLOCATE(d_cc_magnet_mom(this%num_dim))
+        
+        d_cc_magnet_mom(:) = &
+             this%cc_magnet_mom(1:this%num_dim)
+        
+        RETURN       
+        
+      END SUBROUTINE colloid_get_cc_magent_mom
+
+      
+      REAL(MK) FUNCTION colloid_get_cc_magnet_f(this, stat_info)
+        !----------------------------------------------------
+        ! Return paramagnetic fraction of a colloid.
+        !----------------------------------------------------
+
+        TYPE(Colloid), INTENT(IN)       :: this
+        INTEGER, INTENT(OUT)            :: stat_info
+        
+        stat_info = 0
+        colloid_get_cc_magnet_f = &
+             this%cc_magnet_f
+        
+        RETURN
+        
+      END FUNCTION colloid_get_cc_magnet_f
+
+
+      REAL(MK) FUNCTION colloid_get_cc_magnet_chi(this, stat_info)
+        !----------------------------------------------------
+        ! Return magnetic susceptibility difference
+        ! between colloid and fluid.
+        !----------------------------------------------------
+
+        TYPE(Colloid), INTENT(IN)       :: this
+        INTEGER, INTENT(OUT)            :: stat_info
+        
+        stat_info = 0
+        colloid_get_cc_magnet_chi = &
+             this%cc_magnet_chi
+        
+        RETURN
+        
+      END FUNCTION colloid_get_cc_magnet_chi
+
+
+      REAL(MK) FUNCTION colloid_get_cc_magnet_mu(this, stat_info)
+        !----------------------------------------------------
+        ! Return magnetic permitivity.
+        !----------------------------------------------------
+
+        TYPE(Colloid), INTENT(IN)       :: this
+        INTEGER, INTENT(OUT)            :: stat_info
+        
+        stat_info = 0
+        colloid_get_cc_magnet_mu = &
+             this%cc_magnet_mu
+        
+        RETURN
+        
+      END FUNCTION colloid_get_cc_magnet_mu
+
+      
       INTEGER FUNCTION colloid_get_cw_lub_type(this, stat_info)
         !----------------------------------------------------
         ! Return lubrication interaction type of colloid-wall.

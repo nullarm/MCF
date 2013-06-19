@@ -175,7 +175,7 @@
            ! Object of an auxiliary tool.
            !-------------------------------------------------
            
-           TYPE(Tool)                   :: io_tool
+           TYPE(Tool)                   :: tool
            
         END TYPE IO
         

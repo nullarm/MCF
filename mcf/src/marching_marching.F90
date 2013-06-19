@@ -1401,6 +1401,24 @@
                 stat_info_sub)
       
            !-------------------------------------------------
+           ! Test: change magnetic force according to time
+           !-------------------------------------------------
+
+           CALL colloid_set_cc_magnet_type(colloids, 0, stat_info_sub)
+           
+           IF ( step_current >= 3000 ) THEN
+              
+              CALL colloid_set_cc_magnet_type(colloids, 1, stat_info_sub)
+              
+              IF ( step_current >=15000 ) THEN              
+                 
+                 CALL colloid_set_cc_magnet_type(colloids, 0, stat_info_sub)
+                 
+              END IF
+              
+           END IF
+           
+           !-------------------------------------------------
            ! Test: temporary, change repulsive force gradually
            !-------------------------------------------------
 

@@ -84,7 +84,7 @@
            SELECT CASE (this%integrate_type)
               
            CASE (-2)
-           
+              
               integrate_num = 1
     
            CASE (-1)
@@ -107,6 +107,16 @@
               GOTO 9999
               
            END SELECT
+           
+           IF(ASSOCIATED(this%cc_magnet_B))THEN
+              DEALLOCATE(this%cc_magnet_B)
+           END IF
+           ALLOCATE(this%cc_magnet_B(d_dim))
+
+           IF(ASSOCIATED(this%cc_magnet_mom))THEN
+              DEALLOCATE(this%cc_magnet_mom)
+           END IF
+           ALLOCATE(this%cc_magnet_mom(d_dim))
            
            IF(ASSOCIATED(this%v))THEN
               DEALLOCATE(this%v)
@@ -687,10 +697,9 @@
 
 
       SUBROUTINE colloid_set_body_force_type(this,d_type,stat_info)
-        !---------------------------------------
-        ! Set the type of body force on
-        ! colloids.
-        !---------------------------------------
+        !----------------------------------------------------
+        ! Set the type of body force on colloids.
+        !----------------------------------------------------
   
         TYPE(Colloid), INTENT(INOUT)    :: this
         INTEGER, INTENT(IN)             :: d_type
@@ -708,9 +717,9 @@
 
 
       SUBROUTINE colloid_set_body_force(this,d_body_force,stat_info)
-        !---------------------------------------
+        !----------------------------------------------------
         ! Set the body force on all colloids
-        !---------------------------------------
+        !----------------------------------------------------
         
         TYPE(Colloid), INTENT(INOUT)            :: this
         REAL(MK), DIMENSION(:), INTENT(IN)      :: d_body_force
@@ -720,9 +729,9 @@
         
         stat_info = 0
         
-        !---------------------------------------
+        !----------------------------------------------------
         ! Check if the input dimension matches.
-        !---------------------------------------
+        !----------------------------------------------------
         
         dim = SIZE(d_body_force,1)
         
@@ -754,7 +763,8 @@
         
         stat_info = 0
         
-        IF ( d_type < 0 .OR. d_type > 2 ) THEN
+        IF ( d_type <  mcf_cc_lub_type_no .OR. &
+             d_type >  mcf_cc_lub_type_first ) THEN
            PRINT *, "colloid_set_cc_lub_type : ", &
                 "Wrong lub type !"
            stat_info = -1
@@ -782,7 +792,8 @@
         
         stat_info = 0
         
-        IF ( d_type < 0 .OR. d_type > 2 ) THEN
+        IF ( d_type < mcf_cc_repul_type_no .OR. &
+             d_type > mcf_cc_repul_type_LJ ) THEN
            PRINT *, "colloid_set_cc_repul_type : ", &
                 "Wrong repul type !"
            stat_info = -1
@@ -812,8 +823,6 @@
         
         this%cc_lub_cut_off = d_cut_off
         
-9999    CONTINUE
-        
         RETURN
         
       END SUBROUTINE colloid_set_cc_lub_cut_off
@@ -832,8 +841,6 @@
         stat_info = 0
         
         this%cc_lub_cut_on = d_cut_on
-        
-9999    CONTINUE
         
         RETURN
         
@@ -854,8 +861,6 @@
         
         this%cc_repul_cut_off = d_cut_off
         
-9999    CONTINUE
-        
         RETURN
         
       END SUBROUTINE colloid_set_cc_repul_cut_off
@@ -875,8 +880,6 @@
         
         this%cc_repul_cut_on = d_cut_on
         
-9999    CONTINUE
-        
         RETURN
         
       END SUBROUTINE colloid_set_cc_repul_cut_on
@@ -895,12 +898,219 @@
         
         this%cc_repul_F0 = d_F0
         
+        RETURN
+        
+      END SUBROUTINE colloid_set_cc_repul_F0
+      
+
+      SUBROUTINE colloid_set_cc_magnet_type(this,d_type,stat_info)
+        !----------------------------------------------------
+        ! Set magnetic force interaction type between 
+        ! colloid and colloid.
+        !----------------------------------------------------
+        
+        TYPE(Colloid), INTENT(INOUT)    :: this
+        INTEGER, INTENT(IN)             :: d_type
+        INTEGER, INTENT(OUT)            :: stat_info
+        
+        stat_info = 0
+        
+        IF ( d_type < mcf_cc_magnet_type_no .OR. &
+             d_type >  mcf_cc_magnet_type_field ) THEN
+           PRINT *, "colloid_set_cc_magnet_type : ", &
+                "Wrong magnetic type !"
+           stat_info = -1
+           GOTO 9999
+        END IF
+        
+        this%cc_magnet_type = d_type
+        
 9999    CONTINUE
         
         RETURN
         
-      END SUBROUTINE colloid_set_cc_repul_F0
+      END SUBROUTINE colloid_set_cc_magnet_type
 
+      
+      SUBROUTINE colloid_set_cc_magnet_cut_off(this,d_cut_off,stat_info)
+        !----------------------------------------------------
+        ! Set cut off of magnetic interaction 
+        ! between colloid and colloid.
+        !----------------------------------------------------
+        
+        TYPE(Colloid), INTENT(INOUT)    :: this
+        REAL(MK), INTENT(IN)            :: d_cut_off
+        INTEGER, INTENT(OUT)            :: stat_info
+        
+        stat_info = 0
+        
+        this%cc_magnet_cut_off = d_cut_off
+        
+        RETURN
+        
+      END SUBROUTINE colloid_set_cc_magnet_cut_off
+
+      
+      SUBROUTINE colloid_set_cc_magnet_cut_on(this,d_cut_on,stat_info)
+        !----------------------------------------------------
+        ! Set cut on of magnet interaction 
+        ! between colloid and colloid.
+        !----------------------------------------------------
+        
+        TYPE(Colloid), INTENT(INOUT)    :: this
+        REAL(MK), INTENT(IN)            :: d_cut_on
+        INTEGER, INTENT(OUT)            :: stat_info
+        
+        stat_info = 0
+        
+        this%cc_magnet_cut_on = d_cut_on
+        
+        RETURN
+        
+      END SUBROUTINE colloid_set_cc_magnet_cut_on
+      
+
+
+      SUBROUTINE colloid_set_cc_magnet_F0(this,d_cc_magnet_F0,stat_info)
+        !----------------------------------------------------
+        ! Set paramagnetic fraction of a colloid.
+        !----------------------------------------------------
+        
+        TYPE(Colloid), INTENT(INOUT)    :: this
+        REAL(MK), INTENT(IN)            :: d_cc_magnet_F0
+        INTEGER, INTENT(OUT)            :: stat_info
+        
+        stat_info = 0
+        
+        this%cc_magnet_F0 = d_cc_magnet_F0
+        
+        RETURN
+        
+      END SUBROUTINE colloid_set_cc_magnet_F0
+
+
+      SUBROUTINE colloid_set_cc_magnet_B(this,d_cc_magnet_B,stat_info)
+        !----------------------------------------------------
+        ! Set the magnetic field
+        !----------------------------------------------------
+        
+        TYPE(Colloid), INTENT(INOUT)            :: this
+        REAL(MK), DIMENSION(:), INTENT(IN)      :: d_cc_magnet_B
+        INTEGER, INTENT(OUT)                    :: stat_info
+        
+        INTEGER                                 :: dim
+        
+        stat_info = 0
+        
+        !----------------------------------------------------
+        ! Check if the input dimension matches.
+        !----------------------------------------------------
+        
+        dim = SIZE(d_cc_magnet_B,1)
+        
+        IF( dim /= this%num_dim) THEN
+           PRINT *, "colloid_set_cc_magnet_B: ", "Wrong Dimension !"
+           stat_info = -1
+           GOTO 9999
+        END IF
+        
+        this%cc_magnet_B(1:dim) = d_cc_magnet_B(1:dim)
+        
+9999    CONTINUE
+        
+        RETURN       
+        
+      END SUBROUTINE colloid_set_cc_magnet_B
+
+      
+      SUBROUTINE colloid_set_cc_magnet_mom(this,d_cc_magnet_mom,stat_info)
+        !----------------------------------------------------
+        ! Set the magnetic moment
+        !----------------------------------------------------
+        
+        TYPE(Colloid), INTENT(INOUT)            :: this
+        REAL(MK), DIMENSION(:), INTENT(IN)      :: d_cc_magnet_mom
+        INTEGER, INTENT(OUT)                    :: stat_info
+        
+        INTEGER                                 :: dim
+        
+        stat_info = 0
+        
+        !----------------------------------------------------
+        ! Check if the input dimension matches.
+        !----------------------------------------------------
+        
+        dim = SIZE(d_cc_magnet_mom,1)
+        
+        IF( dim /= this%num_dim) THEN
+           PRINT *, "colloid_set_cc_magnet_mom: ", "Wrong Dimension !"
+           stat_info = -1
+           GOTO 9999
+        END IF
+        
+        this%cc_magnet_mom(1:dim) = d_cc_magnet_mom(1:dim)
+        
+9999    CONTINUE
+        
+        RETURN       
+        
+      END SUBROUTINE colloid_set_cc_magnet_mom
+
+
+      SUBROUTINE colloid_set_cc_magnet_f(this,d_cc_magnet_f,stat_info)
+        !----------------------------------------------------
+        ! Set paramagnetic fraction of a colloid.
+        !----------------------------------------------------
+        
+        TYPE(Colloid), INTENT(INOUT)    :: this
+        REAL(MK), INTENT(IN)            :: d_cc_magnet_f
+        INTEGER, INTENT(OUT)            :: stat_info
+        
+        stat_info = 0
+        
+        this%cc_magnet_f = d_cc_magnet_f
+        
+        RETURN
+        
+      END SUBROUTINE colloid_set_cc_magnet_f
+
+
+      SUBROUTINE colloid_set_cc_magnet_chi(this,d_cc_magnet_chi,stat_info)
+        !----------------------------------------------------
+        ! Set magnetic susceptibility difference 
+        ! between colloid and fluid.
+        !----------------------------------------------------
+        
+        TYPE(Colloid), INTENT(INOUT)    :: this
+        REAL(MK), INTENT(IN)            :: d_cc_magnet_chi
+        INTEGER, INTENT(OUT)            :: stat_info
+        
+        stat_info = 0
+        
+        this%cc_magnet_chi = d_cc_magnet_chi
+        
+        RETURN
+        
+      END SUBROUTINE colloid_set_cc_magnet_chi
+
+
+      SUBROUTINE colloid_set_cc_magnet_mu(this,d_cc_magnet_mu,stat_info)
+        !----------------------------------------------------
+        ! Set magnetic permittivity.
+        !----------------------------------------------------
+        
+        TYPE(Colloid), INTENT(INOUT)    :: this
+        REAL(MK), INTENT(IN)            :: d_cc_magnet_mu
+        INTEGER, INTENT(OUT)            :: stat_info
+        
+        stat_info = 0
+        
+        this%cc_magnet_mu = d_cc_magnet_mu
+        
+        RETURN
+        
+      END SUBROUTINE colloid_set_cc_magnet_mu
+      
 
       SUBROUTINE colloid_set_cw_lub_type(this,d_type, stat_info)
         !----------------------------------------------------
@@ -914,7 +1124,8 @@
         
         stat_info = 0
         
-        IF ( d_type < 0 .OR. d_type > 2 ) THEN
+        IF ( d_type < mcf_cw_lub_type_no .OR. &
+             d_type > mcf_cw_lub_type_first ) THEN
            PRINT *, "colloid_set_cw_lub_type : ", &
                 "Wrong lub type !"
            stat_info = -1
@@ -942,7 +1153,8 @@
         
         stat_info = 0
         
-        IF ( d_type < 0 .OR. d_type > 2 ) THEN
+        IF ( d_type < mcf_cw_repul_type_no .OR. &
+             d_type > mcf_cw_repul_type_LJ ) THEN
            PRINT *, "colloid_set_cw_repul_type : ", &
                 "Wrong repul type !"
            stat_info = -1

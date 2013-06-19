@@ -24,6 +24,7 @@
         TYPE(colloid), INTENT(INOUT)    :: this
         INTEGER, INTENT(OUT)            :: stat_info
         
+        REAL(MK)                        :: cut_off
         
         !----------------------------------------------------
         ! Initialization of variables.
@@ -65,30 +66,34 @@
            
         END IF
         
-        
-        !----------------------------------------------------
-        ! Set h to threshold gap, i.e., cc_lub_cut_on
-        !----------------------------------------------------
-        
-        !this%h = this%cc_lub_cut_on
-        
         !----------------------------------------------------
         ! Set h to threshold gap, i.e., cc_lub_cut_off
         !----------------------------------------------------
         
+        cut_off = 1.0e6_MK
+        
         IF ( this%cc_lub_type > 0 .AND. &
-             this%cc_lub_cut_off > 0.0_MK ) THEN
+             this%cc_lub_cut_off < cut_off ) THEN
            
-           this%h = this%cc_lub_cut_off / 3.0_MK
+           cut_off = this%cc_lub_cut_off
            
         END IF
         
         IF ( this%cc_repul_type > 0 .AND. &
-             this%cc_repul_cut_off < this%cc_lub_cut_off) THEN
+             this%cc_repul_cut_off < cut_off) THEN
            
-           this%h = this%cc_repul_cut_off / 3.0_MK
+           cut_off = this%cc_repul_cut_off
            
         END IF
+        
+        IF ( this%cc_magnet_type > 0 .AND. &
+             this%cc_magnet_cut_off < cut_off) THEN
+           
+           cut_off = this%cc_magnet_cut_off
+           
+        END IF
+        
+        this%h = cut_off / 3.0_MK
         
         RETURN
         

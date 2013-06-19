@@ -26,6 +26,7 @@
         !----------------------------------------------------
         
         USE mcf_header
+        USE Class_Tool
         USE Class_Technique
 
         
@@ -106,8 +107,10 @@
            INTEGER                              :: num_osci
            INTEGER                              :: num_le
            INTEGER                              :: num_shear
-
+           
            INTEGER                              :: num_part_wall_solid
+
+           TYPE(Tool)                           :: tool
           
         END TYPE Boundary
         

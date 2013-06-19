@@ -129,7 +129,7 @@
         this%write_restart_particles    = .FALSE.
         this%write_restart_conformation = .FALSE.
 
-        CALL tool_new(this%io_tool,stat_info_sub)
+        CALL tool_new(this%tool,stat_info_sub)
         
         
         RETURN          
@@ -259,7 +259,7 @@
         this%restart_freq_time_wall = 48.0_MK
         this%restart_freq_time_num   = 1
 
-        CALL tool_new(this%io_tool,stat_info_sub)        
+        CALL tool_new(this%tool,stat_info_sub)        
         
         CALL io_read_ctrl(this,d_ctrl,stat_info_sub)
         IF( stat_info_sub /= 0 ) THEN
@@ -298,7 +298,8 @@
         this%write_restart_particles    = .FALSE.
         this%write_restart_conformation = .FALSE.
         
-        
+        CALL tool_new(this%tool,stat_info_sub)
+
 9999    CONTINUE
         
         RETURN
@@ -344,123 +345,177 @@
         num_colloid  = &
              physics_get_num_colloid(this%phys,stat_info_sub)
         
-        PRINT *, '------------------Start------------------'
-        PRINT *, '     IO parameters'
-        PRINT *, '-----------------------------------------'
-        
-        PRINT *, "ctrl_file                   : ", TRIM(this%ctrl_file)
-        PRINT *, "ctrl_unit                   : ", this%ctrl_unit
-        
-        PRINT *, "physics_config_file         : ", TRIM(this%physics_config_file)
-        PRINT *, "physics_config_unit         : ", this%physics_config_unit
-        
-        PRINT *, "io_config_file              : ", TRIM(this%io_config_file)
-        PRINT *, "io_config_unit              : ", this%io_config_unit
+        PRINT *, '============================================================'
+        PRINT *, '              IO  parameters'
+        PRINT *, '====================Start==================================='
+     
+        CALL tool_print_msg(this%tool,&
+             "ctrl_file", &
+             this%ctrl_file(1:LEN_TRIM(this%ctrl_file)), &
+             stat_info_sub)  
+        CALL tool_print_msg(this%tool,&
+             "ctrl_unit", this%ctrl_unit, stat_info_sub)
+        CALL tool_print_msg(this%tool,&
+             "physics_config_file",TRIM(this%physics_config_file), &
+             stat_info_sub)
+        CALL tool_print_msg(this%tool,&
+             "physics_config_unit", this%physics_config_unit, &
+             stat_info_sub)
+        CALL tool_print_msg(this%tool,&
+             "io_config_file", TRIM(this%io_config_file), &
+             stat_info_sub)
+        CALL tool_print_msg(this%tool,&
+             "io_config_unit", this%io_config_unit, &
+             stat_info_sub)
         
         IF( read_external ) THEN
            
-           PRINT *, "read_particle_file          : ", TRIM(this%read_particles_file)
-           PRINT *, "read_particles_unit         : ", this%read_particles_unit
-           PRINT *, "read_particles_format       : ", TRIM(this%read_particles_fmt)
+           CALL tool_print_msg(this%tool,"read_particle_file", &
+                TRIM(this%read_particles_file), stat_info_sub)
+           CALL tool_print_msg(this%tool, "read_particles_unit", &
+                this%read_particles_unit, stat_info_sub)
+           CALL tool_print_msg(this%tool, "read_particles_format", &
+                TRIM(this%read_particles_fmt), stat_info_sub)
            
            IF ( .NOT. Newtonian ) THEN
               
-              PRINT *, "read_conformation_file      : ", TRIM(this%read_conformation_file)
-              PRINT *, "read_conformation_unit      : ", this%read_conformation_unit
-              PRINT *, "read_conformation_format    : ", TRIM(this%read_conformation_fmt)
+              CALL tool_print_msg(this%tool, "read_conformation_file", &
+                   TRIM(this%read_conformation_file), stat_info_sub)
+              CALL tool_print_msg(this%tool, "read_conformation_unit", &
+                   this%read_conformation_unit, stat_info_sub)
+              CALL tool_print_msg(this%tool, "read_conformation_format", &
+                   TRIM(this%read_conformation_fmt), stat_info_sub)
               
            END IF
            
         END IF
         
-        PRINT *, "write output                : ", this%write_output
+        CALL tool_print_msg(this%tool, "write output", &
+             this%write_output, stat_info_sub)
+        
         IF ( this%write_output > 0 .AND. &
              this%write_output < 3 ) THEN
            
            IF( relax_run ) THEN
-              PRINT *, "output_particles_relax_file      : ", TRIM(this%output_particles_relax_file), &
-                   "****.out"
-              PRINT *, "output_particles_relax_unit      : ", this%output_particles_relax_unit
-              PRINT *, "output_particles_relax_format    : ", TRIM(this%output_particles_relax_fmt)
-              PRINT *, "output_particles_relax_freq_step : ", this%output_particles_relax_freq_step
+              CALL tool_print_msg(this%tool, "output_particles_relax_file", &
+                   TRIM(this%output_particles_relax_file),  "****.out", &
+                   stat_info_sub)
+              CALL tool_print_msg(this%tool, "output_particles_relax_unit", &
+                   this%output_particles_relax_unit, stat_info_sub)
+              CALL tool_print_msg(this%tool, "output_particles_relax_format", &
+                   TRIM(this%output_particles_relax_fmt), stat_info_sub)
+              CALL tool_print_msg(this%tool, "output_particles_relax_freq_step", &
+                   this%output_particles_relax_freq_step, stat_info_sub)
            END IF
-           
-           PRINT *, "output_particles_file      : ", TRIM(this%output_particles_file), &
-                "****.out"
-           PRINT *, "output_particles_unit      : ", this%output_particles_unit
-           PRINT *, "output_particles_format    : ", TRIM(this%output_particles_fmt)
+           CALL tool_print_msg(this%tool, "output_particles_file", &
+                TRIM(this%output_particles_file), "****.out", &
+                stat_info_sub)
+           CALL tool_print_msg(this%tool, "output_particles_unit", &
+                this%output_particles_unit, stat_info_sub)
+           CALL tool_print_msg(this%tool, "output_particles_format", &
+                TRIM(this%output_particles_fmt), stat_info_sub)
            
            SELECT CASE ( this%write_output )
            CASE (1)
-              PRINT *, "output_particles_freq_step : ", this%output_particles_freq_step
+              CALL tool_print_msg(this%tool, "output_particles_freq_step", &
+                   this%output_particles_freq_step, stat_info_sub)
            CASE (2)
-              PRINT *, "output_particles_freq_time : ", this%output_particles_freq_time
+              CALL tool_print_msg(this%tool, "output_particles_freq_time", &
+                   this%output_particles_freq_time, stat_info_sub)
            END SELECT
            
            IF ( .NOT. Newtonian ) THEN
-              PRINT *, "output_conformation_file      : ", TRIM(this%output_conformation_file), &
-                   "****.out"
-              PRINT *, "output_conformation_unit      : ", this%output_conformation_unit
-              PRINT *, "output_conformation_format    : ", TRIM(this%output_conformation_fmt)
+              CALL tool_print_msg(this%tool, "output_conformation_file", &
+                   TRIM(this%output_conformation_file), "****.out", &
+                   stat_info_sub)
+              CALL tool_print_msg(this%tool, "output_conformation_unit", &
+                   this%output_conformation_unit, stat_info_sub)
+              CALL tool_print_msg(this%tool, "output_conformation_format", &
+                   TRIM(this%output_conformation_fmt), stat_info_sub)
               SELECT CASE ( this%write_output )
               CASE (1)
-                 PRINT *, "output_conformation_freq_step : ", this%output_conformation_freq_step
+                 CALL tool_print_msg(this%tool, "output_conformation_freq_step", &
+                      this%output_conformation_freq_step, stat_info_sub)
               CASE (2)
-                 PRINT *, "output_conformation_freq_time : ", this%output_conformation_freq_time
+                 CALL tool_print_msg(this%tool, "output_conformation_freq_time", &
+                      this%output_conformation_freq_time, stat_info_sub)
               END SELECT
            END IF
            
            IF ( num_species > 1 .AND. num_colloid > 0 )THEN
-              PRINT *, "colloid_file      : ", TRIM(this%colloid_file), &
-                   "**.dat"
-              PRINT *, "colloid_unit      : ", this%colloid_unit
-              PRINT *, "colloid_format    : ", TRIM(this%colloid_fmt)
+              CALL tool_print_msg(this%tool, "colloid_file", &
+                   TRIM(this%colloid_file), "**.dat", stat_info_sub)
+              CALL tool_print_msg(this%tool, "colloid_unit", &
+                   this%colloid_unit, stat_info_sub)
+              CALL tool_print_msg(this%tool, "colloid_format", &
+                   TRIM(this%colloid_fmt), stat_info_sub)
               SELECT CASE ( this%write_output )
               CASE (1)
-                 PRINT *, "colloid_freq_step : ", this%colloid_freq_step
+                 CALL tool_print_msg(this%tool, "colloid_freq_step", &
+                      this%colloid_freq_step, stat_info_sub)
               CASE (2)
-                 PRINT *, "colloid_freq_time : ", this%colloid_freq_time
+                 CALL tool_print_msg(this%tool, "colloid_freq_time", &
+                      this%colloid_freq_time, stat_info_sub)
               END SELECT
            END IF
            
            IF( relax_run ) THEN
-              PRINT *, "statistic_relax_file      : ", TRIM(this%statistic_relax_file)
-              PRINT *, "statistic_relax_unit      : ", this%statistic_relax_unit
-              PRINT *, "statistic_relax_format    : ", TRIM(this%statistic_relax_fmt)
-              PRINT *, "statistic_relax_freq_step : ", this%statistic_relax_freq_step
+              CALL tool_print_msg(this%tool, "statistic_relax_file", &
+                   TRIM(this%statistic_relax_file), stat_info_sub)
+              CALL tool_print_msg(this%tool, "statistic_relax_unit", &
+                   this%statistic_relax_unit, stat_info_sub)
+              CALL tool_print_msg(this%tool, "statistic_relax_format", &
+                   TRIM(this%statistic_relax_fmt), stat_info_sub)
+              CALL tool_print_msg(this%tool, "statistic_relax_freq_step", &
+                   this%statistic_relax_freq_step, stat_info_sub)
            END IF
            
-           PRINT *, "statistic_file      : ", TRIM(this%statistic_file)
-           PRINT *, "statistic_unit      : ", this%statistic_unit
-           PRINT *, "statistic_format    : ", TRIM(this%statistic_fmt)
+           CALL tool_print_msg(this%tool, "statistic_file", &
+                TRIM(this%statistic_file), stat_info_sub)
+           CALL tool_print_msg(this%tool, "statistic_unit", &
+                this%statistic_unit, stat_info_sub)
+           CALL tool_print_msg(this%tool, "statistic_format", &
+                TRIM(this%statistic_fmt), stat_info_sub)
            SELECT CASE ( this%write_output )
            CASE (1)
-              PRINT *, "statistic_freq_step : ", this%statistic_freq_step
+              CALL tool_print_msg(this%tool, "statistic_freq_step", &
+                   this%statistic_freq_step, stat_info_sub)
            CASE (2)
-              PRINT *, "statistic_freq_time : ", this%statistic_freq_time
+              CALL tool_print_msg(this%tool, "statistic_freq_time", &
+                   this%statistic_freq_time, stat_info_sub)
            END SELECT
            
            IF ( num_shear > 0 )THEN
-              PRINT *, "boundary_file      : ", TRIM(this%boundary_file)
-              PRINT *, "boundary_unit      : ", this%boundary_unit
-              PRINT *, "boundary_format    : ", TRIM(this%boundary_fmt)
+              CALL tool_print_msg(this%tool, "boundary_file", &
+                   TRIM(this%boundary_file), stat_info_sub)
+              CALL tool_print_msg(this%tool, "boundary_unit", &
+                   this%boundary_unit, stat_info_sub)
+              CALL tool_print_msg(this%tool, "boundary_format", &
+                   TRIM(this%boundary_fmt), stat_info_sub)
               SELECT CASE ( this%write_output )
               CASE (1)
-                 PRINT *, "boundary_freq_step : ", this%boundary_freq_step
+                 CALL tool_print_msg(this%tool, "boundary_freq_step", &
+                      this%boundary_freq_step, stat_info_sub)
               CASE (2)
-                 PRINT *, "boundary_freq_time : ", this%boundary_freq_time
+                 CALL tool_print_msg(this%tool, "boundary_freq_time", &
+                      this%boundary_freq_time, stat_info_sub)
               END SELECT
            END IF
            
            IF( relax_run ) THEN
+              
               IF( LEN(TRIM(this%restart_particles_relax_file)) > 0 ) THEN
-                 PRINT *, "restart_particles_relax_file   : ", TRIM(this%restart_particles_relax_file),&
-                      "****.dat"
+                 CALL tool_print_msg(this%tool, "restart_particles_relax_file", &
+                      TRIM(this%restart_particles_relax_file),&
+                      "****.dat", stat_info_sub)
               ELSE
-                 PRINT *, "restart_particles_relax_file   : "
+                 CALL tool_print_msg(this%tool, "restart_particles_relax_file", &
+                      "", stat_info_sub)
               END IF
-              PRINT *, "restart_particles_relax_unit   : ", this%restart_particles_relax_unit
-              PRINT *, "restart_particles_relax_format : ", TRIM(this%restart_particles_relax_fmt)
+              CALL tool_print_msg(this%tool, "restart_particles_relax_unit", &
+                   this%restart_particles_relax_unit, stat_info_sub)
+              CALL tool_print_msg(this%tool, "restart_particles_relax_format", &
+                   TRIM(this%restart_particles_relax_fmt), stat_info_sub)
               
            END IF
            
@@ -470,56 +525,70 @@
         IF ( this%write_restart > 0 ) THEN
            
            IF(LEN(TRIM(this%restart_physics_file)) > 0) THEN
-              PRINT *, "restart_physics_file   : ", TRIM(this%restart_physics_file),&
-                   "****.dat"
+              CALL tool_print_msg(this%tool, "restart_physics_file", &
+                   TRIM(this%restart_physics_file),&
+                   "****.dat", stat_info_sub)
            ELSE
-              PRINT *, "restart_physics_file   : "
+              CALL tool_print_msg(this%tool, "restart_physics_file", &
+                   "", stat_info_sub)
            END IF
-           
-           PRINT *, "restart_physics_unit   : ", this%restart_physics_unit
-           PRINT *, "restart_physics_format : ", TRIM(this%restart_physics_fmt)
-           
-           
-           IF(LEN(TRIM(this%restart_particles_file)) > 0) THEN
-              PRINT *, "restart_particles_file   : ", TRIM(this%restart_particles_file),&
-                   "****.dat"
-           ELSE
-              PRINT *, "restart_particles_file   : "
-           END IF
+           CALL tool_print_msg(this%tool, "restart_physics_unit", &
+                this%restart_physics_unit, stat_info_sub)
+           CALL tool_print_msg(this%tool, "restart_physics_format", &
+                TRIM(this%restart_physics_fmt), stat_info_sub)
               
-           PRINT *, "restart_particles_unit   : ", this%restart_particles_unit
-           PRINT *, "restart_particles_format : ", TRIM(this%restart_particles_fmt)
+           IF(LEN(TRIM(this%restart_particles_file)) > 0) THEN
+              CALL tool_print_msg(this%tool, "restart_particles_file", &
+                   TRIM(this%restart_particles_file),&
+                   "****.dat", stat_info_sub)
+           ELSE
+              CALL tool_print_msg(this%tool, "restart_particles_file", &
+                   "", stat_info_sub)
+           END IF
+           
+           CALL tool_print_msg(this%tool, "restart_particles_unit", &
+                this%restart_particles_unit, stat_info_sub)
+           CALL tool_print_msg(this%tool, "restart_particles_format", &
+                TRIM(this%restart_particles_fmt), stat_info_sub)
            
            IF ( .NOT. Newtonian ) THEN
               
               IF(LEN(TRIM(this%restart_conformation_file)) > 0) THEN
-                 PRINT *, "restart_conformation_file   : ", TRIM(this%restart_conformation_file),&
-                      "****.dat"
+                 CALL tool_print_msg(this%tool, "restart_conformation_file", &
+                      TRIM(this%restart_conformation_file),&
+                      "****.dat", stat_info_sub)
               ELSE
-                 PRINT *, "restart_conformation_file   : "
+                 CALL tool_print_msg(this%tool, "restart_conformation_file", &
+                      "", stat_info_sub)
               END IF
-              
-              PRINT *, "restart_conformation_unit   : ", this%restart_conformation_unit
-              PRINT *, "restart_conformation_format : ", TRIM(this%restart_conformation_fmt)
+              CALL tool_print_msg(this%tool, "restart_conformation_unit", &
+                   this%restart_conformation_unit, stat_info_sub)
+              CALL tool_print_msg(this%tool, "restart_conformation_format", &
+                   TRIM(this%restart_conformation_fmt), stat_info_sub)
               
            END IF
-           
+                 
            SELECT CASE ( this%write_restart ) 
            CASE (1)
-              PRINT *, "restart_freq_step        : ", this%restart_freq_step
+              CALL tool_print_msg(this%tool, "restart_freq_step", &
+                   this%restart_freq_step, stat_info_sub)
            CASE (2)
-              PRINT *, "restart_freq_time        : ", this%restart_freq_time
+              CALL tool_print_msg(this%tool, "restart_freq_time", &
+                   this%restart_freq_time, stat_info_sub)
            CASE (3)
-              PRINT *, "restart_freq_time_wall   : ", &
-                   this%restart_freq_time_wall, " hours"
+              CALL tool_print_msg(this%tool, "restart_freq_time_wall", &
+                   this%restart_freq_time_wall, " hours", stat_info_sub)
            CASE DEFAULT
-              PRINT *, "no such way of writting restart files!"
+              CALL tool_print_msg(this%tool, "restart_freq_time_wall", &
+                   "no such way of writting restart files!", stat_info_sub)              
            END SELECT
            
         END IF ! write_restart
         
-        
-        PRINT *, '-------------------End-------------------'
+            
+        PRINT *, '=====================END===================================='
+        PRINT *, '              IO  parameters'
+        PRINT *, '============================================================'
         
         
         RETURN

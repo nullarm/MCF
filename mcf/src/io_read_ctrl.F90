@@ -58,6 +58,7 @@
         LOGICAL                         :: pp_interact_cw
         INTEGER                         :: cc_lub_type
         INTEGER                         :: cc_repul_type
+        INTEGER                         :: cc_magnet_type
         INTEGER                         :: cw_lub_type
         INTEGER                         :: cw_repul_type
         LOGICAL                         :: stress_tensor
@@ -237,7 +238,7 @@
           ! Convert name of argument to upper case.
           !--------------------------------------------------
           
-          CALL tool_uppercase(this%io_tool,carg,idx-1,stat_info)
+          CALL tool_uppercase(this%tool,carg,idx-1,stat_info)
           
 #ifdef __DEBUG
           
@@ -363,6 +364,12 @@
              READ(cvalue,*,IOSTAT=ios,ERR=200) cc_repul_type
              CALL  control_set_cc_repul_type(ctrl,&
                   cc_repul_type,stat_info_sub)
+
+          ELSE IF (carg == 'CC_MAGNET_TYPE') THEN
+             
+             READ(cvalue,*,IOSTAT=ios,ERR=200) cc_magnet_type
+             CALL  control_set_cc_magnet_type(ctrl,&
+                  cc_magnet_type,stat_info_sub)
              
           ELSE IF (carg == 'CW_LUB_TYPE') THEN
              

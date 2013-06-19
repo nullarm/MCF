@@ -27,6 +27,7 @@
         
         USE ppm_module_data_neighlist, ONLY : ppm_type_ptr_to_clist
         USE mcf_header
+        USE Class_Tool
         
         
         IMPLICIT NONE
@@ -94,6 +95,8 @@
            INTEGER                             :: ppm_debug
            INTEGER                             :: ppm_log_unit
            
+           TYPE(Tool)                          :: tool
+
         END TYPE Technique
         
         

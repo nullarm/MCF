@@ -110,7 +110,7 @@
         
         IF ( this%step_start > this%step_end ) THEN
            PRINT *, "phsyics_check_parameters : ", &
-                "step_step > step_end, wrong !"
+                "step_start > step_end, wrong !"
            lcheck = .FALSE.
            GOTO 9999
         END IF
@@ -121,7 +121,7 @@
         
         IF ( this%time_start > this%time_end ) THEN
            PRINT *, "phsyics_check_parameters : ", &
-                "time_step > time_end, wrong !"
+                "time_start > time_end, wrong !"
            lcheck = .FALSE.
            GOTO 9999
         END IF

@@ -252,6 +252,20 @@
         
       END FUNCTION control_get_cc_repul_type
 
+
+      INTEGER FUNCTION control_get_cc_magnet_type(this,stat_info)
+        
+        TYPE(Control), INTENT(IN)                :: this
+        INTEGER, INTENT(out)                     :: stat_info
+        
+        stat_info = 0
+        
+        control_get_cc_magnet_type  = this%cc_magnet_type
+        
+        RETURN
+        
+      END FUNCTION control_get_cc_magnet_type
+
       
       INTEGER FUNCTION control_get_cw_lub_type(this,stat_info)
         

@@ -34,6 +34,7 @@
    
         
         USE mcf_header
+        USE Class_Tool
         
         USE Class_Control
         USE Class_Boundary
@@ -275,6 +276,8 @@
            
            INTEGER, DIMENSION(:), POINTER     :: bcdef
            TYPE(Boundary), POINTER            :: boundary
+           
+           TYPE(Tool)                         :: tool
            
         END TYPE Physics
         

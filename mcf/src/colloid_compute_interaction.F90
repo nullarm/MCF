@@ -140,16 +140,18 @@
         !----------------------------------------------------
         ! A : consider colloid-colloid lubrication correction
         !     contribution of total drag on colloids.
+        !
         ! B : consider colloid-colloid repulsive force
         !     (kind of contact force, or coating layer)
         !     contribution of total drag on colloids.
-        ! 
         !     They are done in the same way.
-        
-        ! C : consider wall-colloid lubrication correction.
-        ! D : consider wall-colloid repulsive force.
         !
-        !     They are done in the same way.
+        ! C : consider colloid-colloid magnetic force
+        !
+        ! D : consider wall-colloid lubrication correction.
+        !
+        ! E : consider wall-colloid repulsive force.
+        !
         !----------------------------------------------------
         
         IF ( this%cc_lub_type == mcf_cc_lub_type_first .OR. &
@@ -243,7 +245,8 @@
                 this%cc_magnet_type == mcf_cc_magnet_type_field ) THEN
               
               !----------------------------------------------
-              ! Set cut off, thereafter ghost zone size,
+              ! Take the maximum of all cut offs
+              ! as the ghost zone size,
               ! which is used for building ghost zone.
               !----------------------------------------------
               
@@ -278,7 +281,7 @@
               ! images as ghosts of certain sub-domains.
               !
               ! Note that currently only periodic boundary
-              ! is considered, not Lees-Edwards yet.
+              ! is considered, not Lees-Edwards yet!
               !----------------------------------------------
               
               min_phys_i(1:dim) = this%min_phys(1:dim)

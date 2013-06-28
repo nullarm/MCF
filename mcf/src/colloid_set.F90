@@ -750,7 +750,6 @@
       END SUBROUTINE colloid_set_body_force
       
       
-      
       SUBROUTINE colloid_set_cc_lub_type(this,d_type,stat_info)
         !----------------------------------------------------
         ! Set lubrication interaction type between 
@@ -847,7 +846,26 @@
       END SUBROUTINE colloid_set_cc_lub_cut_on
 
       
-       SUBROUTINE colloid_set_cc_repul_cut_off(this,d_cut_off,stat_info)
+      SUBROUTINE colloid_set_cc_repul_sigma(this,d_sigma,stat_info)
+         !----------------------------------------------------
+        ! Set sigma of repulsive interaction 
+        ! between colloid and colloid.
+        !----------------------------------------------------
+        
+        TYPE(Colloid), INTENT(INOUT)    :: this
+        REAL(MK), INTENT(IN)            :: d_sigma
+        INTEGER, INTENT(OUT)            :: stat_info
+        
+        stat_info = 0
+        
+        this%cc_repul_sigma = d_sigma
+        
+        RETURN
+        
+      END SUBROUTINE colloid_set_cc_repul_sigma
+
+
+      SUBROUTINE colloid_set_cc_repul_cut_off(this,d_cut_off,stat_info)
          !----------------------------------------------------
         ! Set cut off of repulsive interaction 
         ! between colloid and colloid.
@@ -1056,6 +1074,94 @@
         
       END SUBROUTINE colloid_set_cc_magnet_mom
 
+
+      SUBROUTINE colloid_set_cc_magnet_acc_rot_vector(this,d_rot_vector,stat_info)
+        !----------------------------------------------------
+        ! Set the accumulative rotating vector of magnatic field.
+        !----------------------------------------------------
+        
+        TYPE(Colloid), INTENT(INOUT)            :: this
+        REAL(MK), DIMENSION(:), INTENT(IN)      :: d_rot_vector
+        INTEGER, INTENT(OUT)                    :: stat_info
+        
+        INTEGER                                 :: dim, stat_info_sub
+        REAL(MK)                                :: len
+        
+        stat_info     = 0
+        stat_info_sub = 0
+        
+        !----------------------------------------------------
+        ! Check if the input dimension matches.
+        !----------------------------------------------------
+        
+        dim = SIZE(d_rot_vector)
+        
+        IF( dim /= 4) THEN
+           PRINT *, "colloid_set_acc_rot_vector : ", "Wrong Dimension !"
+           stat_info = -1
+           GOTO 9999
+        END IF
+        
+        !----------------------------------------------------
+        ! Normalize rotation axis.
+        ! If axis is a zero vector, set rotation angle=0.
+        !----------------------------------------------------
+        
+        len = SQRT(DOT_PRODUCT(d_rot_vector(1:3), d_rot_vector(1:3)))
+        
+        IF ( len < mcf_machine_zero ) THEN
+           
+           this%cc_magnet_acc_rot_vector(1) = 0.0_MK
+           this%cc_magnet_acc_rot_vector(2) = 1.0_MK
+           this%cc_magnet_acc_rot_vector(3) = 0.0_MK
+           this%cc_magnet_acc_rot_vector(4) = 0.0_MK
+              
+        ELSE
+           
+           this%cc_magnet_acc_rot_vector(1:3) = d_rot_vector(1:3) / len
+           this%cc_magnet_acc_rot_vector(4)   = d_rot_vector(4)
+              
+        END IF
+        
+        !----------------------------------------------------
+        ! Use initial accumulation rotating vector to initialize
+        ! accumulation rotating matrix of magnetic field.
+        !----------------------------------------------------
+        
+        CALL colloid_init_magnetism_accumulation_matrix(this,stat_info_sub)
+        
+        IF ( stat_info_sub /= 0 ) THEN
+           PRINT *, "colloid_init_magnetism_accumulation_vector: ", &
+                "compute accumulation matrix failed!"
+           stat_info = -1
+           GOTO 9999
+        END IF
+
+        
+9999    CONTINUE
+        
+        RETURN       
+        
+      END SUBROUTINE colloid_set_cc_magnet_acc_rot_vector
+      
+      
+      SUBROUTINE colloid_set_cc_magnet_rot_freq(this,d_freq,stat_info)
+        !----------------------------------------------------
+        ! Set rotating frequency of magnetic field.
+        !----------------------------------------------------
+        
+        TYPE(Colloid), INTENT(INOUT)    :: this
+        REAL(MK), INTENT(IN)            :: d_freq
+        INTEGER, INTENT(OUT)            :: stat_info
+        
+        stat_info = 0
+        
+        this%cc_magnet_rot_freq = d_freq
+        
+        RETURN
+        
+      END SUBROUTINE colloid_set_cc_magnet_rot_freq
+      
 
       SUBROUTINE colloid_set_cc_magnet_f(this,d_cc_magnet_f,stat_info)
         !----------------------------------------------------
@@ -1865,7 +1971,7 @@
         CALL colloid_init_accumulation_matrix(this,stat_info_sub)
         
         IF ( stat_info_sub /= 0 ) THEN
-           PRINT *, "colloid_set_accumulation_vector: ", &
+           PRINT *, "colloid_init_accumulation_vector: ", &
                 "compute accumulation matrix failed!"
            stat_info = -1
            GOTO 9999

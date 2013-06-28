@@ -72,7 +72,7 @@
         !----------------------------------------------------
         
         INTEGER                         :: dim,num
-        REAL(MK)                        :: sm,sn, F0
+        REAL(MK)                        :: sigma, sm,sn, F0
         REAL(MK)                        :: a, aa, r, s
         REAL(MK)                        :: F
         REAL(MK), DIMENSION(3)          :: R12
@@ -88,10 +88,12 @@
         
         F_ij(1:dim) = 0.0_MK
         F  = 0.0_MK
-                
-        sn = this%cc_repul_cut_off
-        sm = this%cc_repul_cut_on
-        F0 = this%cc_repul_F0
+        
+        sigma = this%cc_repul_sigma
+        sn    = this%cc_repul_cut_off
+        sm    = this%cc_repul_cut_on
+        F0    = this%cc_repul_F0
+        
         !----------------------------------------------------
         ! Calculate the gap.
         !----------------------------------------------------
@@ -171,7 +173,7 @@
                     
                  END IF
 
-                 F = F0/s * ( (0.1_MK*a/s)**12-(0.1_MK*a/s)**6 )
+                 F = F0/s * ( (sigma*a/s)**12-(sigma*a/s)**6 )
                  
               END IF
               

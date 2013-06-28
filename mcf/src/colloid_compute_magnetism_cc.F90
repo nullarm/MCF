@@ -27,7 +27,7 @@
         ! Arguments
         !----------------------------------------------------
         
-        TYPE(Colloid), INTENT(IN)               :: this
+        TYPE(Colloid), INTENT(INOUT)            :: this
         REAL(MK), DIMENSION(:),INTENT(IN)       :: x_ip
         REAL(MK), DIMENSION(:),INTENT(IN)       :: x_jp
         INTEGER, INTENT(IN)                     :: sid_ip

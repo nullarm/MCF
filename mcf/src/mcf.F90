@@ -304,14 +304,14 @@
               READ(buf_string,*) ngroup
               
               IF ( igroup > ngroup ) THEN
-                 PRINT *, "mcf : ", &
+                 PRINT *, __FILE__, __LINE__, &
                       "igroup must not be bigger than nroup !"
                  stat_info =  -1
                  GOTO 9999
               END IF
               
               IF ( igroup < 1 ) THEN
-                 PRINT *, "mcf : ", &
+                 PRINT *, __FILE__, __LINE__, &
                       "igroup must be positive !"
                  stat_info =  -1
                  GOTO 9999
@@ -380,7 +380,8 @@
              mcf_phys,stat_info_sub)
         
         IF(stat_info_sub /= 0 ) THEN
-           PRINT *, "mcf : io_new() has problem "           
+           PRINT *, __FILE__, __LINE__, &
+                "io_new() has problem "           
            stat_info = -1
            GOTO 9999
         END IF
@@ -393,14 +394,14 @@
              control_check_parameters(mcf_ctrl,stat_info_sub)
         
         IF( stat_info_sub /= 0 ) THEN
-           PRINT *, "mcf : ", &
+           PRINT *, __FILE__, __LINE__, &
                 "Checking control parameters has problem ! "
            stat_info = -1
            GOTO 9999
         END IF
         
         IF( .NOT. check_ctrl ) THEN
-           PRINT *, "mcf : ", &
+           PRINT *, __FILE__, __LINE__, &
                 "control parameters are not reasonable ! "
            stat_info = -1
            GOTO 9999
@@ -414,14 +415,14 @@
              physics_check_parameters(mcf_phys,stat_info_sub) 
         
         IF( stat_info_sub /= 0 ) THEN
-           PRINT *, "mcf : ", &
+           PRINT *, __FILE__, __LINE__, &
                 "Checking physics parameters has problem ! "
            stat_info = -1
            GOTO 9999
         END IF
         
         IF( .NOT. check_physics ) THEN
-           PRINT *, "mcf : ", &
+           PRINT *, __FILE__, __LINE__, &
                 "Physics parameters are not resonable !"
            stat_info = -1
            GOTO 9999
@@ -435,14 +436,14 @@
              io_check_parameters(mcf_io,stat_info_sub)
         
         IF(stat_info_sub /= 0 ) THEN
-           PRINT *, "mcf : ", &
+           PRINT *, __FILE__, __LINE__, &
                 "Check IO parameters has problem !" 
            stat_info = -1
            GOTO 9999
         END IF
         
         IF( .NOT. check_io ) THEN
-           PRINT *, "mcf : ", &
+           PRINT *, __FILE__, __LINE__, &
                 "IO parameters are not reasonable ! " 
            stat_info = -1
            GOTO 9999
@@ -538,7 +539,7 @@
         
         CALL random_new(mcf_random,2,random_seed,stat_info_sub)
         IF(stat_info_sub /= 0 ) THEN
-           PRINT *, "mcf : ", &
+           PRINT *, __FILE__, __LINE__, &
                 "Creating random object has problem ! "
            stat_info = -1
            GOTO 9999
@@ -580,8 +581,8 @@
         CALL physics_adjust_parameters(mcf_phys,stat_info_sub)
         
         IF( stat_info_sub /= 0 ) THEN
-           PRINT *,&
-                "mcf : Adjusting physics parameters has problem !"
+           PRINT *, __FILE__, __LINE__, &
+                "Adjusting physics parameters has problem !"
            stat_info = -1
            GOTO 9999
         END IF
@@ -597,8 +598,8 @@
         CALL io_adjust_parameters(mcf_io,stat_info_sub)
         
         IF( stat_info_sub /= 0 ) THEN
-           PRINT *, &
-                "mcf : Adjusting io parameters has problem !"
+           PRINT *, __FILE__, __LINE__, &
+                "Adjusting io parameters has problem !"
            stat_info = -1
            GOTO 9999
         END IF
@@ -752,7 +753,7 @@
            END IF ! read_external
            
            IF( stat_info_sub /=0 ) THEN
-              PRINT *, "mcf : ", &
+              PRINT *, __FILE__, __LINE__, &
                    "Initializing particles has problem !"
               stat_info = -1
               GOTO 9999
@@ -807,7 +808,7 @@
                 stat_info = stat_info_sub)
            
            IF( stat_info_sub /=0 ) THEN
-              PRINT *,  "mcf : ", &
+              PRINT *, __FILE__, __LINE__, &
                    "particles_decompose_global all failed !"
               stat_info = -1
               GOTO 9999
@@ -829,7 +830,7 @@
                 stat_info_sub)
            
            IF( stat_info_sub /=0 ) THEN
-              PRINT *, "mcf : ", &
+              PRINT *, __FILE__, __LINE__, &
                    "Generating quntities locally failed !"
               stat_info = -1
               GOTO 9999
@@ -848,7 +849,7 @@
                 l_map_id = .TRUE., stat_info=stat_info_sub)
            
            IF( stat_info_sub /=0 ) THEN
-              PRINT *,  "mcf : ", &
+              PRINT *, __FILE__, __LINE__, &
                    "Decomposing x, v, IDs globally failed !"
               stat_info = -1
               GOTO 9999
@@ -865,7 +866,7 @@
                 stat_info_sub)
            
            IF( stat_info_sub /=0 ) THEN
-              PRINT *, "mcf : ", &
+              PRINT *, __FILE__, __LINE__, &
                    "Generating quantities locally failed !"
               stat_info = -1
               GOTO 9999
@@ -879,7 +880,7 @@
            CALL particles_compute_mass(mcf_particles,stat_info_sub)
            
            IF( stat_info_sub /=0 ) THEN
-              PRINT *, "mcf : ", &
+              PRINT *, __FILE__, __LINE__, &
                    "Computing mass failed !"
               stat_info = -1
               GOTO 9999
@@ -930,7 +931,7 @@
            CALL marching_relax(mcf_marching,stat_info_sub)
            
            IF( stat_info_sub /=0 ) THEN
-              PRINT *, "mcf : ", &
+              PRINT *,  __FILE__, __LINE__, &
                    "Marching relax failed!"
               stat_info = -1
               GOTO 9999
@@ -946,7 +947,7 @@
         CALL marching_marching(mcf_marching,stat_info_sub)
 
         IF( stat_info_sub /=0 ) THEN
-           PRINT *, "mcf : ", &
+           PRINT *, __FILE__, __LINE__, &
                 "Marching integration failed!"
            stat_info = -1
            GOTO 9999

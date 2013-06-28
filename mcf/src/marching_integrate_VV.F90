@@ -544,7 +544,7 @@
                  ! accuracy order.
                  !-------------------------------------------
                  
-                 CALL colloid_integrate_rotate_velocity(colloids,&
+                 CALL colloid_integrate_rotation_velocity(colloids,&
                       step-1+i+step_start,dt_sub_time_step,stat_info_sub)
                  
                  IF ( stat_info_sub /= 0 ) THEN
@@ -570,7 +570,7 @@
                     ! centers with desired order.
                     !----------------------------------------
                  
-                    CALL colloid_integrate_translate_position(colloids,&
+                    CALL colloid_integrate_translation_position(colloids,&
                          step-1+i-step_start,dt_sub_time_step,stat_info_sub)
                     
                     IF ( stat_info_sub /= 0 ) THEN
@@ -585,7 +585,7 @@
                     ! accuracy order.
                     !----------------------------------------
                  
-                    CALL colloid_integrate_translate_velocity(colloids,&
+                    CALL colloid_integrate_translation_velocity(colloids,&
                          step-1+i-step_start,dt_sub_time_step,stat_info_sub)
                     
                     IF ( stat_info_sub /= 0 ) THEN
@@ -623,7 +623,7 @@
                     ! Compute colloid translating acceleration.
                     !----------------------------------------
                     
-                    CALL colloid_compute_translate_acceleration(colloids,&
+                    CALL colloid_compute_translation_acceleration(colloids,&
                          stat_info_sub)
                     
                     IF( stat_info_sub /=0 ) THEN
@@ -732,7 +732,7 @@
                  ! Compute colloid rotating acceleration.
                  !-------------------------------------------
                  
-                 CALL colloid_compute_rotate_acceleration(colloids,&
+                 CALL colloid_compute_rotation_acceleration(colloids,&
                       stat_info_sub)
                  
                  IF( stat_info_sub /=0 ) THEN

@@ -54,7 +54,7 @@
         stat_info = 0
         
         IF ( dim /=2 .AND. dim /=3 ) THEN
-           PRINT *, "tool_rotation_matrix : ", &
+           PRINT *, __FILE__, __LINE__, &
                 "Dimension should be either 2 or 3 !"
            stat_info = -1
            GOTO 9999
@@ -62,7 +62,7 @@
         
         dim1 = SIZE(ax,1)
         IF ( dim1 /= 3 ) THEN
-           PRINT *, "tool_rotation_matrix : ", &
+           PRINT *,  __FILE__, __LINE__, &
                 "rotation axis should be 3D !"
            stat_info = -1
            GOTO 9999
@@ -70,7 +70,7 @@
         
         len = DOT_PRODUCT(ax(:), ax(:))
         IF ( len > 1.0_MK + mcf_machine_zero) THEN
-           PRINT *, "tool_rotation_matrix : ", &
+           PRINT *,  __FILE__, __LINE__, &
                 "rotation axis should be unit vector !"
            stat_info = -1
            GOTO 9999
@@ -78,7 +78,7 @@
         
         dim1 = SIZE(rm,1)
         IF ( dim1 /= 3 ) THEN
-           PRINT *, "tool_rotation_matrix : ", &
+           PRINT *,  __FILE__, __LINE__, &
                 "dimension of rotation matrix does not match !"
            stat_info = -1
            GOTO 9999

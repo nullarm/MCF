@@ -78,6 +78,7 @@
         this%cc_repul_type  = 0
         this%cc_lub_cut_off = 0.0_MK
         this%cc_lub_cut_on  = 0.0_MK
+        this%cc_repul_sigma   = 0.0_MK
         this%cc_repul_cut_off = 0.0_MK
         this%cc_repul_cut_on  = 0.0_MK
         this%cc_repul_F0      = 0.0_MK
@@ -90,6 +91,11 @@
         ALLOCATE(this%cc_magnet_B(dim))
         NULLIFY(this%cc_magnet_mom)
         ALLOCATE(this%cc_magnet_mom(dim))
+        this%cc_magnet_rot_vector(:)     = 0.0_MK
+        this%cc_magnet_acc_rot_vector(:) = 0.0_MK
+        this%cc_magnet_rot_matrix(:,:)     = 0.0_MK
+        this%cc_magnet_acc_rot_matrix(:,:) = 0.0_MK
+        this%cc_magnet_rot_freq          = 1.0_MK
         this%cc_magnet_f   = 0.0_MK
         this%cc_magnet_chi = 0.0_MK
         this%cc_magnet_mu  = 1.0_MK
@@ -364,6 +370,7 @@
         this%cc_lub_cut_on  = 0.0_MK
 
         this%cc_repul_type = 0
+        this%cc_repul_sigma   = 0.0_MK
         this%cc_repul_cut_off = 0.0_MK
         this%cc_repul_cut_on  = 0.0_MK
         this%cc_repul_F0      = 0.0_MK
@@ -376,6 +383,11 @@
         ALLOCATE(this%cc_magnet_B(d_dim))
         NULLIFY(this%cc_magnet_mom)
         ALLOCATE(this%cc_magnet_mom(d_dim))
+        this%cc_magnet_rot_vector(:)     = 0.0_MK
+        this%cc_magnet_acc_rot_vector(:) = 0.0_MK
+        this%cc_magnet_rot_matrix(:,:)     = 0.0_MK
+        this%cc_magnet_acc_rot_matrix(:,:) = 0.0_MK
+        this%cc_magnet_rot_freq          = 1.0_MK        
         this%cc_magnet_f   = 0.0_MK
         this%cc_magnet_chi = 0.0_MK
         this%cc_magnet_mu  = 1.0_MK
@@ -683,6 +695,8 @@
         
         IF ( this%cc_repul_type > mcf_cc_repul_type_no ) THEN
            
+           CALL tool_print_msg(this%tool, "cc_repul_sigma", &
+                this%cc_repul_sigma, stat_info_sub)
            CALL tool_print_msg(this%tool, "cc_repul_cut_off", &
                 this%cc_repul_cut_off, stat_info_sub)
            CALL tool_print_msg(this%tool, "cc_repul_cut_on", &
@@ -707,6 +721,12 @@
            !this%cc_magnet_B(1:dim), stat_info_sub)
            CALL tool_print_msg(this%tool, "cc_magnet_mom", &
                 this%cc_magnet_mom(1:dim), stat_info_sub)
+           CAlL tool_print_msg(this%tool, "cc_magnet_rot_vector", &
+                this%cc_magnet_acc_rot_vector(1:3), stat_info_sub)
+           CAlL tool_print_msg(this%tool, "cc_magnet_rot_angle", &
+                this%cc_magnet_acc_rot_vector(4), stat_info_sub)        
+           CAlL tool_print_msg(this%tool, "cc_magnet_rot_freq", &
+                this%cc_magnet_rot_freq, stat_info_sub)           
            !CALL tool_print_msg(this%tool, "cc_magnet_f ", &
            !this%cc_magnet_f, stat_info_sub)
            !CALL tool_print_msg(this%tool, "cc_magnet_chi", &

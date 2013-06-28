@@ -1,0 +1,66 @@
+      SUBROUTINE colloid_compute_magnetism_rotation_vector(this, dt, stat_info)
+        !----------------------------------------------------
+        ! Subroutine  : colloid_compute_magnetism_rotation_vector
+        !----------------------------------------------------
+        !
+        ! Purpose     : Compute the rotation vector
+        !
+        ! Remark      : 
+        !
+        ! Reference  : Chen et. al. 2006, physics of fluids
+        !              wikipedia
+        !
+        ! Revision   : V0.1  26.06.2013, original.
+        !
+        !----------------------------------------------------
+        ! Author      : Xin Bian
+        ! Contact     : xin.bian@aer.mw.tum.de
+        !
+        ! Dr. Marco Ellero's Emmy Noether Group,
+        ! Prof. Dr. N. Adams' Chair of Aerodynamics,
+        ! Faculty of Mechanical Engineering,
+        ! Technische Universitaet Muenchen, Germany.
+        !----------------------------------------------------
+        
+        TYPE(Colloid), INTENT(INOUT)    :: this
+        REAL(MK), INTENT(IN)            :: dt
+        INTEGER, INTENT(OUT)            :: stat_info
+        
+        REAL(MK)                        :: len, freq, phi
+        
+        !----------------------------------------------------
+        ! Initialization of variables.
+        !----------------------------------------------------
+        
+        stat_info = 0
+        freq      = this%cc_magnet_rot_freq
+        
+        this%cc_magnet_rot_vector(1:3) = &
+             this%cc_magnet_acc_rot_vector(1:3)
+        
+        !----------------------------------------------
+        ! Normalize roation vector at this time step.
+        !----------------------------------------------
+        
+        len = SQRT(DOT_PRODUCT(this%cc_magnet_rot_vector(1:3),&
+             this%cc_magnet_rot_vector(1:3)))
+        
+        IF ( len < mcf_machine_zero ) THEN
+           
+           this%cc_magnet_rot_vector(1:3) = 0.0_MK
+           this%cc_magnet_rot_vector(2)   = 1.0_MK
+           this%cc_magnet_rot_vector(4)   = 0.0_MK
+           
+        ELSE
+           
+           this%cc_magnet_rot_vector(1:3) = &
+                this%cc_magnet_rot_vector(1:3) / len
+           this%cc_magnet_rot_vector(4)   = &
+                2.0_MK * mcf_pi * freq * dt
+           
+        END IF
+        
+        RETURN
+        
+      END SUBROUTINE colloid_compute_magnetism_rotation_vector
+      

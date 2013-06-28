@@ -929,7 +929,7 @@
               ! Compute colloid translating acceleration.
               !----------------------------------------------
               
-              CALL colloid_compute_translate_acceleration(colloids,&
+              CALL colloid_compute_translation_acceleration(colloids,&
                    stat_info_sub)
               
               IF ( stat_info_sub /=0 ) THEN
@@ -945,7 +945,7 @@
            ! Compute colloid ratating acceleration.
            !-------------------------------------------------
            
-           CALL colloid_compute_rotate_acceleration(colloids,&
+           CALL colloid_compute_rotation_acceleration(colloids,&
                 stat_info_sub)
            
            IF ( stat_info_sub /=0 ) THEN

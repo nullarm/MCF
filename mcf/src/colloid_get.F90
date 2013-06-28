@@ -397,6 +397,24 @@
       END FUNCTION colloid_get_cc_lub_cut_on
       
       
+      REAL(MK) FUNCTION colloid_get_cc_repul_sigma(this, stat_info)
+        !----------------------------------------------------
+        ! Return sigma for repulsive interaction
+        ! between colloid-colloid.
+        !----------------------------------------------------
+
+        TYPE(Colloid), INTENT(IN)       :: this
+        INTEGER, INTENT(OUT)            :: stat_info
+        
+        stat_info = 0
+        colloid_get_cc_repul_sigma = &
+             this%cc_repul_sigma
+        
+        RETURN
+        
+      END FUNCTION colloid_get_cc_repul_sigma
+      
+
       REAL(MK) FUNCTION colloid_get_cc_repul_cut_off(this, stat_info)
         !----------------------------------------------------
         ! Return cut off for repulsive interaction
@@ -449,6 +467,22 @@
         RETURN
         
       END FUNCTION colloid_get_cc_repul_F0
+
+      
+      INTEGER FUNCTION colloid_get_cc_magnet_type(this, stat_info)
+        !----------------------------------------------------
+        ! Return magnetism type of colloid-colloid.
+        !----------------------------------------------------
+
+        TYPE(Colloid), INTENT(IN)       :: this
+        INTEGER, INTENT(OUT)            :: stat_info
+        
+        stat_info = 0
+        colloid_get_cc_magnet_type = this%cc_magnet_type
+        
+        RETURN
+        
+      END FUNCTION colloid_get_cc_magnet_type
 
       
       REAL(MK) FUNCTION colloid_get_cc_magnet_cut_off(this, stat_info)
@@ -555,6 +589,48 @@
       END SUBROUTINE colloid_get_cc_magent_mom
 
       
+      SUBROUTINE colloid_get_cc_magnet_acc_rot_vector(this,d_rot_vector,stat_info)
+        !----------------------------------------------------
+        ! Return the accumulative rotating vector of magnetic field.
+        !----------------------------------------------------
+        
+        TYPE(Colloid), INTENT(IN)               :: this
+        REAL(MK), DIMENSION(:), POINTER         :: d_rot_vector
+        INTEGER, INTENT(OUT)                    :: stat_info
+        
+        stat_info = 0
+        
+        IF(ASSOCIATED(d_rot_vector)) THEN
+           DEALLOCATE(d_rot_vector)
+        END IF
+        
+        ALLOCATE(d_rot_vector(4))
+        
+        d_rot_vector(1:4) = &
+             this%cc_magnet_acc_rot_vector(1:4)
+        
+        RETURN       
+
+      END SUBROUTINE colloid_get_cc_magnet_acc_rot_vector
+
+      
+      REAL(MK) FUNCTION colloid_get_cc_magnet_rot_freq(this, stat_info)
+        !----------------------------------------------------
+        ! Return rotating frequency of magnetic field.
+        !----------------------------------------------------
+
+        TYPE(Colloid), INTENT(IN)       :: this
+        INTEGER, INTENT(OUT)            :: stat_info
+        
+        stat_info = 0
+        colloid_get_cc_magnet_rot_freq = &
+             this%cc_magnet_rot_freq
+        
+        RETURN
+        
+      END FUNCTION colloid_get_cc_magnet_rot_freq
+
+
       REAL(MK) FUNCTION colloid_get_cc_magnet_f(this, stat_info)
         !----------------------------------------------------
         ! Return paramagnetic fraction of a colloid.

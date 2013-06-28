@@ -1,12 +1,11 @@
-      SUBROUTINE colloid_compute_accumulation_vector(this,stat_info)
+      SUBROUTINE colloid_compute_magnetism_accumulation_vector(this,stat_info)
         !----------------------------------------------------
-        ! Subroutine  : colloid_compute_accumulation_vector
+        ! Subroutine  : colloid_compute_magnetism_accumulation_vector
         !----------------------------------------------------
         !
         ! Purpose     : Compute the accumulative rotation vector
-        !               using accumulative rotation matrix.
         !
-        ! Remark      : Colloid are modeled as rigid body.
+        ! Remark      : 
         !
         ! Reference  : Chen et. al. 2006, physics of fluids
         !              wikipedia
@@ -23,13 +22,12 @@
         ! Technische Universitaet Muenchen, Germany.
         !----------------------------------------------------
         
-        TYPE(Colloid), INTENT(OUT)      :: this
+        TYPE(Colloid), INTENT(INOUT)    :: this
         INTEGER, INTENT(OUT)            :: stat_info
         
         INTEGER                         :: stat_info_sub
-        INTEGER                         :: i, dim
         REAL(MK),DIMENSION(3)           :: axis
-        REAL(MK)                        :: phi
+        REAL(MK)                        :: len, phi
         
         !----------------------------------------------------
         ! Initialization of variables.
@@ -37,38 +35,45 @@
         
         stat_info     = 0
         stat_info_sub = 0
-        dim           = this%num_dim
         
-#if __PARTICLES_POSITION_FIXED
-#else        
-        IF ( this%rotate ) THEN
+        
+        CALL tool_rotation_vector(this%tool, &
+             3,this%cc_magnet_acc_rot_matrix(1:3,1:3),&
+             axis(1:3),phi,stat_info_sub)
+        
+        IF ( stat_info_sub /= 0 ) THEN
+           PRINT *, __FILE__, __LINE__, &
+                "Using tool_rotation_vector failed! "
+           stat_info = -1
+           GOTO 9999
+        END IF
+
+        !----------------------------------------------
+        ! Normalize roation vector at this time step.
+        !----------------------------------------------
+              
+        len = SQRT(DOT_PRODUCT(axis(1:3),axis(1:3)))
+        
+        IF ( len < mcf_machine_zero ) THEN
            
-           DO i = 1, this%num_colloid
-              
-              CALL tool_rotation_vector(this%tool, &
-                   dim,this%acc_matrix(1:3,1:3,i),&
-                   axis(1:3),phi,stat_info_sub)
-              
-              IF ( stat_info_sub /= 0 ) THEN
-                 PRINT *, "colloid_compute_accumulation_vector: ", &
-                      "Using tool_rotation_vector failed! "
-                 stat_info = -1
-                 GOTO 9999
-              END IF
-              
-              this%acc_vector(1:3,i) = axis(1:3)
-              this%acc_vector(4,i)   = phi
-              
-           END DO ! i = 1, num_colloid
-                 
-        END IF ! rotate
+           axis(1:3) = 0.0_MK
+           axis(2)   = 1.0_MK
+           phi       = 0.0_MK
+           
+        ELSE
+           
+           axis(1:3) = axis(1:3) / len
+           
+        END IF
+      
         
-#endif
+        this%cc_magnet_acc_rot_vector(1:3) = axis(1:3)
+        this%cc_magnet_acc_rot_vector(4)   = phi
         
         
 9999    CONTINUE
         
         RETURN
         
-      END SUBROUTINE colloid_compute_accumulation_vector
+      END SUBROUTINE colloid_compute_magnetism_accumulation_vector
       

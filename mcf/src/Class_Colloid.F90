@@ -121,6 +121,7 @@
            REAL(MK)                           :: cc_lub_cut_on
 
            INTEGER                            :: cc_repul_type
+           REAL(MK)                           :: cc_repul_sigma
            REAL(MK)                           :: cc_repul_cut_off
            REAL(MK)                           :: cc_repul_cut_on
            REAL(MK)                           :: cc_repul_F0
@@ -131,6 +132,11 @@
            REAL(MK)                           :: cc_magnet_F0
            REAL(MK), DIMENSION(:), POINTER    :: cc_magnet_B
            REAL(MK), DIMENSION(:), POINTER    :: cc_magnet_mom
+           REAL(MK), DIMENSION(4)             :: cc_magnet_rot_vector
+           REAL(MK), DIMENSION(3,3)           :: cc_magnet_rot_matrix
+           REAL(MK), DIMENSION(4)             :: cc_magnet_acc_rot_vector
+           REAL(MK), DIMENSION(3,3)           :: cc_magnet_acc_rot_matrix
+           REAL(MK)                           :: cc_magnet_rot_freq
            REAL(MK)                           :: cc_magnet_f
            REAL(MK)                           :: cc_magnet_chi
            REAL(MK)                           :: cc_magnet_mu
@@ -139,7 +145,7 @@
            INTEGER                            :: cw_lub_type
            REAL(MK)                           :: cw_lub_cut_off
            REAL(MK)                           :: cw_lub_cut_on
-
+           
            INTEGER                            :: cw_repul_type
            REAL(MK)                           :: cw_repul_cut_off
            REAL(MK)                           :: cw_repul_cut_on
@@ -266,7 +272,7 @@
            MODULE PROCEDURE colloid_init_default
            MODULE PROCEDURE colloid_init
         END INTERFACE
-                
+        
       CONTAINS       
         
         REAL(MK) FUNCTION colloid_polar_angle(x,y)
@@ -323,16 +329,22 @@
 #include "colloid_compute_lubrication_cw.F90"
 #include "colloid_compute_repulsion_cc.F90"
 #include "colloid_compute_repulsion_cw.F90"
+#include "colloid_compute_magnetism_rotation_vector.F90"
+#include "colloid_compute_magnetism_rotation_matrix.F90"
+#include "colloid_init_magnetism_accumulation_matrix.F90"
+#include "colloid_compute_magnetism_accumulation_vector.F90"
+#include "colloid_compute_magnetism_accumulation_matrix.F90"
+#include "colloid_compute_magnetism_moment.F90"
 #include "colloid_compute_magnetism_cc.F90"
 #include "colloid_compute_interaction_implicit_velocity_all.F90"
 #include "colloid_compute_interaction_implicit_velocity_pair.F90"
 #include "colloid_compute_interaction_implicit_velocity_pair_sweep.F90"
-#include "colloid_compute_translate_acceleration.F90"
-#include "colloid_compute_rotate_acceleration.F90"
+#include "colloid_compute_translation_acceleration.F90"
+#include "colloid_compute_rotation_acceleration.F90"
 #include "colloid_apply_body_force.F90"
-#include "colloid_integrate_translate_position.F90"
-#include "colloid_integrate_translate_velocity.F90"
-#include "colloid_integrate_rotate_velocity.F90"
+#include "colloid_integrate_translation_position.F90"
+#include "colloid_integrate_translation_velocity.F90"
+#include "colloid_integrate_rotation_velocity.F90"
 #include "colloid_adjust_colloid.F90"
 #include "colloid_compute_statistic.F90"
 #include "colloid_polar_ellipse.F90"

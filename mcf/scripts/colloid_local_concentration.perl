@@ -27,8 +27,8 @@ $step_start=$ARGV[2];
 $step_end  =99999999;
 $step_end  =$ARGV[3];
 
-$Lx=16.0;
-$Ly=16.0;
+$Lx=64.0;
+$Ly=64.0;
 $Lx=$ARGV[4];
 $Ly=$ARGV[5];
 
@@ -135,13 +135,14 @@ foreach $f (@file_names_in)
 		$in_t = int($y_t/$h[$j]);
 ###################################################
 # Loop each index from bottom to the center of a colloid
+# Outside the loop is the first circular segment.
 ###################################################
-		$d = $y_c-$y_b;
+		$d = $y_c-($in_b+1)*$h[$j];
 		$theta = 2.0*acos($d/$R);
 		$area_segment = $R**2*($theta-sin($theta))/2.0;
 		$area[$in_b][$j] += $area_segment;
 		$area_segment_pre = $area_segment;
-		for ($i=$in_b+1;$i<=$in_c;$i++)
+		for ($i=$in_b+2;$i<=$in_c;$i++)
 		{
 ###################################################
 # Calculate area of fraction in each index:
@@ -152,16 +153,19 @@ foreach $f (@file_names_in)
 		    $d = $y_c-$i*$h[$j];
 		    $theta = 2.0*acos($d/$R);
 		    $area_segment = $R**2*($theta-sin($theta))/2.0;
-		    $area[$i][$j] += ($area_segment-$area_segment_pre);
+		    $area[$i-1][$j] += ($area_segment-$area_segment_pre);
 		    $area_segment_pre = $area_segment;
 		}
+		$area_segment = $pi*$R**2/2.0;
+		$area[$in_c][$j] += ($area_segment - $area_segment_pre);
+		
 ###################################################
 # Loop each index from top to the center of a colloid
 # Note that the center index is added here the 
 # second times, as the center fraction is divided
 # into two pieces.
 ###################################################
-		$d = $y_t-$y_c;
+		$d = $in_t*$h[$j]-$y_c;
 		$theta = 2.0*acos($d/$R);
 		$area_segment = $R**2*($theta-sin($theta))/2.0;
 		$area[$in_t][$j] += $area_segment;
@@ -201,24 +205,17 @@ if ($num_file > 0)
 {
     for ($j=0; $j<$num_res; $j++)
     {
-	for ($k=0;$k<=$res[$j];$k++)
+	$file_out_name = ">".$file_out_prefix."_".$h[$j].".dat";
+	open(OUT, $file_out_name);
+	
+	for ($k=0;$k<$res[$j];$k++)
 	{
 	    $area[$k][$j]=$area[$k][$j]/$num_file/($h[$j]*$Lx);
+	    print OUT $y[$k][$j],' ', $area[$k][$j], "\n";
 	}
+	print "writing file : ", $file_out_name, "\n";
+	close(OUT);    
     }
-}
-
-for ($j=0; $j<$num_res; $j++)
-{
-    $file_out_name = ">".$file_out_prefix."_".$h[$j].".dat";
-    open(OUT, $file_out_name);
-
-    for ($k=0;$k<$res[$j];$k++)
-    {
-	print OUT $y[$k][$j],' ', $area[$k][$j], "\n";
-    }
-    print "writing file : ", $file_out_name, "\n";
-    close(OUT);    
 }
 
 

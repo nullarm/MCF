@@ -316,6 +316,8 @@ flow_adjust_freq = 10
 #                     i.e., maximum threshold for lubrication force
 #                     is restricted at this miminum possible gap.
 #
+#  cc_repul_sigma   : sigma in Lennard-Jones potentional force
+#
 #  cc_repul_cut_off : cut off for extra repulsive force which
 #                     keeps colloids apart.
 #
@@ -324,7 +326,31 @@ flow_adjust_freq = 10
 #                     i.e., maximum threshold for repulsion force
 #                     is restricted at this miminum possible gap.
 #
-#  cc_repul_F0      : constant/ maximum of this repulsive force.
+#  cc_magnet_cut_off : cut off for magnetic force 
+#
+#  cc_magnet_cut_on  : cut on of magnetic force
+
+#  cc_magnet_F0      : magnitude of the magnetic force.
+#
+#  cc_magnet_B      : magnetic field(vector)
+#
+#  cc_magnet_mom    : magnetic moment(unit vector)
+#
+#  cc_magnet_rot_vector I: 
+#                   magnetic field is rotating around I.
+#                   I1, I2, I3 (always 3D vector), phi (4th dimension)
+#                   I is recommended to be unit, otherwise will be normalized.
+#                   theta is the angle rotated around I before simulation,
+#                   i.e., initial orientation of magentic field.
+#
+#  cc_magnet_rot_freq: 
+#                   rotating frequency of magnetic field.
+#
+#  cc_magnet_f      : particle area/volume fraction that is paramagnetic
+#
+#  cc_magnet_chi    : magnetic susceptibility difference between particle and fluid.
+#
+#  cc_magnet_mu     : magnetic permittivity
 #
 #
 #  cw_lub_cut_off   : cut off of surface distance for lubrication
@@ -449,9 +475,17 @@ coll_body_force      = 0.0,0.0
 cc_lub_cut_off   = 0.0
 cc_lub_cut_on    = 0.0
 
+cc_repul_sigma   = 0.1
 cc_repul_cut_off = 0.0
 cc_repul_cut_on  = 0.0
 cc_repul_F0      = 0.0
+
+cc_magnet_cut_off = 0.0
+cc_magnet_cut_on  = 0.0
+cc_magnet_F0      = 1.0		 
+cc_magnet_mom      = -1.0, 0.0 1.0
+cc_magnet_rot_vector = 0.0,1.0,0.0, 0.0
+cc_magnet_rot_f      = 100.0
 
 cw_lub_cut_off   = 0.0
 cw_lub_cut_on    = 0.0
@@ -459,6 +493,7 @@ cw_lub_cut_on    = 0.0
 cw_repul_cut_off = 0.0
 cw_repul_cut_on  = 0.0
 cw_repul_F0      = 0.0
+
 
 
 coll_shape       = 1

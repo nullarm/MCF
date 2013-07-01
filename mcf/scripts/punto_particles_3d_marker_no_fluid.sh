@@ -8,5 +8,5 @@ fi
 
 rm punto_particles_marker_no_fluid.dat
 
-perl  ~/project/trunk/mcf/scripts/particles_3d_marker_no_fluid.perl ${dirname}
+perl  ~/MCF/mcf/scripts/particles_3d_marker_no_fluid.perl ${dirname}
 

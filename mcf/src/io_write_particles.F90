@@ -81,9 +81,9 @@
         REAL(MK), DIMENSION(:,:), POINTER       :: fv
         REAL(MK), DIMENSION(:,:), POINTER       :: fr
 #endif
-#ifdef __IO_PARTICLES_STRESS_TOTAL
+!#ifdef __IO_PARTICLES_STRESS_TOTAL
         REAL(MK), DIMENSION(:,:), POINTER       :: s
-#endif
+!#endif
 #ifdef __IO_PARTICLES_STRESS_SEPARATE
         REAL(MK), DIMENSION(:,:), POINTER       :: sp
         REAL(MK), DIMENSION(:,:), POINTER       :: sv
@@ -106,7 +106,8 @@
         INTEGER                                 :: num_fr
 #endif
 
-
+        
+        INTEGER                                 :: num_s, i
         INTEGER                                 :: data_dim
         INTEGER                                 :: current_dim
         REAL(MK), DIMENSION(:,:), POINTER       :: output
@@ -139,9 +140,9 @@
         NULLIFY(fv)
         NULLIFY(fr)
 #endif
-#ifdef __IO_PARTICLES_STRESS_TOTAL
+!#ifdef __IO_PARTICLES_STRESS_TOTAL
         NULLIFY(s)
-#endif
+!#endif
 #ifdef __IO_PARTICLES_STRESS_SEPARATE
         NULLIFY(sp)
         NULLIFY(sv)
@@ -190,10 +191,9 @@
 
         IF ( stress_tensor ) THEN
            
-#ifdef __IO_PARTICLES_STRESS_TOTAL
-           
+!#ifdef __IO_PARTICLES_STRESS_TOTAL
            CALL particles_get_s(d_particles,s,num_part,stat_info)
-#endif
+!#endif
            
 #ifdef __IO_PARTICLES_STRESS_SEPARATE
            CALL particles_get_sp(d_particles,sp,num_part,stat_info)
@@ -256,9 +256,8 @@
         
         !----------------------------------------------------
         ! Allocate memory for output data.
-        ! x,y(,z), vx,vy(,vz), rho/d, m, pid,sid; f, s, u.
-        ! For 2D stress tensor s:
-        ! only xy and yx component are considered for now.
+        ! x,y(,z), vx,vy(,vz), rho/d, m, pid,sid;
+        ! force, stress tensor, potential energy.
         !----------------------------------------------------
         
         data_dim = num_x + num_v + 1 + 1 + num_id
@@ -280,14 +279,15 @@
         
         IF ( stress_tensor ) THEN
            
-#ifdef __IO_PARTICLES_STRESS_TOTAL
-           data_dim = data_dim + 2
-#endif
+           num_s    = SIZE(s,1)
+!#ifdef __IO_PARTICLES_STRESS_TOTAL           
+           data_dim = data_dim + num_s
+!#endif
 #ifdef __IO_PARTICLES_STRESS_SEPARATE
-           data_dim = data_dim + 2
-           data_dim = data_dim + 2
+           data_dim = data_dim + num_s
+           data_dim = data_dim + num_s
            IF ( Brownian ) THEN
-              data_dim = data_dim + 2
+              data_dim = data_dim + num_s
            END IF
 #endif
         END IF ! stress_tensor
@@ -349,13 +349,14 @@
 
         IF ( stress_tensor ) THEN
            
-#ifdef __IO_PARTICLES_STRESS_TOTAL
-           output(current_dim+1,1:num_part) = &
-                s(2,1:num_part)
-           output(current_dim+2,1:num_part) = &
-                s(3,1:num_part)      
-           current_dim = current_dim + 2
-#endif
+!#ifdef __IO_PARTICLES_STRESS_TOTAL
+! currently for 2D         
+           DO i=1, 4
+              output(current_dim+i,1:num_part) = &
+                   s(i,1:num_part)      
+           END DO
+           current_dim = current_dim + 4
+!#endif
 #ifdef __IO_PARTICLES_STRESS_SEPARATE
            output(current_dim+1,1:num_part) = &
                 sp(2,1:num_part)

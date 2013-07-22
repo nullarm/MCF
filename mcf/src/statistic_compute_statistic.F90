@@ -254,7 +254,8 @@
            END IF ! sid(j) == 0
            
            !-------------------------------------------------
-           ! Count solvent particles for total stress tensor
+           ! Count solvent and colloidal boundary particles
+           ! for total stress tensor
            !-------------------------------------------------
            
            IF ( stress_tensor ) THEN

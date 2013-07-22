@@ -872,10 +872,13 @@
               GOTO 9999
            END IF
            
-           !-------------------------------------------------
-           ! Calculate particles' mass initially,
-           ! from density.
-           !-------------------------------------------------
+           
+        END IF ! read_external
+
+        !----------------------------------------------------
+        ! Calculate particles' mass initially,
+        ! from density.
+        !----------------------------------------------------
            
            CALL particles_compute_mass(mcf_particles,stat_info_sub)
            
@@ -885,9 +888,7 @@
               stat_info = -1
               GOTO 9999
            END IF
-           
-        END IF ! read_external
-
+       
         !----------------------------------------------------
         ! Display physics parameters on root process after 
         ! decomposing, since for internally generated particles, 

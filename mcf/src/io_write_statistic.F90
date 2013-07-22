@@ -175,6 +175,10 @@
         
         !----------------------------------------------------
         ! For 2D case, off diagonal components only.
+        ! Note that the unit is wrong here for stress tensor,
+        ! as rij*fij is calculated, where fij is 
+        ! force/mass, not force itself.
+        ! This needs to be correct by post processing.
         !----------------------------------------------------
         
         IF ( l_stress_tensor ) THEN

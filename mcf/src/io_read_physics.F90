@@ -129,6 +129,7 @@
         REAL(MK)                                :: cc_repul_cut_on
         REAL(MK)                                :: cc_repul_F0
 
+        LOGICAL                                 :: cc_magnet_type
         REAL(MK)                                :: cc_magnet_cut_off
         REAL(MK)                                :: cc_magnet_cut_on
         REAL(MK)                                :: cc_magnet_F0
@@ -214,7 +215,10 @@
         num_colloid   = 0
       
         NULLIFY(colloids)
-        ALLOCATE(colloids)        
+        ALLOCATE(colloids) 
+
+        cc_magnet_type = &
+             control_get_cc_magnet_type(this%ctrl,stat_info_sub)
         coll_index   = 0
         coll_integrate_type = &
              control_get_integrate_colloid_type(this%ctrl,stat_info_sub)
@@ -1707,24 +1711,28 @@
               CALL colloid_set_cc_repul_F0(colloids, &
                    cc_repul_F0,stat_info_sub)
 
-              CALL colloid_set_cc_magnet_cut_off(colloids, &
-                   cc_magnet_cut_off,stat_info_sub)
-              CALL colloid_set_cc_magnet_cut_on(colloids, &
-                   cc_magnet_cut_on,stat_info_sub)
-              CALL colloid_set_cc_magnet_F0(colloids, &
-                   cc_magnet_F0,stat_info_sub)
-              CALL colloid_set_cc_magnet_B(colloids,&
-                   cc_magnet_B,stat_info_sub)
-              CALL colloid_set_cc_magnet_mom(colloids,&
-                   cc_magnet_mom,stat_info_sub)
-              CALL colloid_set_cc_magnet_acc_rot_vector(colloids,&
-                   cc_magnet_rot_vector,stat_info_sub)    
-              CALL colloid_set_cc_magnet_rot_freq(colloids,&
-                   cc_magnet_rot_freq,stat_info_sub)
-              CALL colloid_set_cc_magnet_chi(colloids,&
-                   cc_magnet_chi,stat_info_sub)
-              CALL colloid_set_cc_magnet_mu(colloids,&
-                   cc_magnet_mu,stat_info_sub)
+              IF ( cc_magnet_type > mcf_cc_magnet_type_no ) THEN
+
+                 CALL colloid_set_cc_magnet_cut_off(colloids, &
+                      cc_magnet_cut_off,stat_info_sub)
+                 CALL colloid_set_cc_magnet_cut_on(colloids, &
+                      cc_magnet_cut_on,stat_info_sub)
+                 CALL colloid_set_cc_magnet_F0(colloids, &
+                      cc_magnet_F0,stat_info_sub)
+                 CALL colloid_set_cc_magnet_B(colloids,&
+                      cc_magnet_B,stat_info_sub)
+                 CALL colloid_set_cc_magnet_mom(colloids,&
+                      cc_magnet_mom,stat_info_sub)
+                 CALL colloid_set_cc_magnet_acc_rot_vector(colloids,&
+                      cc_magnet_rot_vector,stat_info_sub)    
+                 CALL colloid_set_cc_magnet_rot_freq(colloids,&
+                      cc_magnet_rot_freq,stat_info_sub)
+                 CALL colloid_set_cc_magnet_chi(colloids,&
+                      cc_magnet_chi,stat_info_sub)
+                 CALL colloid_set_cc_magnet_mu(colloids,&
+                      cc_magnet_mu,stat_info_sub)
+                 
+              END IF
 
               CALL colloid_set_cw_lub_cut_off(colloids, &
                    cw_lub_cut_off,stat_info_sub)

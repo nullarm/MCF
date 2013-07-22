@@ -205,9 +205,9 @@
               
               dt_f = this%adapt_t_coef*SQRT(this%h/fa)
               
-              IF ( dt_f < dt_sub ) THEN
+              IF ( dt_f < dt ) THEN
                  PRINT *, "drag is too big for colloid",&
-                      i, drag(1:dim,i), dt_f
+                      i, drag(1:dim,i), dt_f, dt
               END IF
               
            END IF
@@ -738,7 +738,7 @@
                     IF ( dt_f < dt_sub/2.0_MK ) THEN
                        
                        PRINT *, "First dt_sub: F_repul is too big for colloid",&
-                            i, F_repul(1:dim,i), dt_f, sub_step
+                            i, F_repul(1:dim,i), dt_f, dt_sub
                        
                     END IF
                     

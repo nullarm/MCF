@@ -30,14 +30,16 @@ PPM_DISTR_FILE=libppm-$(PPM_VERSION).tar.gz
 
 # a place to fetch fftw library
 FFTW_SITE=ftp://ftp.netbsd.org/pub/NetBSD/packages/distfiles
-FFTW_VERSION=3.1.3
+FFTW_VERSION=3.3.3
 
 # a place to fetch mpich library
-MPICH_VERSION=1.0.8
+MPICH_VERSION=1.5
 MPICH_SITE=http://www.mcs.anl.gov/research/projects/mpich2/downloads/tarballs/
 
 MAKEDEPF90_SITE=http://personal.inet.fi/private/erikedelmann/makedepf90/
 MAKEDEPF90=$(PREFIX)/bin/makedepf90
+
+METIS_VERSION=4.1.1
 
 # a preprocessor for  ppm
 CPP=cpp
@@ -65,7 +67,7 @@ install_mpi: mpich_extract mpich_configure mpich_compile mpich_install
 
 install_all: install_mpi install_all_but_mpi
 
-install_metis: metis_extract metis_configure metis_compile metis_install
+install_metis: metis_extract metis_patch metis_configure metis_compile metis_install
 install_vizing: vizing_extract vizing_configure vizing_compile vizing_install
 install_ppm: ppm_extract ppm_configure ppm_compile ppm_install
 
@@ -94,9 +96,10 @@ mpich_extract: $(DISTDIR)/mpich2-$(MPICH_VERSION).tar.gz
 mpich_configure:
 	cd ${WRKDIR}/mpich2-$(MPICH_VERSION) ; \
 	./configure  RSHCOMMAND="$(RSH)" MPICH2LIB_FCFLAGS=-O2  \
-	FCFLAGS="$(FCFLAGS)" FC="$(FC)" F77="$(FC)" F90="$(FC)" \
+	FCFLAGS="$(FCFLAGS)" FC="$(FC)" F77="$(FC)" \
 	CC=$(CC) \
-        --disable-romio --enable-f90 --disable-cxx --enable-fast=O3 \
+        --disable-romio --enable-fc --disable-cxx --enable-fast=O3 \
+	--with-pm=mpd \
         --prefix=$(PREFIX)
 
 mpich_compile:
@@ -140,6 +143,7 @@ ppm_extract: $(DISTDIR)/$(PPM_DISTR_FILE)
 ppm_configure:
 	cd ${WRKDIR}/libppm-$(PPM_VERSION); \
 	./configure --prefix=$(PREFIX) --enable-mpi \
+	FC=$(MPIFC) \
 	MPIFC=$(MPIFC) LDFLAGS=-L$(PREFIX)/lib \
 	MAKEDEPF90=$(MAKEDEPF90) FCFLAGS="-I$(PREFIX)/include -g"
 
@@ -195,8 +199,11 @@ makedepf90_install:
 	make install
 
 
-metis_extract: $(DISTDIR)/metis-4.1.1.tar.gz
+metis_extract: $(DISTDIR)/metis-$(METIS_VERSION).tar.gz
 	${EXTRACT_COMAND} -d ${WRKDIR} $<
+
+metis_patch: 
+	cp files/rename.h ${WRKDIR}/metis-$(METIS_VERSION)/src/
 
 metis_configure:
 	cd ${WRKDIR}/metis-*; \

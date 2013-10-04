@@ -49,7 +49,7 @@
         LOGICAL                         :: flow_v_fixed
         LOGICAL                         :: l_stress_tensor
         LOGICAL                         :: l_p_energy
-        LOGICAL                         :: integrate_colloid_type
+        INTEGER                         :: integrate_colloid_type
         
         INTEGER                         :: num_dim
         REAL(MK)                        :: k_energy

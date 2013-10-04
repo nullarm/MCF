@@ -773,12 +773,12 @@
            WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub)  TRIM(cbuf)
            WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub) ' '
       
-           WRITE(cbuf, '(A,I)') 'coll_sub_time_step = ', &
+           WRITE(cbuf, '(A,I8)') 'coll_sub_time_step = ', &
                 coll_sub_time_step
            WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub)  TRIM(cbuf)
            WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub) ' '
           
-           WRITE(cbuf, '(A,I)') 'coll_implicit_pair_num_sweep = ', &
+           WRITE(cbuf, '(A,I8)') 'coll_implicit_pair_num_sweep = ', &
                 coll_implicit_pair_num_sweep
            WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub)  TRIM(cbuf)
            WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub) ' '
@@ -793,11 +793,11 @@
            WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub)  TRIM(cbuf)
            WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub) ' '
           
-           WRITE(cbuf, '(A,I)') 'coll_implicit_pair_sweep_max = ', coll_implicit_pair_sweep_max
+           WRITE(cbuf, '(A,I8)') 'coll_implicit_pair_sweep_max = ', coll_implicit_pair_sweep_max
            WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub)  TRIM(cbuf)
            WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub) ' '
    
-           WRITE(cbuf, '(A,I)') 'coll_explicit_sub_time_step   = ', coll_explicit_sub_time_step
+           WRITE(cbuf, '(A,I8)') 'coll_explicit_sub_time_step   = ', coll_explicit_sub_time_step
            WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub)  TRIM(cbuf)
            WRITE(UNIT=this%restart_physics_unit,FMT='(A)',IOSTAT=stat_info_sub) ' '
       

@@ -129,7 +129,7 @@
         REAL(MK)                                :: cc_repul_cut_on
         REAL(MK)                                :: cc_repul_F0
 
-        LOGICAL                                 :: cc_magnet_type
+        INTEGER                                 :: cc_magnet_type
         REAL(MK)                                :: cc_magnet_cut_off
         REAL(MK)                                :: cc_magnet_cut_on
         REAL(MK)                                :: cc_magnet_F0

@@ -20,8 +20,8 @@ use Math::Trig;
 $num_dim     = 3;
 $step_start  = 10000;
 $step_end    = 99999999;
-$num_bin     = 50; # number of bins for PDF histogram
-$num_extreme = 4;
+$num_bin     = 30; # number of bins for PDF histogram
+$num_extreme = 40;
 $num_moment  = 4;
 
 ###################################################
@@ -310,7 +310,20 @@ for($i=0;$i<$num_dim;$i++)
 
 print "number of files processed: ", $num_file, "\n";
 
-for ($i=0;$i<$num_dim;$i++)
+print "pdf_v_0.dat: PDF of vx\n";
+print "pdf_v_1.dat: PDF of vy\n";
+print "pdf_v_2.dat: PDF of vz\n";
+print "pdf_v_3.dat: PDF of (vx+vy+vz)\/3\n";
+print "pdf_v2.dat : PDF of vx^2+vy^2+vz^2\n";
+print "pdf_vs.dat : PDF of sqrt(vx^2+vy^2+vz^2)\n";
+
+#Average three directions.
+for ($j=0;$j<$num_bin;$j++)
+{
+    $pdf_v[3][$j]  = ($pdf_v[0][$j]+$pdf_v[1][$j]+$pdf_v[2][$j])/3.0;
+    $v_hist[3][$j] = $v_hist[0][$j]; # just take x direction.
+}
+for ($i=0;$i<=$num_dim;$i++)
 {
     $file_out_name = ">".$file_out_prefix."_".$i.".dat"; 
     open(OUT,$file_out_name);
@@ -346,6 +359,8 @@ print "Unity check--->: sum of pdf_vs[j]   = ", $unitys, "\n";
 
 close(OUT2);
 close(OUTs);
+
+print "Fluctuation moments in three directions:\n";
 
 for($k=0;$k<=$num_moment;$k++)
 {

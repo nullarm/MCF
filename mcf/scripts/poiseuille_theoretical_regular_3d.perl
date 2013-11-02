@@ -1,18 +1,31 @@
-
+#----------------------------------
+# Generate a file which contains
+# theoretical solution of poiseuille
+# flow, Morris J.P. et al. 1997.
+# The discrete points position is
+# regular grid.
+#----------------------------------
 $epsilon = 1.0e-18;
 $pi      = 3.14159265359;
 
-$npart = 10;
-$t   = 0.1;
-$mu  = 1.0e-6;
-$L   = 1.0e-3;
-$rho = 1.0e+3;
-$F   = 1.0e-4;
+$npart = 20;
+$t     = 0.1;
+$step  = $ARGV[0];
+$dt    = $ARGV[1];
+$t=$step*$dt;
+
+#print $t, "  ", $dt, " ", $step, "\n";
+
+$mu  = 8.46;
+$L   = 1.5;
+$rho = 1.0;
+$F   = 750;
 $dh   = $L /$npart;
 $temp = 0;
 $n    = 0;
-$timestring = substr($t, 2);
-$filename = "poiseuille" . '_' . $L/$dh . '_'.  $timestring .  ".dat";
+#$timestring = substr($t, 2);
+#$filename = "poiseuille_grid" . '_'.  $timestring .  ".dat";
+$filename = "poiseuille_grid" . '_'.  $step .  ".dat";
 open file,'>',$filename or die ;
 
 

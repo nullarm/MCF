@@ -1,13 +1,29 @@
-open file_n, "thin.dat";
-open file_a, ">poiseuille_b.dat";
-
+#----------------------------------
+# Generate a file which contains
+# theoretical solution of poiseuille
+# flow, Morris J.P. et al. 1997.
+# The discrete points position is
+# from input thin.dat.
+#----------------------------------
+#default input file name and time
+$file_name_in="thin.dat";
 $t   = 10;
+
+$file_name_in=$ARGV[0];
+$t=$ARGV[1];
+
+$file_name_out=">poiseuille".$t.".dat";
+
+open file_n, $file_name_in;
+open file_a, $file_name_out;
+
+
 $epsilon = 1.0e-18;
 $pi      = 3.14159265359;
-$mu  = 0.06;
-$L   = 1.0;
+$mu  = 8.46;
+$L   = 1.5;
 $rho = 1.0;
-$F   = 0.0135765;
+$F   = 6.0;
 $temp = 0;
 $n    = 100;
 

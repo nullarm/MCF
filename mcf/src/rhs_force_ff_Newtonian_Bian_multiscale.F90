@@ -3,38 +3,33 @@
 ! return two accelerations between two Newtonian particles, 
 ! accelerations from i.e. conservative(pressure) force 
 ! dissipative(viscous) force and random(thermal noise) force.
-! Using Espanol & Revenga 2003 formulation.
+! Using Bian 2013 formulation for multi-resolution/scale.
 !----------------------------------------------------------------
-
-      SUBROUTINE rhs_force_ff_Newtonian_Espanol(this,&
-           xi,xj,dij,vi,vj,numi,numj,pi,pj,&
+      SUBROUTINE rhs_force_ff_Newtonian_Bian_multiscale(this,&
+           xi,xj,dij,vi,vj,numi,numj, pi,pj,&
            mi,mj,w,gradw,fi,fj,auij,stat_info)
         !----------------------------------------------------
-        ! Subroutine : rhs_force_ff_Newtonian_Espanol
+        ! Subroutine : rhs_force_ff_Newtonian_Bian_multiscale
         !----------------------------------------------------
         !
         ! Purpose    : Implement the pressure, viscous and 
-        !              thermal force from 
-        !              Espanol and Revenga 2003
-        !              Physical Review E paper.
-
+        !              thermal force from Hu and Adams 2006 
+        !              Journal of Computational Physics.
         !
-        ! Reference  : Hu and Adams 
-        !              Journal of Computational Physics 213 
-        !              844-861, 2006.
+        ! Reference  : Bian, unpublished 2013
         !
         ! Remark     :
         !
-        ! Revisions  : V0.1 30.02.2009
+        ! Revisions  : V0.1 Nov. 1, 2013
         !
         !----------------------------------------------------
         ! Author       : Xin Bian
-        ! Contact      : xin.bian@aer.mw.tum.de
+        ! Contact      : xin_bian@brown.edu
         !
-        ! Dr. Marco Ellero's Emmy Noether Group,
-        ! Prof. Dr. N. Adams' Chair of Aerodynamics,
-        ! Faculty of Mechanical Engineering,
-        ! Technische Universitaet Muenchen, Germany.
+        ! Prof. George Em Karniadakis',
+        ! Crunch group,
+        ! the division of applied mathematics,
+        ! Brown University, US.
         !----------------------------------------------------
         
         !----------------------------------------------------
@@ -60,7 +55,7 @@
         REAL(MK), INTENT(IN)                    :: gradw
         REAL(MK), DIMENSION(:), INTENT(INOUT)   :: fi
         REAL(MK), DIMENSION(:), INTENT(INOUT)   :: fj
-        REAL(MK), INTENT(OUT),OPTIONAL          :: auij
+        REAL(MK), INTENT(OUT), OPTIONAL         :: auij
         INTEGER, INTENT(OUT)                    :: stat_info
         
         !----------------------------------------------------
@@ -71,16 +66,17 @@
         INTEGER                         :: num_dim
         REAL(MK)                        :: dt
         REAL(MK)                        :: eta
-        REAL(MK)                        :: kt        
+        REAL(MK)                        :: kt
         REAL(MK), DIMENSION(3)          :: eij
-        REAL(MK)                        :: ev
         REAL(MK), DIMENSION(3)          :: vij
-        REAL(MK)                        :: f_c,f_d1,f_d2
-        REAL(MK), DIMENSION(3)          :: f_r
+        REAL(MK)                        :: ev
+        REAL(MK)                        :: f_c
+        REAL(MK)                        :: f_d
+        REAL(MK)                        :: f_r        
         REAL(MK), DIMENSION(3,3)        :: dW
-        REAL(MK)                        :: trace, a,b,Zij,Aij,Bij
+        REAL(MK)                        :: trace
         REAL(MK), DIMENSION(3)          :: We
-        INTEGER                         :: i,j         
+        INTEGER                         :: i,j
         
         !----------------------------------------------------
         ! Initialization of variables.
@@ -88,40 +84,36 @@
         
         stat_info     = 0
         stat_info_sub = 0
-        
+
         fi(:) = 0.0_MK
         fj(:) = 0.0_MK
         
         num_dim = this%num_dim
-
+        
         dt  = this%dt
-        eta     = physics_get_eta(this%phys,stat_info_sub)     
-        kt      = this%kt
-
+        eta = physics_get_eta(this%phys,stat_info_sub)     
+        kt  = this%kt
+        
         !----------------------------------------------------
         ! Check if any denominator is non-positive.
         !----------------------------------------------------
-      
-        IF ( dij < mcf_machine_zero .OR. &
-             mi < mcf_machine_zero .OR. &
+        
+        IF ( mi < mcf_machine_zero .OR. &
              mj < mcf_machine_zero .OR. &
              numi < mcf_machine_zero .OR. &
-             numj < mcf_machine_zero) THEN
+             numj < mcf_machine_zero ) THEN
            
            PRINT *,"xi,xj,dij : ",  xi,xj,dij
            PRINT *,"vi,vj : ", vi,vj
            PRINT *,"numi,numj : ", numi,numj
            PRINT *,"pi,pj : ", pi,pj
            PRINT *,"mi,mj : ", mi,mj
-           PRINT *,"w, gradw : ", w, gradw
+           PRINT *,"w, gradw : ", w, gradw          
            
-           PRINT *, "rhs_force_ff_Newtonian_Espanol : ",& 
-                "Divided by non-positive !" 
            stat_info = -1
            GOTO 9999
            
         END IF
-        
         
         !----------------------------------------------------
         ! Calculate normalized vector pointing from j to i.
@@ -130,26 +122,26 @@
         eij(1:num_dim) = (xi(1:num_dim)  - xj(1:num_dim)) / dij
         
         !----------------------------------------------------
-        ! Calculate velocity vector pointing from j to i.
+        ! Calculate the velocity vector pointing from j to i.
         !----------------------------------------------------
         
         vij(1:num_dim)  = vi(1:num_dim) - vj(1:num_dim)
         
         !----------------------------------------------------
-        ! Dot product of normalized vector e and velocity v.
+        ! Dot product of eij and vij.
         !----------------------------------------------------
         
         ev = 0.0_MK
         DO i = 1, num_dim
-           ev = ev + eij(i) * vij(i)  
+           ev = ev + eij(i)*vij(i)
         END DO
         
-  	!----------------------------------------------------
+        !----------------------------------------------------
 	! Calculate the conservative force
-	! per unit mass(from pressure).
+	! per unit mass (from pressure).
   	!----------------------------------------------------
         
-        f_c = ( pi/( numi**2.0_MK) + pj/(numj**2.0_MK)) * gradw
+        f_c = ( pi/(numi**2.0_MK)+ pj/(numj**2.0_MK)) * gradw
         
         fi(1:num_dim) = fi(1:num_dim) - f_c * eij(1:num_dim) / mi
         fj(1:num_dim) = fj(1:num_dim) + f_c * eij(1:num_dim) / mj
@@ -157,36 +149,24 @@
         !----------------------------------------------------
         ! Calculate potential energy, if needed.
         !----------------------------------------------------
-      
-        IF( PRESENT(auij)) THEN
+        
+        IF(PRESENT(auij))THEN
            auij = 0.5_MK * f_c * ev / mi
         END IF
         
         !----------------------------------------------------
-        ! Calculate the first part of viscous force
-        ! per unit mass(from viscosity).
-        !----------------------------------------------------
-        
-        f_d1 =  (2.0_MK - 1.0_MK/num_dim) * eta * &
-             gradw / numi / numj /  dij
-        
-        fi(1:num_dim) = fi(1:num_dim) + f_d1  * vij(1:num_dim) / mi
-        fj(1:num_dim) = fj(1:num_dim) - f_d1  * vij(1:num_dim) / mj
-        
-    	!----------------------------------------------------
-  	! Calculate the second part of viscous force
-	! per unit mass
+        ! Calculate dissipative force
+	! per unit mass(from viscosity).
   	!----------------------------------------------------
         
-        f_d2 = eta * (num_dim + 2) / num_dim * &
-             gradw * ev / numi / numj / dij
+        f_d = 2.0_MK * eta * (1.0_MK/numi/numj) * gradw / dij
         
-        fi(1:num_dim) = fi(1:num_dim) + f_d2 * eij(1:num_dim) / mi 
-        fj(1:num_dim) = fj(1:num_dim) - f_d2 * eij(1:num_dim) / mj
+        fi(1:num_dim) = fi(1:num_dim) + f_d  * vij(1:num_dim) / mi
+        fj(1:num_dim) = fj(1:num_dim) - f_d  * vij(1:num_dim) / mj
         
         !----------------------------------------------------
         ! Calculate random force
-	! per unit mass (from thermal noise),
+	! per unit mass(from thermal noise),
         ! if kt is above zero.
   	!----------------------------------------------------
         
@@ -194,7 +174,8 @@
              kt >  mcf_machine_zero ) THEN
            
            !-------------------------------------------------
-           ! Generate the 2*2(2D) or 3*3(3D) matrix
+           ! Generate the 2*2(2D) or 
+           ! 3*3(3D) matrix
            ! dW with 4 or 9 random numbers.
            ! Calculate the trace.
            !-------------------------------------------------
@@ -222,13 +203,6 @@
               dW(i,i) = dW(i,i) - trace
            END DO
            
-           Zij = 4.0_MK*kt*gradW/dij/numi/numj
-           a   = 5.0_MK *eta/3.0_MK
-           !b   = (DFLOAT(num_dim) + 2.0_MK)*eta/ 3.0_MK
-           Aij = SQRT(-Zij * a)
-           !Bij = SQRT(-Zij*DFLOAT(num_dim)/2.0_MK * &
-           !     (b+a*(2.0_MK/DFLOAT(num_dim) -1.0_MK)))
-           Bij  = 0.0_MK ! for incompressible
            !-------------------------------------------------
            ! Generate the vector by
            ! dot product of dW and eij.  
@@ -241,16 +215,31 @@
               END DO
            END DO
            
-           f_r(1:num_dim) = (Aij * We(1:num_dim) + Bij*trace*eij(1:num_dim)) / &
-                SQRT(dt)
-           fi(1:num_dim) = fi(1:num_dim) + f_r(1:num_dim) / mi
-           fj(1:num_dim) = fj(1:num_dim) - f_r(1:num_dim) / mj 
-
-        END IF ! Brownian .AND. kT > 0
+           !-------------------------------------------------
+           ! Calculate the random force.
+           !-------------------------------------------------
+           
+           IF ( f_d > 0.0_MK) THEN
+              PRINT *, "rhs_force_ff_Newtnonian_HuAdams : ",&
+                   "dissipative force should be non-positive !"
+              stat_info = -1
+              GOTO 9999
+           END IF
+           
+           f_r = SQRT(-15.0_MK / 4.0_MK * kt * f_d) / SQRT(dt)
+           
+           fi(1:num_dim)  = fi(1:num_dim) + &
+                f_r * We(1:num_dim) / mi 
+           fj(1:num_dim)  = fj(1:num_dim) - &
+                f_r * We(1:num_dim) / mj 
+           
+        END IF ! Brownian and kt > 0
+        
         
 9999    CONTINUE
         
         RETURN
         
-      END SUBROUTINE rhs_force_ff_Newtonian_Espanol
-    
+      END SUBROUTINE rhs_force_ff_Newtonian_Bian_multiscale
+      
+      

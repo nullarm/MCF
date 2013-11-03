@@ -73,6 +73,7 @@
            !                  if there is.
            !-------------------------------------------------
            
+           REAL(MK)                           :: alpha
            INTEGER                            :: num_dim 
            REAL(MK), DIMENSION(:), POINTER    :: min_phys
            REAL(MK), DIMENSION(:), POINTER    :: max_phys

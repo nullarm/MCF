@@ -345,6 +345,42 @@
         RETURN          
         
       END SUBROUTINE particles_get_m
+
+      
+      SUBROUTINE particles_get_dx(this,dx,num,stat_info)
+
+        TYPE(Particles),INTENT(IN)              :: this
+        REAL(MK),DIMENSION(:),POINTER           :: dx
+        INTEGER, INTENT(IN)                     :: num
+        INTEGER,INTENT(OUT)                     :: stat_info
+        
+        
+        stat_info = 0
+        
+        IF( num > this%num_part_all) THEN
+           PRINT *, "particles_get_dx :  ",&
+                "Required particles is more than existed !"
+           stat_info = -1
+           GOTO 9999
+        END IF
+        
+        IF(ASSOCIATED(dx)) THEN 
+           DEALLOCATE(dx)
+        END IF
+        
+        IF ( num > 0 ) THEN
+           
+           ALLOCATE( dx(num))
+           
+           dx(1:num) = this%dx(1:num)
+           
+        END IF
+           
+9999    CONTINUE
+        
+        RETURN          
+        
+      END SUBROUTINE particles_get_dx
       
       
       SUBROUTINE particles_get_p(this,p,num,stat_info)

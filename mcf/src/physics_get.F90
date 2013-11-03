@@ -34,6 +34,20 @@
       END FUNCTION physics_get_num_species
       
       
+      REAL(MK) FUNCTION physics_get_alpha(this,stat_info)
+        
+        TYPE(Physics), INTENT(IN)       :: this
+        INTEGER, INTENT(OUT)            :: stat_info
+        
+        stat_info = 0
+        
+        physics_get_alpha = this%alpha
+        
+        RETURN
+        
+      END FUNCTION physics_get_alpha
+      
+      
       INTEGER FUNCTION physics_get_num_dim(this,stat_info)
         
         TYPE(Physics), INTENT(IN)       :: this

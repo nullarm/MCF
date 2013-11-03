@@ -46,6 +46,7 @@
         this%ctrl => d_ctrl
         
         this%num_species       = 2
+        this%alpha             = 1.0
         this%num_dim           = 2
 
         NULLIFY(this%min_phys)
@@ -211,6 +212,8 @@
         
         CALL tool_print_msg(this%tool, &
              "num_species", this%num_species, stat_info_sub)
+        CALL tool_print_msg(this%tool, &
+             "alpha", this%alpha, stat_info_sub)
         CALL tool_print_msg(this%tool, &
              "num_dim", this%num_dim, stat_info_sub)
         CALL tool_print_msg(this%tool, &

@@ -211,6 +211,41 @@
         RETURN          
         
       END SUBROUTINE particles_set_m
+
+      
+      SUBROUTINE particles_set_dx(this,d_dx,num,stat_info)
+
+        TYPE(Particles),INTENT(INOUT)           :: this
+        REAL(MK),DIMENSION(:),POINTER           :: d_dx
+        INTEGER, INTENT(IN)                     :: num
+        INTEGER,INTENT(OUT)                     :: stat_info
+        
+        INTEGER                                 :: dim_dx
+        
+        stat_info = 0
+        
+        dim_dx = SIZE(d_dx,1)
+        
+        IF ( dim_dx /= num ) THEN
+           PRINT *, "particles_set_dx: ", &
+                "dimension doesn't match !"
+           stat_info = -1
+           GOTO 9999
+        END IF
+        
+        IF(ASSOCIATED(this%dx)) THEN 
+           DEALLOCATE(this%dx)
+        END IF
+        
+        ALLOCATE(this%dx(dim_dx))
+        
+        this%dx(:) = d_dx(:)
+        
+9999    CONTINUE
+        
+        RETURN          
+        
+      END SUBROUTINE particles_set_dx
       
 
       SUBROUTINE particles_set_f(this,d_f,num,stat_info)

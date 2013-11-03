@@ -60,6 +60,7 @@
         this%job_time_start      = 0.0_MK
 
         this%debug_flag          = 1
+        this%multiscale          = .FALSE.
         this%relax_run           = .FALSE.
         this%colloid_relax       = .FALSE.
         this%read_external       = .FALSE.
@@ -174,6 +175,10 @@
              "debug_flag", &
              this%debug_flag, stat_info_sub)
         CALL tool_print_msg(this%tool,&
+             "multiscale", &
+             this%multiscale,stat_info_sub)
+
+        CALL tool_print_msg(this%tool,&
              "relax_run", &
              this%relax_run,stat_info_sub)
 
@@ -203,6 +208,12 @@
                 "kernel_type", &
                 "Lucy kernel", stat_info_sub)
            
+        CASE (3)
+           
+           CALL tool_print_msg(this%tool,&
+                "kernel_type", &
+                "Quintic Spline, multiscale", stat_info_sub)
+
         CASE DEFAULT
            
            CALL tool_print_msg(this%tool,&
@@ -309,6 +320,20 @@
                 "rhs_force_type", &
                 "Hu and Adams, Phys. Fluids 2006", &
                 stat_info_sub)
+
+        CASE (5)
+           
+           CALL tool_print_msg(this%tool,&
+                "rhs_force_type", &
+                "Bian, unpublished 2013", &
+                stat_info_sub)
+    
+        CASE (6)
+           
+           CALL tool_print_msg(this%tool,&
+                "rhs_force_type", &
+                "Bian, multiscale, unpublished 2013", &
+                stat_info_sub)
            
         CASE DEFAULT
 
@@ -316,6 +341,8 @@
                 "rhs_force_type", this%rhs_force_type, &
                 "not available!", stat_info_sub)
            
+           stat_info = -1
+          
         END SELECT ! rhs_force_type
         
 

@@ -35,6 +35,21 @@
       END SUBROUTINE physics_set_num_species
       
       
+      SUBROUTINE physics_set_alpha(this,d_alpha,stat_info)
+        
+        TYPE(Physics), INTENT(INOUT)    :: this
+        REAL(MK), INTENT(IN)            :: d_alpha
+        INTEGER, INTENT(OUT)            :: stat_info
+        
+        stat_info = 0
+        
+        this%alpha = d_alpha
+        
+        RETURN
+        
+      END SUBROUTINE physics_set_alpha
+      
+      
       SUBROUTINE physics_set_num_dim(this,d_num_dim,stat_info)
         
         TYPE(Physics), INTENT(INOUT)    :: this
@@ -116,7 +131,6 @@
               DEALLOCATE(this%evec)
            END IF
            ALLOCATE(this%evec(d_num_dim,d_num_dim))
-           
            
         END IF
         

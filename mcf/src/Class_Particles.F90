@@ -136,6 +136,7 @@
            REAL(MK)                             :: rho_min
            REAL(MK)                             :: rho_max
            REAL(MK), DIMENSION(:), POINTER      :: m
+           REAL(MK), DIMENSION(:), POINTER      :: dx ! size of the particle
            REAL(MK), DIMENSION(:), POINTER      :: p
            INTEGER, DIMENSION(:,:), POINTER     :: id
            REAL(MK), DIMENSION(:,:), POINTER    :: f

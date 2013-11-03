@@ -74,6 +74,7 @@
         this%rho_max  = &
              physics_get_rho(this%phys,stat_info_sub)
         NULLIFY(this%m)
+        NULLIFY(this%dx)
         NULLIFY(this%p)
         NULLIFY(this%id)
         this%num_id   = 2

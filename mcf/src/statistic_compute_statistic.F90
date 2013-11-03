@@ -457,7 +457,8 @@
            
         END IF
         
-#endif !__MPI
+#endif 
+!__MPI
         
         !----------------------------------------------------
         ! Add extra kinetic energy and momentum.

@@ -306,7 +306,7 @@
         REAL(MK), DIMENSION(:), POINTER         :: max_phys
         
         
-        REAL(MK)                                :: i, k
+        INTEGER                                 :: i, k
         INTEGER                                 :: stat_info_sub
         
         stat_info     = 0

@@ -42,6 +42,7 @@
         LOGICAL                        	:: lExist  
         
         INTEGER                         :: debug_flag
+        LOGICAL                         :: multiscale
         LOGICAL                         :: relax_run
         LOGICAL                         :: colloid_relax
         LOGICAL                         :: read_external
@@ -272,12 +273,18 @@
              CALL control_set_debug_flag(ctrl,&
                   debug_flag,stat_info_sub)
              
+          ELSE IF (carg == 'MULTISCALE') THEN
+             
+             READ(cvalue,'(L)',IOSTAT=ios,ERR=200) multiscale
+             CALL control_set_multiscale(ctrl,&
+                  multiscale,stat_info_sub)
+             
           ELSE IF (carg == 'RELAX_RUN') THEN
              
              READ(cvalue,'(L)',IOSTAT=ios,ERR=200) relax_run
              CALL control_set_relax_run(ctrl,&
                   relax_run,stat_info_sub)
-            
+        
           ELSE IF (carg == 'COLLOID_RELAX') THEN
              
              READ(cvalue,'(L)',IOSTAT=ios,ERR=200) colloid_relax

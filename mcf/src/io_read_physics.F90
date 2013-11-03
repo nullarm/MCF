@@ -46,6 +46,7 @@
         !----------------------------------------------------
         
         INTEGER                         :: num_species
+        REAL(MK)                        :: alpha
         INTEGER                         :: num_dim
         REAL(MK), DIMENSION(3)          :: min_phys
         REAL(MK), DIMENSION(3)          :: max_phys
@@ -406,6 +407,15 @@
              
              CALL physics_set_num_species(phys,num_species,stat_info_sub)
              
+          ELSE IF (carg == 'ALPHA') THEN
+             
+             !-----------------------------------------------
+             ! Get relative coarse-graining level
+             !-----------------------------------------------
+             
+             READ(cvalue,*,IOSTAT=ios,ERR=200) alpha
+             
+             CALL physics_set_alpha(phys,alpha,stat_info_sub)       
              
           ELSE IF (carg == 'NUM_DIM') THEN
              

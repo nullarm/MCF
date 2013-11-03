@@ -32,7 +32,10 @@
         !               check the report I wrote.
         !
         !
-        ! Revisions   : V0.4 21.11.2011, including ellipsoid
+        ! Revisions   : V0.5 Nov. 2, 2013, including multiscale
+        !               resolutoin/size/scale.
+        !              
+        !               V0.4 21.11.2011, including ellipsoid
         !               and dicollod.
         !
         !               V0.3 17.12.2009, including mass moment
@@ -65,6 +68,7 @@
         !----------------------------------------------------
         
         INTEGER                                 :: stat_info_sub
+        LOGICAL                                 :: multiscale
         INTEGER                                 :: num_dim
         INTEGER                                 :: lattice_type
         REAL(MK), DIMENSION(:), POINTER         :: dx
@@ -93,6 +97,13 @@
         REAL(MK)                                :: ami
         
         !----------------------------------------------------
+        ! New variables
+        !----------------------------------------------------
+
+        REAL(MK)                                :: m1, m0, height
+        REAL(MK)                                :: alpha, kappa
+        
+        !----------------------------------------------------
         ! Initialization of variables.
         !----------------------------------------------------
         
@@ -118,13 +129,16 @@
         ! Number of colloid particle.
         !----------------------------------------------------
         
+        multiscale = &
+             control_get_multiscale(this%ctrl,stat_info_sub)
         num_dim = &
              physics_get_num_dim(this%phys,stat_info_sub)
         lattice_type = &
              physics_get_lattice_type(this%phys,stat_info_sub)
+        alpha = physics_get_alpha(this%phys,stat_info_sub)
         Call physics_get_dx(this%phys,dx,stat_info_sub)
         Call physics_get_min_phys(this%phys,min_phys,stat_info_sub)
-        Call physics_get_max_phys(this%phys,max_phys,stat_info_sub)
+        Call physics_get_max_phys(this%phys,max_phys,stat_info_sub)        
         init_rho = physics_get_rho(this%phys,stat_info_sub)
         CALL physics_get_bcdef(this%phys,bcdef,stat_info_sub)
         CALL physics_get_boundary(this%phys,tboundary,stat_info_sub)
@@ -379,7 +393,7 @@
                  mass = mass * dx(i)
                  
               END DO
-           
+
            CASE (mcf_lattice_type_staggered)
               !-------------------------------------------------
               ! 2D staggered lattice.
@@ -447,7 +461,40 @@
            
         END IF
         
-        this%m(1:this%num_part_real) = mass
+        IF (multiscale) THEN
+           
+           !alpha= 2.0_MK ! scale ratio=max_mass/min_mas
+           
+           m0 = 2.0_MK*mass/(alpha+1.0_MK);
+           m1 = alpha * m0
+                      
+           ! linear change range for size of particles
+           ! and assume the middle has maximum size particle
+           height = max_phys(2)/2.0_MK 
+           ! slope of the mass change
+           kappa  = (m1-m0)/height 
+           
+           DO i=1, this%num_part_real
+              
+              IF (this%x(2,i) < (min_phys(2) + max_phys(2))/2.0_MK) THEN
+                 ! first half of the domain
+                 this%m(i) = m0 + kappa*(this%x(2,i) - min_phys(2))
+              ELSE
+                 ! second half of the domain
+                 this%m(i) = m0 + kappa*(max_phys(2) - this%x(2,i))
+              END IF
+              
+              !assume partilce is a squre size in 2D
+              !the its dimension is square root of area.
+              this%dx(i) = SQRT(this%m(i)/init_rho)
+              
+           END DO
+           
+        ELSE
+           
+           this%m(1:this%num_part_real) = mass
+           
+        ENDIF
         
 
 #if 0   

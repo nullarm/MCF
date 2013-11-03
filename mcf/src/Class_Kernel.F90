@@ -79,6 +79,7 @@
 #include "kernel_finalize.F90"
 #include "kernel_kernel.F90"
 #include "kernel_get.F90"
+#include "kernel_set.F90"
 
 
       END MODULE Class_Kernel

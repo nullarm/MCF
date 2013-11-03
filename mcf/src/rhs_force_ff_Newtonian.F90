@@ -168,7 +168,21 @@
            CALL  rhs_force_ff_Newtonian_HuAdams_angular(this,&
                 xi,xj,dij,vi,vj,rhoi,rhoj,pi,pj,&
                 mi,mj,w,gradw,fi,fj,auij=auij,stat_info=stat_info_sub)
-#endif     
+#endif
+           
+        CASE (5)
+           
+           CALL  rhs_force_ff_Newtonian_Bian(this,&
+                xi,xj,dij,vi,vj,rhoi,rhoj,pi,pj,&
+                mi,mj,w,gradw,fi,fj,auij,stat_info_sub)
+          
+        CASE (6)
+           ! for now, no efficiency for multiscale
+           ! we use the biggest cut off.
+           CALL  rhs_force_ff_Newtonian_Bian_multiscale(this,&
+                xi,xj,dij,vi,vj,rhoi,rhoj,pi,pj,&
+                mi,mj,w,gradw,fi,fj,auij,stat_info_sub)
+     
            
         CASE DEFAULT
            
@@ -198,3 +212,5 @@
 #include "rhs_force_ff_Newtonian_Espanol.F90"
 #include "rhs_force_ff_Newtonian_HuAdams.F90"
 #include "rhs_force_ff_Newtonian_HuAdams_angular.F90"
+#include "rhs_force_ff_Newtonian_Bian.F90"
+#include "rhs_force_ff_Newtonian_Bian_multiscale.F90"

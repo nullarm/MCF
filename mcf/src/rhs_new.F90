@@ -149,6 +149,21 @@
            PRINT *, "rhs_force_type   : ", &
                 "Hu and Adams, Phys. Fluids. 2006"
        
+        CASE (5) 
+           
+           PRINT *, "rhs_force_type   : ", &
+                "Bian, Unpublished, 2013"
+       
+        CASE (6) 
+           
+           PRINT *, "rhs_force_type   : ", &
+                "Bian, multiscale, Unpublished, 2013"
+       
+        CASE DEFAULT
+           
+           PRINT *, __FILE__, __LINE__, "no such force type!"
+           stat_info = -1
+           
         END SELECT
 
         

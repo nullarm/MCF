@@ -12,7 +12,9 @@
       	!
       	! References :
      	!
-      	! Revisions  : 0.2 04.03.2010, including relax_run. 
+      	! Revisions  : Nov. 2 013, including multiscale
+        !
+        !              0.2 04.03.2010, including relax_run. 
         !
         !              0.1 03.03.2009, original version.
 	!----------------------------------------------------
@@ -42,6 +44,7 @@
            INTEGER, DIMENSION(10)     :: job_execute_values
            REAL(MK)                   :: job_time_start
            INTEGER                    :: debug_flag
+           LOGICAL                    :: multiscale
            LOGICAL                    :: relax_run
            LOGICAL                    :: colloid_relax
            LOGICAL                    :: read_external

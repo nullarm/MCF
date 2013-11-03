@@ -41,6 +41,11 @@
         CASE (2)           
            CALL kernel_kernel_Lucy_w(this, &
                 rij,w,stat_info_sub)
+           
+        CASE (3)           
+           CALL kernel_kernel_quintic_spline_w_multiscale(this, &
+                rij,w,r_c,stat_info_sub)
+           
         END SELECT
         
         
@@ -92,6 +97,11 @@
         CASE (2)           
            CALL kernel_kernel_Lucy_w_gradw(this, &
                 rij,w,gradw,stat_info_sub)
+           
+        CASE (3)           
+           CALL kernel_kernel_quintic_spline_w_gradw_multiscale(this, &
+                rij,w,gradw,r_c,stat_info_sub)
+       
         END SELECT
         
         
@@ -99,6 +109,7 @@
 
 #include "kernel_kernel_quintic_spline.F90"
 #include "kernel_kernel_Lucy.F90"
+#include "kernel_kernel_quintic_spline_multiscale.F90"
       
       
       

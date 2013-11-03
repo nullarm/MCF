@@ -6,7 +6,7 @@
 # Revision date: Oct.3, 2013
 # Remark,
 # nth moment is averaged over all particles at each file,
-# namly, each time step, then further averaged over
+# namely, each time step, then further averaged over
 # all the files.
 # This is different (for n>=2) to that
 # all particles loaded in from all files/time steps and
@@ -360,21 +360,31 @@ print "Unity check--->: sum of pdf_vs[j]   = ", $unitys, "\n";
 close(OUT2);
 close(OUTs);
 
-print "Fluctuation moments in three directions:\n";
+print "Fluctuation moments of v in each direction:\n";
 
+#Average three directions
+for($k=0;$k<=$num_moment;$k++)
+{
+    $M[3][$k] = ($M[0][$k]+$M[1][$k]+$M[2][$k])/3.0
+}
 for($k=0;$k<=$num_moment;$k++)
 {
     print "M", $k,"------>: ";
-    for ($i=0;$i<$num_dim;$i++)
+    for ($i=0;$i<=$num_dim;$i++)
     {
-	printf("%s%u%s%15.8e%s", "[",$i, "] = ", $M[$i][$k], ' ');
+	printf("%s%u%s%13.8e%s", "[",$i, "]=", $M[$i][$k], ' ');
     }
     print "\n";
 }
+print "Standard derivation of v in each direction:\n";
+
 print "sigma--->: ";
-for ($i=0;$i<$num_dim;$i++)
+
+$sigma[3]=($sigma[0]+$sigma[1]+$sigma[2])/3.0;
+
+for ($i=0;$i<=$num_dim;$i++)
 {
-    printf("%s%u%s%15.8e%s", "[",$i, "] = ", $sigma[$i], ' ');
+    printf("%s%u%s%13.8e%s", "[",$i, "]=", $sigma[$i], ' ');
 }
 print "\n";
 

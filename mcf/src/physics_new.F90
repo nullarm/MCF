@@ -45,9 +45,10 @@
         NULLIFY(this%ctrl)
         this%ctrl => d_ctrl
         
-        this%num_species       = 2
-        this%alpha             = 1.0
-        this%num_dim           = 2
+        this%num_species = 2
+        this%chi         = 1.0_MK ! default constant mass
+        this%multiscale_shape = 2.0_MK ! default hat
+        this%num_dim     = 2
 
         NULLIFY(this%min_phys)
         ALLOCATE(this%min_phys(2))
@@ -89,7 +90,11 @@
              this%num_part_dim(1:2)
         
         this%cut_off       = 9.6e-3_MK
+        this%cut_off1      = 9.6e-3_MK
+        this%cut_off2      = 9.6e-3_MK
         this%h             = 3.2e-3_MK
+        this%h1            = 3.2e-3_MK
+        this%h2            = 3.2e-3_MK
         this%dt            = -1.0_MK
         this%dt_c          = -1.0_MK
         this%dt_nu         = -1.0_MK
@@ -187,7 +192,7 @@
         TYPE(Physics),INTENT(IN)      :: this
         INTEGER,INTENT(OUT)           :: stat_info
         
-        
+        INTEGER                       :: multiscale
         LOGICAL                       :: relax_run
         LOGICAL                       :: flow_v_fixed
         LOGICAL                       :: Newtonian
@@ -198,6 +203,8 @@
         stat_info     = 0
         stat_info_sub = 0
         
+        multiscale   = &
+             control_get_multiscale(this%ctrl,stat_info_sub)
         relax_run    = &
              control_get_relax_run(this%ctrl,stat_info_sub)
         flow_v_fixed = &
@@ -212,8 +219,12 @@
         
         CALL tool_print_msg(this%tool, &
              "num_species", this%num_species, stat_info_sub)
+        IF ( multiscale > 0 ) THEN
+           CALL tool_print_msg(this%tool, &
+                "chi", this%chi, stat_info_sub)
+        END IF
         CALL tool_print_msg(this%tool, &
-             "alpha", this%alpha, stat_info_sub)
+             "multiscale_shape", this%multiscale_shape, stat_info_sub)
         CALL tool_print_msg(this%tool, &
              "num_dim", this%num_dim, stat_info_sub)
         CALL tool_print_msg(this%tool, &
@@ -267,6 +278,16 @@
              "cut_off", this%cut_off, stat_info_sub)
         CALL tool_print_msg(this%tool,&
              "smoothing length", this%h, stat_info_sub)
+        IF ( multiscale > 0 ) THEN
+           CALL tool_print_msg(this%tool,&
+                "cut_off 1", this%cut_off1, stat_info_sub)
+           CALL tool_print_msg(this%tool,&
+                "cut_off 2", this%cut_off2, stat_info_sub)
+           CALL tool_print_msg(this%tool,&
+                "smoothing length 1", this%h1, stat_info_sub)     
+           CALL tool_print_msg(this%tool,&
+                "smoothing length 2", this%h2, stat_info_sub)     
+        END IF
         CALL tool_print_msg(this%tool,&
              "dt", this%dt, stat_info_sub)
         CALL tool_print_msg(this%tool,&

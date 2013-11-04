@@ -73,7 +73,8 @@
            !                  if there is.
            !-------------------------------------------------
            
-           REAL(MK)                           :: alpha
+           REAL(MK)                           :: chi
+           INTEGER                            :: multiscale_shape
            INTEGER                            :: num_dim 
            REAL(MK), DIMENSION(:), POINTER    :: min_phys
            REAL(MK), DIMENSION(:), POINTER    :: max_phys
@@ -112,7 +113,14 @@
            INTEGER                            :: num_part_tot
            REAL(MK), DIMENSION(:), POINTER    :: dx
            REAL(MK)                           :: cut_off
-           REAL(MK)                           :: h 
+           REAL(MK)                           :: h
+           ! initial particle mass
+           REAL(MK)                           :: m
+           ! largest and smallest particle mass, 
+           ! useful for multi-resolution and multi-scale.
+           REAL(MK)                           :: m1, m2 
+           REAL(MK)                           :: h1, h2
+           REAL(MK)                           :: cut_off1, cut_off2
            
            !-------------------------------------------------
            ! dt             : time step size.
@@ -292,6 +300,7 @@
 #include "physics_finalize.F90"
 #include "physics_check_parameters.F90"
 #include "physics_adjust_parameters.F90"
+#include "physics_compute_mass.F90"
 #include "physics_initialize_dt.F90"
 #include "physics_adapt_dt.F90"
 #include "physics_get.F90"

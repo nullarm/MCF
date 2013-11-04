@@ -54,6 +54,21 @@
   ! Get kernel value and its derivative first.
   !----------------------------------------------------------
   
+  IF ( multiscale > 0 ) THEN
+     
+     dx1 = SQRT(this%m(ip)/init_density)
+     dx2 = SQRT(this%m(jp)/init_density)
+     rc1 = kappa * dx1
+     rc2 = kappa * dx2
+     IF ( dij > rc1 .AND. dij > rc2 ) THEN
+        CYCLE
+     END IF
+     
+     rc = (rc1 + rc2)/2.0_MK
+     CALL kernel_set_cut_off(this%kern,rc,stat_info_sub)
+     
+  END IF
+  
   CALL kernel_kernel(this%kern,dij,w,gradw,stat_info_sub)
   
   !----------------------------------------------------------

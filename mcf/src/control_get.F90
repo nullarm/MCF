@@ -33,7 +33,7 @@
       END FUNCTION control_get_debug_flag
       
       
-      LOGICAL FUNCTION control_get_multiscale(this,stat_info)
+      INTEGER FUNCTION control_get_multiscale(this,stat_info)
         
         TYPE(Control), INTENT(IN)                :: this
         INTEGER, INTENT(out)                     :: stat_info

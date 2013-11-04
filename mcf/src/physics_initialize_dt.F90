@@ -42,7 +42,7 @@
        
         INTEGER                         :: stat_info_sub
         LOGICAL                         :: relax_run
-        
+        INTEGER                         :: smoothing_length
         
         !----------------------------------------------------
         ! Initialization of variables.
@@ -55,6 +55,12 @@
         relax_run    = &
              control_get_relax_run(this%ctrl,stat_info_sub)
         
+        !----------------------------------------------------
+        ! For multi-scale, h1 the smallest is used.
+        !----------------------------------------------------
+        
+        smoothing_length = this%h1
+
         !----------------------------------------------------
         ! Set basic initial dts
         !----------------------------------------------------
@@ -71,13 +77,13 @@
         
         IF ( this%c > 0 ) THEN
            
-           this%dt_c = 0.25_MK * this%h / this%c 
+           this%dt_c = 0.25_MK * smoothing_length / this%c 
            
         END IF
         
         IF ( relax_run .AND. this%c_relax > 0 ) THEN
            
-           this%dt_c_relax = 0.25_MK * this%h / this%c_relax 
+           this%dt_c_relax = 0.25_MK * smoothing_length / this%c_relax 
            
         END IF
         
@@ -88,7 +94,7 @@
         IF( this%eta > 0.0_MK ) THEN
            
            this%dt_nu = 0.125_MK * &
-                (this%h**2) * this%rho / this%eta
+                (smoothing_length**2) * this%rho / this%eta
            
         END IF
         
@@ -98,7 +104,7 @@
         
         IF( this%fa_max > 0.0_MK ) THEN
            
-           this%dt_f = 0.25_MK * SQRT(this%h / this%fa_max)
+           this%dt_f = 0.25_MK * SQRT(smoothing_length / this%fa_max)
            
         END IF
         

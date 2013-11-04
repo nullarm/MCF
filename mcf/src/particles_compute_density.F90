@@ -77,7 +77,7 @@
         ! symmetry         : indicate if we use symmetric
         !                    inter-communication or not.
         !----------------------------------------------------
-        
+        INTEGER                         :: multiscale
         INTEGER                         :: rhs_density_type
         LOGICAL                         :: symmetry
         
@@ -90,10 +90,15 @@
         ! init_density : initial density.
         !----------------------------------------------------
         
+        
         INTEGER                         :: num_dim
         REAL(MK)                        :: cut_off
         REAL(MK)                        :: cut_off2
+        REAL(MK), DIMENSION(:),POINTER  :: dx
         REAL(MK)                        :: init_density
+        REAL(MK)                        :: kappa
+        REAL(MK)                        :: dx1,dx2
+        REAL(MK)                        :: rc1,rc2,rc
         
         !----------------------------------------------------
         ! Boundary parameters :
@@ -237,6 +242,8 @@
         !                    inter-process communication.
         !----------------------------------------------------
         
+        multiscale       = &
+             control_get_multiscale(this%ctrl,stat_info_sub)
         rhs_density_type = &
              control_get_rhs_density_type(this%ctrl,stat_info_sub)
         symmetry         = &
@@ -254,6 +261,9 @@
         cut_off      = &
              physics_get_cut_off(this%phys,stat_info_sub)
         cut_off2     = cut_off * cut_off
+        NULLIFY(dx)
+        CALL physics_get_dx(this%phys,dx,stat_info_sub)
+        kappa = cut_off / dx(1)        
         init_density = &
              physics_get_rho(this%phys,stat_info_sub)
         
@@ -796,25 +806,40 @@
                              ! calculate density contribution.
                              !-------------------------------
                              
-                             CALL kernel_kernel(this%kern,dij,&
-                                  w,stat_info_sub)
-                             CALL rhs_density_ff(this%rhs, w,&
-                                  this%m(ip),this%m(jp), &
-                                  rhoi,rhoj,stat_info_sub)
-                             
-                             !-------------------------------
-                             ! Density calculated for
-                             ! fluid particles, or
-                             ! boundary particle without
-                             ! constant density type.
-                             !-------------------------------
-                             
-                             IF ( this%id(this%sid_idx,ip) == 0 .OR. &
-                                  ( this%id(this%sid_idx,ip) < 0 .AND. &
-                                  wall_rho_type==mcf_wall_rho_type_dynamic ) .OR. &
-                                  ( this%id(this%sid_idx,ip) > 0 .AND. &
-                                  coll_rho_type==mcf_colloid_rho_type_dynamic ) ) THEN
+                             IF ( multiscale > 0 ) THEN
                                 
+                                dx1 = SQRT(this%m(ip)/init_density)
+                                dx2 = SQRT(this%m(jp)/init_density)
+                                rc1 = kappa * dx1
+                                rc2 = kappa * dx2
+                                IF ( dij > rc1  .AND. dij > rc2 ) THEN
+                                   CYCLE
+                                END IF
+                                
+                                rc = (rc1 + rc2)/2.0_MK
+                                CALL kernel_set_cut_off(this%kern,rc,stat_info_sub)
+                                
+                             END IF
+
+                            CALL kernel_kernel(this%kern,dij,w,stat_info_sub)
+                            
+                            CALL rhs_density_ff(this%rhs, w,&
+                                 this%m(ip),this%m(jp), &
+                                 rhoi,rhoj,stat_info_sub)
+                            
+                            !-------------------------------
+                            ! Density calculated for
+                            ! fluid particles, or
+                            ! boundary particle without
+                            ! constant density type.
+                            !-------------------------------
+                             
+                            IF ( this%id(this%sid_idx,ip) == 0 .OR. &
+                                 ( this%id(this%sid_idx,ip) < 0 .AND. &
+                                 wall_rho_type==mcf_wall_rho_type_dynamic ) .OR. &
+                                 ( this%id(this%sid_idx,ip) > 0 .AND. &
+                                 coll_rho_type==mcf_colloid_rho_type_dynamic ) ) THEN
+                               
 #if 0
                                 IF ( this%id(this%sid_idx,ip) /=0 .AND. &
                                      this%id(this%sid_idx,jp) == &
@@ -896,6 +921,10 @@
         
         IF(ASSOCIATED(jnp)) THEN
            DEALLOCATE(jnp)
+        END IF
+        
+        IF(ASSOCIATED(dx)) THEN
+           DEALLOCATE(dx)
         END IF
         
         RETURN

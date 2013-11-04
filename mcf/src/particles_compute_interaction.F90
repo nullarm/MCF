@@ -91,6 +91,7 @@
         ! p_energy      : if potential energy is needed.  
         !----------------------------------------------------
         
+        INTEGER                         :: multiscale
         INTEGER                         :: rhs_density_type
         LOGICAL                         :: symmetry
         LOGICAL                         :: Newtonian
@@ -127,7 +128,12 @@
         REAL(MK)                        :: cut_off
         REAL(MK)                        :: cut_off2
         REAL(MK), DIMENSION(:),POINTER  :: dx
+        REAL(MK)                        :: init_density
         REAL(MK)                        :: eta
+        REAL(MK)                        :: kappa
+        REAL(MK)                        :: dx1,dx2
+        REAL(MK)                        :: rc1,rc2,rc
+        
         !----------------------------------------------------
         ! Boundary parameters :
         !
@@ -319,6 +325,8 @@
         ! Get control variables.
         !----------------------------------------------------
         
+        multiscale       = &
+             control_get_multiscale(this%ctrl,stat_info_sub)
         rhs_density_type = &
              control_get_rhs_density_type(this%ctrl,stat_info_sub)
         symmetry  = &
@@ -349,6 +357,9 @@
         cut_off2 = cut_off * cut_off
         NULLIFY(dx)
         CALL physics_get_dx(this%phys,dx,stat_info_sub)
+        kappa = cut_off / dx(1)
+        init_density = &
+             physics_get_rho(this%phys,stat_info_sub)
         eta         = &
              physics_get_eta(this%phys,stat_info_sub)
         

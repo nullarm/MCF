@@ -68,40 +68,18 @@
         !----------------------------------------------------
         
         INTEGER                                 :: stat_info_sub
-        LOGICAL                                 :: multiscale
-        INTEGER                                 :: num_dim
-        INTEGER                                 :: lattice_type
-        REAL(MK), DIMENSION(:), POINTER         :: dx
+        INTEGER                                 :: multiscale
         REAL(MK), DIMENSION(:), POINTER         :: min_phys
         REAL(MK), DIMENSION(:), POINTER         :: max_phys
-        REAL(MK)                                :: init_rho
-        REAL(MK)                                :: mass        
-        INTEGER, DIMENSION(:), POINTER          :: bcdef
-        TYPE(Boundary), POINTER                 :: tboundary
-        INTEGER                                 :: num_sym
-        INTEGER                                 :: num_colloid
-        TYPE(Colloid), POINTER                  :: colloids
-        INTEGER, DIMENSION(:), POINTER          :: coll_shape
-        REAL(MK), DIMENSION(:,:), POINTER       :: coll_radius
-        INTEGER, DIMENSION(:), POINTER          :: coll_freq
-        REAL(MK), DIMENSION(:), POINTER         :: coll_m
-        REAL(MK), DIMENSION(:,:), POINTER       :: coll_mmi
-        REAL(MK)                                :: coll_vol
-        REAL(MK)                                :: coll_m_tot
-        INTEGER                                 :: i
-        REAL(MK)                                :: n_p
-        REAL(MK)                                :: d_theta
-        REAL(MK)                                :: theta
-        REAL(MK)                                :: r
-        REAL(MK)                                :: a, b, c, v_cap
-        REAL(MK)                                :: ami
         
         !----------------------------------------------------
         ! New variables
         !----------------------------------------------------
 
-        REAL(MK)                                :: m1, m0, height
-        REAL(MK)                                :: alpha, kappa
+        REAL(MK)                                :: m, m1, m2, height
+        REAL(MK)                                :: chi, psi
+        INTEGER                                 :: multiscale_shape
+        INTEGER                                 :: i
         
         !----------------------------------------------------
         ! Initialization of variables.
@@ -110,18 +88,8 @@
         stat_info     = 0
         stat_info_sub = 0
         
-        NULLIFY(dx)
         NULLIFY(min_phys)
         NULLIFY(max_phys)
-        NULLIFY(bcdef)
-        NULLIFY(tboundary)
-        NULLIFY(colloids)
-        NULLIFY(coll_shape)
-        NULLIFY(coll_radius)
-        NULLIFY(coll_freq)        
-        NULLIFY(coll_m)
-        NULLIFY(coll_mmi)
-        
         
         !----------------------------------------------------
         ! Dimension and initial density.
@@ -131,370 +99,85 @@
         
         multiscale = &
              control_get_multiscale(this%ctrl,stat_info_sub)
-        num_dim = &
-             physics_get_num_dim(this%phys,stat_info_sub)
-        lattice_type = &
-             physics_get_lattice_type(this%phys,stat_info_sub)
-        alpha = physics_get_alpha(this%phys,stat_info_sub)
-        Call physics_get_dx(this%phys,dx,stat_info_sub)
+        chi = physics_get_chi(this%phys,stat_info_sub)
+        multiscale_shape = &
+             physics_get_multiscale_shape(this%phys,stat_info_sub)
         Call physics_get_min_phys(this%phys,min_phys,stat_info_sub)
         Call physics_get_max_phys(this%phys,max_phys,stat_info_sub)        
-        init_rho = physics_get_rho(this%phys,stat_info_sub)
-        CALL physics_get_bcdef(this%phys,bcdef,stat_info_sub)
-        CALL physics_get_boundary(this%phys,tboundary,stat_info_sub)
-        num_sym = boundary_get_num_sym(tboundary,stat_info_sub)
-        num_colloid = &
-             physics_get_num_colloid(this%phys,stat_info_sub)
+        m = physics_get_m(this%phys,stat_info_sub)
         
-        !----------------------------------------------------
-        ! Mass of colloids are calculated according
-        ! to theire volumens, i.e. mass=v*rho.
-        !----------------------------------------------------
-        
-        coll_m_tot = 0.0_MK
-        
-        IF ( num_colloid > 0 ) THEN
+        IF ( multiscale > 0 ) THEN
            
-           CAlL physics_get_colloid(this%phys,colloids,stat_info_sub)
-           CALL colloid_get_shape(colloids,coll_shape,stat_info_sub)
-           CALL colloid_get_radius(colloids,coll_radius,stat_info_sub)
-           CALL colloid_get_freq(colloids,coll_freq,stat_info_sub)           
-           CALL colloid_get_m(colloids,coll_m,stat_info_sub)
-           CALL colloid_get_mmi(colloids,coll_mmi,stat_info_sub)
-
-           coll_vol = 0.0_MK
+           m1 = physics_get_m1(this%phys,stat_info_sub)
+           m2 = physics_get_m2(this%phys,stat_info_sub)
            
-           DO i = 1, num_colloid
-              
-              IF ( num_dim == 2 ) THEN
-                 
-                 SELECT CASE(coll_shape(i))
-                    
-                 CASE( mcf_colloid_shape_cylinder)
-                    
-                    !----------------------------------------
-                    ! 2D cylinder area.
-                    !----------------------------------------
-                    
-                    coll_vol = mcf_pi * coll_radius(1,i)**2.0_MK
-                    coll_m(i) = init_rho * coll_vol
-                    coll_mmi(3,i) = 0.5_MK*coll_m(i)*coll_radius(1,i)**2
-                    
-                 CASE( mcf_colloid_shape_disk)
-                    
-                    !----------------------------------------
-                    ! 2D disk area.
-                    !----------------------------------------
-                    
-                    coll_vol = mcf_pi * coll_radius(1,i)**2.0_MK
-                    coll_m(i) = init_rho * coll_vol
-                    coll_mmi(3,i) = 0.5_MK*coll_m(i)*coll_radius(1,i)**2
-             
-                    
-                 CASE (mcf_colloid_shape_ellipse)
-                    
-                    !----------------------------------------
-                    ! 2D ellipse area.
-                    !----------------------------------------
-                    
-                    coll_vol = mcf_pi*coll_radius(1,i)*coll_radius(2,i)
-                    coll_m(i)= init_rho*coll_vol
-                    coll_mmi(3,i) = 0.25_MK*coll_m(i)* &
-                         ( coll_radius(1,i)**2+coll_radius(2,i)**2 )
-                    
-                 CASE (mcf_colloid_shape_dicolloid)
-                    
-                    PRINT *, "particles_compute_mass: ", &
-                         "Dicolloid in 2D not implemented."
-                    stat_info = -1
-                    GOTO 9999
-                    
-                 CASE (mcf_colloid_shape_star)
-                    
-                    !----------------------------------------
-                    ! 2D star area.
-                    !----------------------------------------
-                    
-                    !coll_vol = mcf_pi * coll_radius(1,i)**2
-                    !coll_m(i)= init_rho * coll_vol
-                    
-                    n_p     = 10000.0_MK
-                    d_theta = 2.0_MK*mcf_pi/n_p
-                    theta   = d_theta / 2.0_MK
-                    
-                    coll_vol = 0.0_MK
-                    ami      = 0.0_MK
-                    
-                    DO WHILE ( theta <= 2.0_MK*mcf_pi )
-                       
-                       r = colloid_polar_star_r(&
-                            coll_radius(1,i),coll_radius(2,i), &
-                            REAL(coll_freq(i),MK),theta,0.0_MK)
-                       
-                       coll_vol = coll_vol + r**2 * d_theta / 2.0_MK
-                       ami      = ami + r**4 * d_theta / 4.0_MK
-                       
-                       theta = theta + d_theta
-                       
-                    END DO
-                    
-                    coll_m(i)   = coll_vol * init_rho
-                    coll_mmi(3,i) = ami * init_rho              
-                    
-                 CASE  DEFAULT
-                    
-                    PRINT *, "particles_compute_mass: ", &
-                         "No such shape in 2D !"
-                    stat_info = -1
-                    GOTO 9999
-                
-                 END SELECT ! shape(i)
-                 
-                 !-------------------------------------------
-                 ! For symmetry boundaries, we reduce the
-                 ! mass and moment inertia by factor num_sym.                
-                 !-------------------------------------------
-                 
-                 IF ( num_sym > 0 ) THEN
-                    
-                    coll_m(i)   = coll_m(i) / REAL(num_sym,MK)
-                    coll_mmi(3,i) = coll_mmi(3,i) / REAL(num_sym,MK)
-                    
-                 END IF
-                 
-                 
-              ELSE IF ( num_dim ==3 ) THEN
-                 
-                 SELECT CASE(coll_shape(i))
-                    
-                    !----------------------------------------
-                    ! momentum of inertia is not checked!
-                    !----------------------------------------
-                    
-                 CASE(mcf_colloid_shape_cylinder)
-                     
-                    coll_vol = mcf_pi * &
-                         coll_radius(1,i)**2.0_MK * &
-                         coll_radius(2,i)
-                    coll_m(i) = init_rho * coll_vol
-                    coll_mmi(3,i) = 0.5_MK*coll_m(i)*coll_radius(1,i)**2
-  
-                 CASE(mcf_colloid_shape_sphere)
-                    
-                    !----------------------------------------
-                    ! 3D Sphere volume.
-                    !----------------------------------------
-                    
-                    coll_vol = &
-                         4.0_MK* mcf_pi * &
-                         coll_radius(1,i)**3.0_MK / 3.0_MK
-                    
-                    coll_m(i)       = init_rho*coll_vol
-                    coll_mmi(1:3,i) = 0.4_MK*coll_m(i)*coll_radius(1,i)**2
-                    
-                 CASE(mcf_colloid_shape_ellipsoid)
-                    
-                    !----------------------------------------
-                    ! 3D ellipsoid volume.               
-                    !----------------------------------------
-                    
-                    coll_vol = 4.0_MK * mcf_pi * &
-                         coll_radius(1,i)*coll_radius(2,i)*&
-                         coll_radius(3,i)/3.0_MK
-                    
-                    coll_m(i) = init_rho * coll_vol
-                    coll_mmi(1,i) = 0.2_MK*coll_m(i)* &
-                         (coll_radius(2,i)**2+coll_radius(3,i)**2)
-                    coll_mmi(2,i) = 0.2_MK*coll_m(i)* &
-                         (coll_radius(1,i)**2+coll_radius(3,i)**2)
-                    coll_mmi(3,i) = 0.2_MK*coll_m(i)* &
-                         (coll_radius(1,i)**2+coll_radius(2,i)**2)
-                   
-                 CASE(mcf_colloid_shape_dicolloid)
-                    !----------------------------------------
-                    ! 3D dicolloid, check wikipedia for
-                    ! spherical cap to get volume v_cap
-                    !----------------------------------------
-                    
-                    a = coll_radius(1,i)
-                    b = coll_radius(2,i)
-                    c = SQRT(a**2 - b**2)
-                    v_cap = mcf_pi * (2.0_MK * a + b) * &
-                         (a - b)**2 / 3.0_MK
-                    coll_vol = &
-                         8.0_MK * mcf_pi * &
-                         a**3.0_MK / 3.0_MK - &
-                         2.0_MK * v_cap
-                    
-                    coll_m(i) = init_rho * coll_vol
-                    
-                    !----------------------------------------
-                    ! check report for details
-                    !----------------------------------------
-                    
-                    coll_mmi(1,i) = &
-                         16.0_MK * init_rho * mcf_pi * a**5 / 15.0_MK - &
-                         init_rho * mcf_pi * &
-                         (a**4*c-2.0_MK*a**2*c**3/3.0_MK+c**5/5.0_MK)
-                    
-                    coll_mmi(2,i) = init_rho * mcf_pi * &
-                         (b**5 + 10.0_MK*a**2*b**3+40.0_MK*a**3*b**2+&
-                         45.0_MK*a**4*b+16.0_MK*a**5)/30.0_MK
-                    
-                    coll_mmi(3,i) = coll_mmi(2,i)
-                    
-                 CASE  DEFAULT
-                    
-                    PRINT *, "particles_compute_mass: ", &
-                         "No such shape in 3D !"
-                    stat_info = -1
-                    GOTO 9999
-                
-                 END SELECT ! coll_shape
-                 
-                 !-------------------------------------------
-                 ! For symmetry boundaries, we reduce the
-                 ! mass and moment inertia by factor num_sym.
-                 !-------------------------------------------
-                 
-                 IF ( num_sym > 0 ) THEN
-                    
-                    coll_m(i)   = coll_m(i) / REAL(num_sym,MK)
-                    coll_mmi(1:3,i) = coll_mmi(1:3,i) / REAL(num_sym,MK)
-                    
-                 END IF
-                 
-              END IF
-              
-              coll_m_tot = coll_m_tot + coll_m(i)
-              
-           END DO ! i = 1 , num_colloid
+           !chi scale ratio=max_mass/min_mas
            
-           
-           CALL colloid_set_m(colloids,coll_m,stat_info_sub)
-           CALL colloid_set_mmi(colloids,coll_mmi,stat_info_sub)
-           
-        END IF ! num_colloid > 0
-        
-        IF ( num_dim == 2 ) THEN
-
-           SELECT CASE ( lattice_type )
+           SELECT CASE ( multiscale )
               
-           CASE (mcf_lattice_type_square)
-              !----------------------------------------------
-              ! Here we consider 2D sqaure or 3D simple
-              ! cubic lattice.
-              !----------------------------------------------
+           CASE (1)
+              ! linear change range for size of particles
               
-              mass = init_rho
-              
-              DO i = 1, num_dim
+              SELECT CASE ( multiscale_shape )
                  
-                 mass = mass * dx(i)
+              CASE (1)
+                 ! monotonic linear increase of size
+                 PRINT *, __FILE__, __LINE__, "multiscale shape not supported !"
+                 stat_info = -1
+                 GOTO 9999
                  
-              END DO
-
-           CASE (mcf_lattice_type_staggered)
-              !-------------------------------------------------
-              ! 2D staggered lattice.
-              !-------------------------------------------------
-              
-              mass = init_rho
-              
-              DO i = 1, num_dim
+              CASE (-1)
+                 ! monotonic linear decrease of size
+                 PRINT *, __FILE__, __LINE__, "multiscale shape not supported !"
+                 stat_info = -1
+                 GOTO 9999
                  
-                 mass = mass * dx(i) / SQRT(2.0_MK)
+              CASE (2)
+                 ! linear Hat size distribution.
+                 ! and assume the middle has maximum size particle
+                 height = max_phys(2)/2.0_MK 
+                 ! slope of the mass change
+                 psi  = (m2-m1)/height 
                  
-              END DO
-              
-           CASE (mcf_lattice_type_hexagonal)
-              !-------------------------------------------------
-              ! 2D hexagonal lattice.
-              !-------------------------------------------------
-              
-              mass = init_rho
-              
-              DO i = 1, num_dim
+                 DO i=1, this%num_part_real
+                    
+                    IF (this%x(2,i) < (min_phys(2) + max_phys(2))/2.0_MK) THEN
+                       ! first half of the domain
+                       this%m(i) = m1 + psi*(this%x(2,i) - min_phys(2))
+                    ELSE
+                       ! second half of the domain
+                       this%m(i) = m1 + psi*(max_phys(2) - this%x(2,i))
+                    END IF
+                    
+                 END DO
                  
-                 mass = mass * ( max_phys(i)  - min_phys(i) )
+              CASE (-2)
+                 ! inverse of linear hat for size distribution
+                 PRINT *, __FILE__, __LINE__, "multiscale shape not supported !"
+                 stat_info = -1
+                 GOTO 9999
                  
-              END DO
+              END SELECT ! multiscale shape
               
-              mass = mass - coll_m_tot
+           CASE (2)
               
-              mass = mass / this%num_part_fluid
-              
-           CASE DEFAULT
-              
-              PRINT *, "particles_compute_mass: ",&
-                   "lattice type not available !"
+              ! Parabolic functions of size distribution.
+              PRINT *, __FILE__, __LINE__, "multiscale type not supported!"
               stat_info = -1
               GOTO 9999
               
-           END SELECT ! lattice_type
-           
-        ELSE
-
-           SELECT CASE ( lattice_type )
-              
-           CASE (mcf_lattice_type_cubic)
-              !----------------------------------------------
-              ! Here we consider 3D simple cubic lattice.
-              !----------------------------------------------
-              
-              mass = init_rho
-              
-              DO i = 1, num_dim
-                 
-                 mass = mass * dx(i)
-                 
-              END DO
-           
            CASE DEFAULT
-              
-              PRINT *, "particles_compute_mass: ",&
-                   "lattice type not available !"
+              PRINT *, __FILE__, __LINE__, "multiscale type not supported!"
               stat_info = -1
               GOTO 9999
               
-           END SELECT ! lattice_type
-           
-        END IF
-        
-        IF (multiscale) THEN
-           
-           !alpha= 2.0_MK ! scale ratio=max_mass/min_mas
-           
-           m0 = 2.0_MK*mass/(alpha+1.0_MK);
-           m1 = alpha * m0
-                      
-           ! linear change range for size of particles
-           ! and assume the middle has maximum size particle
-           height = max_phys(2)/2.0_MK 
-           ! slope of the mass change
-           kappa  = (m1-m0)/height 
-           
-           DO i=1, this%num_part_real
-              
-              IF (this%x(2,i) < (min_phys(2) + max_phys(2))/2.0_MK) THEN
-                 ! first half of the domain
-                 this%m(i) = m0 + kappa*(this%x(2,i) - min_phys(2))
-              ELSE
-                 ! second half of the domain
-                 this%m(i) = m0 + kappa*(max_phys(2) - this%x(2,i))
-              END IF
-              
-              !assume partilce is a squre size in 2D
-              !the its dimension is square root of area.
-              this%dx(i) = SQRT(this%m(i)/init_rho)
-              
-           END DO
+           END SELECT ! end multiscale
            
         ELSE
            
-           this%m(1:this%num_part_real) = mass
+           this%m(1:this%num_part_real) = m
            
-        ENDIF
+        ENDIF ! multiscale
         
 
 #if 0   
@@ -608,40 +291,13 @@
         
 9999    CONTINUE
         
-        IF(ASSOCIATED(dx)) THEN
-           DEALLOCATE(dx)
-        END IF
-
+        
         IF(ASSOCIATED(min_phys)) THEN
            DEALLOCATE(min_phys)
         END IF
 
         IF(ASSOCIATED(max_phys)) THEN
            DEALLOCATE(max_phys)
-        END IF
-        
-        IF(ASSOCIATED(bcdef)) THEN
-           DEALLOCATE(bcdef)
-        END IF
-        
-        IF(ASSOCIATED(coll_shape)) THEN
-           DEALLOCATE(coll_shape)
-        END IF
-        
-        IF(ASSOCIATED(coll_radius)) THEN
-           DEALLOCATE(coll_radius)
-        END IF
-        
-        IF(ASSOCIATED(coll_freq)) THEN
-           DEALLOCATE(coll_freq)
-        END IF
-        
-        IF(ASSOCIATED(coll_m)) THEN
-           DEALLOCATE(coll_m)
-        END IF
-
-        IF(ASSOCIATED(coll_mmi)) THEN
-           DEALLOCATE(coll_mmi)
         END IF
         
         RETURN

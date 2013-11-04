@@ -42,7 +42,7 @@
         LOGICAL                        	:: lExist  
         
         INTEGER                         :: debug_flag
-        LOGICAL                         :: multiscale
+        INTEGER                         :: multiscale
         LOGICAL                         :: relax_run
         LOGICAL                         :: colloid_relax
         LOGICAL                         :: read_external
@@ -275,7 +275,7 @@
              
           ELSE IF (carg == 'MULTISCALE') THEN
              
-             READ(cvalue,'(L)',IOSTAT=ios,ERR=200) multiscale
+             READ(cvalue,*,IOSTAT=ios,ERR=200) multiscale
              CALL control_set_multiscale(ctrl,&
                   multiscale,stat_info_sub)
              

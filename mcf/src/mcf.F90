@@ -213,6 +213,7 @@
         REAL(MK), DIMENSION(:), POINTER       :: min_phys_t
         REAL(MK), DIMENSION(:), POINTER       :: max_phys_t
         REAL(MK)                              :: cut_off
+        REAL(MK)                              :: cut_off2
         REAL(MK)                              :: h
         REAL(MK)                              :: c        
         REAL(MK)                              :: rho,rho_ref,gamma
@@ -548,10 +549,13 @@
         !----------------------------------------------------
         ! Get some basic physics parameters, 
         ! which are used for initializing kernel and PPM.
+        ! cut_off2 is the largest cut off of largest particle,
+        ! it is usefull for multi-scale simulation.
         !----------------------------------------------------
         
-        num_dim = physics_get_num_dim(mcf_phys,stat_info_sub)
-        cut_off = physics_get_cut_off(mcf_phys,stat_info_sub)
+        num_dim  = physics_get_num_dim(mcf_phys,stat_info_sub)
+        cut_off  = physics_get_cut_off(mcf_phys,stat_info_sub)
+        cut_off2 = physics_get_cut_off2(mcf_phys,stat_info_sub)
         num_colloid = physics_get_num_colloid(mcf_phys,stat_info_sub)
 
         !----------------------------------------------------
@@ -572,8 +576,20 @@
         ! since it will be used for calculating dt.
         !----------------------------------------------------
         
-        CAll physics_set_h(mcf_phys,h,stat_info_sub)
+        CALL physics_set_h(mcf_phys,h,stat_info_sub)
         
+        !----------------------------------------------------
+        ! Compute particle mass in Class physics
+        !----------------------------------------------------
+        
+        CALL physics_compute_mass(mcf_phys,stat_info_sub)
+        
+        IF( stat_info_sub /= 0 ) THEN
+           PRINT *, __FILE__, __LINE__, &
+                "Computing physics mass has problem !"
+           stat_info = -1
+           GOTO 9999
+        END IF
         !----------------------------------------------------
         ! Adjust and calculate physics parameters, such as dt.
         !----------------------------------------------------
@@ -615,7 +631,7 @@
         !----------------------------------------------------
 
         CALL technique_init_ppm(mcf_tech,num_dim,&
-             min_phys_t,max_phys_t,cut_off*1.0001_MK,&
+             min_phys_t,max_phys_t,cut_off2*1.0001_MK,&
              bcdef,stat_info_sub)
         
         !----------------------------------------------------
@@ -880,11 +896,11 @@
         ! from density.
         !----------------------------------------------------
            
-           CALL particles_compute_mass(mcf_particles,stat_info_sub)
+        CALL particles_compute_mass(mcf_particles,stat_info_sub)
            
-           IF( stat_info_sub /=0 ) THEN
-              PRINT *, __FILE__, __LINE__, &
-                   "Computing mass failed !"
+        IF( stat_info_sub /=0 ) THEN
+           PRINT *, __FILE__, __LINE__, &
+                "Computing mass failed !"
               stat_info = -1
               GOTO 9999
            END IF

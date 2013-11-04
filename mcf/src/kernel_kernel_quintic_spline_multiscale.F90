@@ -1,5 +1,5 @@
       SUBROUTINE kernel_kernel_quintic_spline_w_multiscale(this, rij, &
-           r_c, w, stat_info)
+           w, stat_info)
         !----------------------------------------------------
         ! Subroutine  :  kernel_kerel_quintic_spline_w_multiscale
         !----------------------------------------------------
@@ -35,7 +35,6 @@
         
         TYPE(Kernel), INTENT(IN)        :: this
         REAL(MK),  INTENT(IN)           :: rij
-        REAL(MK),  INTENT(IN)           :: r_c
         REAL(MK), INTENT(OUT)           :: w
         INTEGER, INTENT(INOUT)          :: stat_info
         
@@ -106,8 +105,8 @@
       END SUBROUTINE kernel_kernel_quintic_spline_w_multiscale
       
       
-      SUBROUTINE kernel_kernel_quintic_spline_w_gradw_mutiscale(this, &
-           rij, r_c, w, gradW, stat_info)
+      SUBROUTINE kernel_kernel_quintic_spline_w_gradw_multiscale(this, &
+           rij, w, gradW, stat_info)
         !--------------------------------------------------------------
         ! Subroutine  :  kernel_kerel_quintic_spline_w_gradw_multiscale
         !--------------------------------------------------------------
@@ -143,7 +142,6 @@
         
         TYPE(Kernel), INTENT(IN)        :: this
         REAL(MK),  INTENT(IN)           :: rij
-        REAL(MK),  INTENT(IN)           :: r_c
         REAL(MK), INTENT(OUT)           :: w    
         REAL(MK), INTENT(OUT)           :: gradW
         INTEGER, INTENT(INOUT)          :: stat_info
@@ -220,4 +218,5 @@
         
         RETURN
         
-      END SUBROUTINE kernel_kernel_quintic_spline_w_gradw_mutiscale
+      END SUBROUTINE kernel_kernel_quintic_spline_w_gradw_multiscale
+      

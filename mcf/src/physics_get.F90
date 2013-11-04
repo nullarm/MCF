@@ -34,20 +34,33 @@
       END FUNCTION physics_get_num_species
       
       
-      REAL(MK) FUNCTION physics_get_alpha(this,stat_info)
+      REAL(MK) FUNCTION physics_get_chi(this,stat_info)
         
         TYPE(Physics), INTENT(IN)       :: this
         INTEGER, INTENT(OUT)            :: stat_info
         
         stat_info = 0
         
-        physics_get_alpha = this%alpha
+        physics_get_chi = this%chi       
+        RETURN
+        
+      END FUNCTION physics_get_chi
+      
+      
+      INTEGER FUNCTION physics_get_multiscale_shape(this,stat_info)
+        
+        TYPE(Physics), INTENT(IN)       :: this
+        INTEGER, INTENT(OUT)            :: stat_info
+        
+        stat_info = 0
+        
+        physics_get_multiscale_shape = this%multiscale_shape
         
         RETURN
         
-      END FUNCTION physics_get_alpha
-      
-      
+      END FUNCTION physics_get_multiscale_shape
+     
+
       INTEGER FUNCTION physics_get_num_dim(this,stat_info)
         
         TYPE(Physics), INTENT(IN)       :: this
@@ -291,6 +304,34 @@
         
       END FUNCTION physics_get_cut_off
       
+
+      REAL(MK) FUNCTION physics_get_cut_off1(this,stat_info)
+        
+        TYPE(Physics), INTENT(IN)       :: this
+        INTEGER, INTENT(OUT)            :: stat_info
+        
+        stat_info = 0
+        
+        physics_get_cut_off1 = this%cut_off1
+        
+        RETURN
+        
+      END FUNCTION physics_get_cut_off1
+      
+      
+      REAL(MK) FUNCTION physics_get_cut_off2(this,stat_info)
+        
+        TYPE(Physics), INTENT(IN)       :: this
+        INTEGER, INTENT(OUT)            :: stat_info
+        
+        stat_info = 0
+        
+        physics_get_cut_off2 = this%cut_off2
+        
+        RETURN
+        
+      END FUNCTION physics_get_cut_off2
+      
       
       REAL(MK) FUNCTION physics_get_h(this,stat_info)
         
@@ -304,8 +345,78 @@
         RETURN
         
       END FUNCTION physics_get_h
+
+      
+      REAL(MK) FUNCTION physics_get_h1(this,stat_info)
+        
+        TYPE(Physics), INTENT(IN)       :: this
+        INTEGER, INTENT(OUT)            :: stat_info
+        
+        stat_info = 0
+        
+        physics_get_h1 = this%h1
+        
+        RETURN
+        
+      END FUNCTION physics_get_h1
+
+      
+      REAL(MK) FUNCTION physics_get_h2(this,stat_info)
+        
+        TYPE(Physics), INTENT(IN)       :: this
+        INTEGER, INTENT(OUT)            :: stat_info
+        
+        stat_info = 0
+        
+        physics_get_h2 = this%h2
+        
+        RETURN
+        
+      END FUNCTION physics_get_h2
       
       
+      REAL(MK) FUNCTION physics_get_m(this,stat_info)
+        
+        TYPE(Physics), INTENT(IN)       :: this
+        INTEGER, INTENT(OUT)            :: stat_info
+        
+        stat_info = 0
+        
+        physics_get_m = this%m
+        
+        RETURN
+        
+      END FUNCTION physics_get_m
+
+      
+      REAL(MK) FUNCTION physics_get_m1(this,stat_info)
+        
+        TYPE(Physics), INTENT(IN)       :: this
+        INTEGER, INTENT(OUT)            :: stat_info
+        
+        stat_info = 0
+        
+        physics_get_m1 = this%m1
+        
+        RETURN
+        
+      END FUNCTION physics_get_m1
+      
+      
+      REAL(MK) FUNCTION physics_get_m2(this,stat_info)
+        
+        TYPE(Physics), INTENT(IN)       :: this
+        INTEGER, INTENT(OUT)            :: stat_info
+        
+        stat_info = 0
+        
+        physics_get_m2 = this%m2
+        
+        RETURN
+        
+      END FUNCTION physics_get_m2      
+      
+
        REAL(MK) FUNCTION physics_get_dt_c(this,stat_info)
         
         TYPE(Physics), INTENT(IN)       :: this

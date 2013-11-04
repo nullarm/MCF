@@ -1,5 +1,7 @@
       MODULE Class_Rhs
-        
+        !It is suggested that kernel calculation
+        !be moved to Rhs to calculte, instead in
+        !particles_compute_density/particle_compute_interaction   
         USE mcf_header
         USE Class_Debug
         

@@ -60,7 +60,7 @@
         this%job_time_start      = 0.0_MK
 
         this%debug_flag          = 1
-        this%multiscale          = .FALSE.
+        this%multiscale          = 0
         this%relax_run           = .FALSE.
         this%colloid_relax       = .FALSE.
         this%read_external       = .FALSE.

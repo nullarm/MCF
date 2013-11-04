@@ -35,7 +35,8 @@
         REAL(MK), INTENT(IN)            :: dt
         INTEGER, INTENT(OUT)	        :: stat_info
         
-        
+
+        INTEGER                         :: multiscale
         INTEGER                         :: stat_info_sub
         INTEGER                         :: integrate_type
         
@@ -47,8 +48,25 @@
         stat_info     = 0
         stat_info_sub = 0
         
+        multiscale     = &
+             control_get_multiscale(this%ctrl,stat_info_sub)
         integrate_type = &
              control_get_integrate_type(this%ctrl,stat_info_sub)
+        
+        !this is particular usefull for multiscale        
+        IF ( multiscale > 0 ) THEN
+           
+           CALL particles_compute_mass(this%particles,stat_info_sub)
+           
+           IF ( stat_info_sub /=0 ) THEN
+              
+              PRINT *, __FILE__,__LINE__, "computing mass failed!"
+              stat_info = -1
+              GOTO 9999
+              
+           END IF
+           
+        END IF
         
         SELECT CASE(integrate_type) 
            

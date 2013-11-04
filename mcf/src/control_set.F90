@@ -79,7 +79,7 @@
       SUBROUTINE control_set_multiscale(this,d_multiscale,stat_info)
         
         TYPE(Control), INTENT(INOUT)             :: this
-        LOGICAL, INTENT(IN)                      :: d_multiscale
+        INTEGER, INTENT(IN)                      :: d_multiscale
         INTEGER, INTENT(out)                     :: stat_info
         
         stat_info = 0
@@ -89,7 +89,7 @@
         RETURN
         
       END SUBROUTINE control_set_multiscale
-
+      
       
       SUBROUTINE control_set_relax_run(this,d_relax_run,stat_info)
         

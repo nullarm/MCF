@@ -44,7 +44,7 @@
            INTEGER, DIMENSION(10)     :: job_execute_values
            REAL(MK)                   :: job_time_start
            INTEGER                    :: debug_flag
-           LOGICAL                    :: multiscale
+           INTEGER                    :: multiscale
            LOGICAL                    :: relax_run
            LOGICAL                    :: colloid_relax
            LOGICAL                    :: read_external

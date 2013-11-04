@@ -1,4 +1,4 @@
-      SUBROUTINE io_read_physics_config(this,phys,stat_info)
+      Subroutine io_read_physics_config(this,phys,stat_info)
         !----------------------------------------------------
         ! Subroutine  : io_read_physics_config
         !----------------------------------------------------
@@ -46,7 +46,8 @@
         !----------------------------------------------------
         
         INTEGER                         :: num_species
-        REAL(MK)                        :: alpha
+        REAL(MK)                        :: chi
+        INTEGER                         :: multiscale_shape
         INTEGER                         :: num_dim
         REAL(MK), DIMENSION(3)          :: min_phys
         REAL(MK), DIMENSION(3)          :: max_phys
@@ -407,15 +408,26 @@
              
              CALL physics_set_num_species(phys,num_species,stat_info_sub)
              
-          ELSE IF (carg == 'ALPHA') THEN
+          ELSE IF (carg == 'CHI') THEN
              
              !-----------------------------------------------
              ! Get relative coarse-graining level
              !-----------------------------------------------
              
-             READ(cvalue,*,IOSTAT=ios,ERR=200) alpha
+             READ(cvalue,*,IOSTAT=ios,ERR=200) chi
              
-             CALL physics_set_alpha(phys,alpha,stat_info_sub)       
+             CALL physics_set_chi(phys,chi,stat_info_sub)       
+          
+          ELSE IF (carg == 'MULTISCALE_SHAPE') THEN
+             
+             !-----------------------------------------------
+             ! Get multiscale shape
+             !-----------------------------------------------
+             
+             READ(cvalue,*,IOSTAT=ios,ERR=200) multiscale_shape
+             
+             CALL physics_set_multiscale_shape(phys, &
+                  multiscale_shape,stat_info_sub)
              
           ELSE IF (carg == 'NUM_DIM') THEN
              

@@ -44,7 +44,7 @@
            
         CASE (3)           
            CALL kernel_kernel_quintic_spline_w_multiscale(this, &
-                rij,w,r_c,stat_info_sub)
+                rij,w,stat_info_sub)
            
         END SELECT
         
@@ -100,7 +100,7 @@
            
         CASE (3)           
            CALL kernel_kernel_quintic_spline_w_gradw_multiscale(this, &
-                rij,w,gradw,r_c,stat_info_sub)
+                rij,w,gradw,stat_info_sub)
        
         END SELECT
         

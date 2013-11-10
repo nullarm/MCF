@@ -69,8 +69,13 @@
         !----------------------------------------------------
         
         INTEGER                                 :: stat_info_sub
+        INTEGER                                 :: multiscale
+        INTEGER                                 :: multiscale_shape
         INTEGER                                 :: num_dim,j
+        REAL(MK), DIMENSION(:), POINTER         :: min_phys
+        REAL(MK), DIMENSION(:), POINTER         :: max_phys
         REAL(MK), DIMENSION(:), POINTER         :: dx
+        REAL(MK)                                :: height
         TYPE(Boundary), POINTER                 :: tboundary
         INTEGER                                 :: num_wall_solid
         
@@ -162,7 +167,15 @@
         stat_info     = 0
         stat_info_sub = 0
         
+        multiscale = &
+             control_get_multiscale(this%ctrl,stat_info_sub)
+        multiscale_shape = &
+             physics_get_multiscale_shape(this%phys,stat_info_sub)
+        
         num_dim = this%num_dim
+        
+        NULLIFY(min_phys)
+        NULLIFY(max_phys)
         
         NULLIFY(dx)
         NULLIFY(tboundary)
@@ -187,6 +200,8 @@
         !----------------------------------------------------
         
         num_dim        = this%num_dim
+        Call physics_get_min_phys(this%phys,min_phys,stat_info_sub)
+        Call physics_get_max_phys(this%phys,max_phys,stat_info_sub)        
         CALL physics_get_dx(this%phys,dx,stat_info_sub)
         CALL physics_get_boundary(this%phys,tboundary,stat_info_sub)
         num_wall_solid = &
@@ -274,8 +289,7 @@
         ALLOCATE(tid(this%num_id,num_total),STAT=stat_info_sub)
         
         IF( stat_info_sub /= 0 ) THEN
-           PRINT *, &
-                "particles_init_global_assign_id : ", &
+           PRINT *, __FILE__, __LINE__, &
                 "Allocating memory for variables has problem !"
            stat_info = -1
            GOTO 9999
@@ -312,8 +326,8 @@
            ! Before checking, this particle is assumed solvent
            ! and its velocity is zero.
            !-------------------------------------------------
-
-           p_sid              = 0
+           
+           p_sid              = 0                      
            counted_wall_solid = .FALSE.
            counted_colloid    = .FALSE.
            counted_ignore     = .FALSE.           
@@ -578,6 +592,8 @@
 	!----------------------------------------------------
         
         num_total = num + num_more
+
+        !PRINT *, "num_total: ", num_total
         
         IF (ASSOCIATED(this%x)) THEN
            DEALLOCATE(this%x,STAT=stat_info_sub)
@@ -676,16 +692,14 @@
              this%num_part_real,nid,ide,stat_info_sub)
         
         IF ( stat_info_sub /= 0 ) THEN
-           PRINT *, &
-                "particles_init_global_assign_id : ", &
+           PRINT *,  __FILE__, __LINE__, &
                 "Error by checking duiplicates !"
            stat_info = -1
            GOTO 9999
         END IF
         
         IF ( nid /= 0) THEN
-           PRINT *, &
-                "particles_init_global_assign_id : ", &
+           PRINT *, __FILE__, __LINE__, &
                 "Found collocating particles !"
            stat_info = -1
            GOTO 9999
@@ -693,6 +707,14 @@
         
         
 9999    CONTINUE
+
+        IF(ASSOCIATED(min_phys)) THEN
+           DEALLOCATE(min_phys)
+        END IF
+
+        IF(ASSOCIATED(max_phys)) THEN
+           DEALLOCATE(max_phys)
+        END IF
         
         IF(ASSOCIATED(dx)) THEN
            DEALLOCATE(dx)

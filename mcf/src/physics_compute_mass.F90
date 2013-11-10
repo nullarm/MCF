@@ -37,9 +37,8 @@
         INTEGER                                 :: stat_info_sub
         INTEGER                                 :: multiscale
         INTEGER                                 :: multiscale_shape
-        REAL(MK)                                :: psi
-        REAL(MK)                                :: height
-        REAL(MK)                                :: dx1,dx2
+        REAL(MK)                                :: resolution_ratio1
+        REAL(MK)                                :: resolution_ratio2
         INTEGER                                 :: num_dim
         
         !----------------------------------------------------
@@ -374,8 +373,8 @@
               
            END SELECT ! lattice_type
            
-        ELSE
-
+        ELSE IF ( num_dim == 3 ) THEN
+           
            SELECT CASE ( this%lattice_type )
               
            CASE (mcf_lattice_type_cubic)
@@ -402,8 +401,9 @@
            
         END IF
         
+        !PRINT *, __FILE__, __LINE__, "mass", this%m
         
-        ! consider different mass of multi resolution
+        ! consider different mass of multi-resolution
         
         IF ( multiscale > 0 ) THEN
            
@@ -414,42 +414,40 @@
            CASE (1)
               ! linear change range for size of particles
               
-              this%m1 = 2.0_MK*this%m/(this%chi+1.0_MK);
-              this%m2 = this%chi * this%m1
+              this%dx1 = this%dx(1)*this%chi1
+              this%dx2 = this%dx(1)*this%chi2
               
-           CASE (2)
+              !CASE (2)
               
               ! Parabolic functions of size distribution.
-              this%m1 = 3.0_MK*this%m/(this%chi+2.0_MK);
-              this%m2 = this%chi * this%m1
+              !   this%m1 = 3.0_MK*this%m/(this%chi+2.0_MK);
+              !   this%m2 = this%chi * this%m1
               
            CASE DEFAULT
               PRINT *, __FILE__, __LINE__, "multiscale type not supported!"
               stat_info = -1
               GOTO 9999
               
-           END SELECT ! end multiscale
+           END SELECT ! end multiscale type
 
            !------------------------------------------
-           ! for 2D
-           ! get maximum and mininum
-           ! smoothing lenght and cut off.
+           ! For square/cubic lattic only.
+           ! Get mininum and maximum
+           ! smoothing length and cut off.
+           ! For now we consider dx=dy(=dz)
            !------------------------------------------
-           dx1 = SQRt(this%m1/this%rho)
-           dx2 = SQRt(this%m1/this%rho)
-           this%h1  = this%h * dx1 /this%dx(0)
-           this%h2  = this%h * dx2 /this%dx(0)
-           this%cut_off1  = this%cut_off * dx1 /this%dx(0)
-           this%cut_off2  = this%cut_off * dx2 /this%dx(0)
            
-        ELSE
-           this%m1 = this%m
-           this%m2 = this%m
-           this%h1 = this%h
-           this%h1 = this%h
-           this%cut_off1 = this%cut_off
-           this%cut_off2 = this%cut_off
         END IF ! multiscale
+        
+        this%m1 = this%rho * (this%dx1)**num_dim
+        this%m2 = this%rho * (this%dx2)**num_dim
+        
+        this%h1 = this%h * this%chi1
+        this%h2 = this%h * this%chi2
+        
+        this%cut_off1 = this%cut_off * this%chi1
+        this%cut_off2 = this%cut_off * this%chi2
+        
         
 9999    CONTINUE
         

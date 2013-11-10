@@ -34,17 +34,30 @@
       END FUNCTION physics_get_num_species
       
       
-      REAL(MK) FUNCTION physics_get_chi(this,stat_info)
+      REAL(MK) FUNCTION physics_get_chi1(this,stat_info)
         
         TYPE(Physics), INTENT(IN)       :: this
         INTEGER, INTENT(OUT)            :: stat_info
         
         stat_info = 0
         
-        physics_get_chi = this%chi       
+        physics_get_chi1 = this%chi1 
         RETURN
         
-      END FUNCTION physics_get_chi
+      END FUNCTION physics_get_chi1
+      
+      
+      REAL(MK) FUNCTION physics_get_chi2(this,stat_info)
+        
+        TYPE(Physics), INTENT(IN)       :: this
+        INTEGER, INTENT(OUT)            :: stat_info
+        
+        stat_info = 0
+        
+        physics_get_chi2 = this%chi2 
+        RETURN
+        
+      END FUNCTION physics_get_chi2
       
       
       INTEGER FUNCTION physics_get_multiscale_shape(this,stat_info)
@@ -289,6 +302,34 @@
         RETURN
         
       END SUBROUTINE physics_get_dx
+      
+      
+      REAL(MK) FUNCTION physics_get_dx1(this,stat_info)
+        
+        TYPE(Physics), INTENT(IN)       :: this
+        INTEGER, INTENT(OUT)            :: stat_info
+        
+        stat_info = 0
+        
+        physics_get_dx1 = this%dx1
+        
+        RETURN
+        
+      END FUNCTION physics_get_dx1
+      
+      
+      REAL(MK) FUNCTION physics_get_dx2(this,stat_info)
+        
+        TYPE(Physics), INTENT(IN)       :: this
+        INTEGER, INTENT(OUT)            :: stat_info
+        
+        stat_info = 0
+        
+        physics_get_dx2 = this%dx2
+        
+        RETURN
+        
+      END FUNCTION physics_get_dx2
       
       
       REAL(MK) FUNCTION physics_get_cut_off(this,stat_info)

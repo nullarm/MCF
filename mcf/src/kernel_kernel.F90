@@ -32,22 +32,34 @@
         stat_info = 0
         stat_info_sub = 0
         
+        w = 0.0_MK
+        
         SELECT CASE(this%kernel_type)
            
-        CASE (1)           
-           CALL kernel_kernel_quintic_spline_w(this, &
-                rij,w,stat_info_sub)
-           
-        CASE (2)           
+        CASE (2)
            CALL kernel_kernel_Lucy_w(this, &
                 rij,w,stat_info_sub)
            
-        CASE (3)           
+        CASE (5)
+           CALL kernel_kernel_quintic_spline_w(this, &
+                rij,w,stat_info_sub)
+           
+        CASE (6)
            CALL kernel_kernel_quintic_spline_w_multiscale(this, &
                 rij,w,stat_info_sub)
            
+        CASE DEFAULT
+           
+           PRINT *, __FILE__, __LINE__,&
+                "No such kernel type!"
+           stat_info = -1
+           GOTO 9999
+           
         END SELECT
         
+9999    CONTINUE
+        
+        RETURN
         
       END SUBROUTINE kernel_kernel_w
       
@@ -87,28 +99,40 @@
 
         stat_info = 0
         stat_info_sub = 0
+        w     = 0.0_MK
+        gradw = 0.0_MK
         
         SELECT CASE(this%kernel_type)
-           
-        CASE (1)           
-           CALL kernel_kernel_quintic_spline_w_gradw(this, &
-                rij,w,gradw,stat_info_sub)
            
         CASE (2)           
            CALL kernel_kernel_Lucy_w_gradw(this, &
                 rij,w,gradw,stat_info_sub)
-           
-        CASE (3)           
+        
+        CASE (5)           
+           CALL kernel_kernel_quintic_spline_w_gradw(this, &
+                rij,w,gradw,stat_info_sub)
+       
+        CASE (6)           
            CALL kernel_kernel_quintic_spline_w_gradw_multiscale(this, &
                 rij,w,gradw,stat_info_sub)
        
+        CASE DEFAULT
+           
+           PRINT *, __FILE__, __LINE__,&
+                "No such kernel type!"
+           stat_info = -1
+           GOTO 9999
+           
         END SELECT
+
+9999    CONTINUE
         
+        RETURN
         
       END SUBROUTINE kernel_kernel_w_gradw
 
+#include "kernel_kernel_Lucy.F90"      
 #include "kernel_kernel_quintic_spline.F90"
-#include "kernel_kernel_Lucy.F90"
 #include "kernel_kernel_quintic_spline_multiscale.F90"
       
       

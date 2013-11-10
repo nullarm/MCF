@@ -581,7 +581,6 @@
         num_part_all  = &
              particles_get_num_part_all(this%particles,stat_info_sub)
         
-        
         !----------------------------------------------------
         ! Get all particles' positions (including ghosts),
       	! to build neighbor list(e.g., cell list).
@@ -598,7 +597,6 @@
            stat_info = -1
            GOTO 9999
         END IF
-        
         
         !----------------------------------------------------
         ! Compute mass density/number density at time_current.

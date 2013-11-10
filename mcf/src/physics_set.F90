@@ -35,7 +35,7 @@
       END SUBROUTINE physics_set_num_species
       
       
-      SUBROUTINE physics_set_chi(this,d_chi,stat_info)
+      SUBROUTINE physics_set_chi1(this,d_chi,stat_info)
         
         TYPE(Physics), INTENT(INOUT)    :: this
         REAL(MK), INTENT(IN)            :: d_chi
@@ -43,11 +43,26 @@
         
         stat_info = 0
         
-        this%chi = d_chi
+        this%chi1 = d_chi
         
         RETURN
         
-      END SUBROUTINE physics_set_chi
+      END SUBROUTINE physics_set_chi1
+      
+      
+      SUBROUTINE physics_set_chi2(this,d_chi,stat_info)
+        
+        TYPE(Physics), INTENT(INOUT)    :: this
+        REAL(MK), INTENT(IN)            :: d_chi
+        INTEGER, INTENT(OUT)            :: stat_info
+        
+        stat_info = 0
+        
+        this%chi2 = d_chi
+        
+        RETURN
+        
+      END SUBROUTINE physics_set_chi2
       
 
       SUBROUTINE physics_set_multiscale_shape(this,d_shape,stat_info)

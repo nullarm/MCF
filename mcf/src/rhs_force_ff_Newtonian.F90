@@ -171,23 +171,25 @@
 #endif
            
         CASE (5)
-           
+           ! for now, no efficiency for multiscale
+           ! we use the biggest cut off.           
            CALL  rhs_force_ff_Newtonian_Bian(this,&
                 xi,xj,dij,vi,vj,rhoi,rhoj,pi,pj,&
                 mi,mj,w,gradw,fi,fj,auij,stat_info_sub)
           
         CASE (6)
+           
            ! for now, no efficiency for multiscale
-           ! we use the biggest cut off.
+           ! we use the biggest cut off.      
            CALL  rhs_force_ff_Newtonian_Bian_multiscale(this,&
                 xi,xj,dij,vi,vj,rhoi,rhoj,pi,pj,&
                 mi,mj,w,gradw,fi,fj,auij,stat_info_sub)
-     
+           
            
         CASE DEFAULT
            
            PRINT *, "rhs_force_ff_Newtonian : ", & 
-                "4-> Not existing formulation!"
+                " > 6 Not existing formulation!"
            stat_info = -1
            GOTO 9999
            

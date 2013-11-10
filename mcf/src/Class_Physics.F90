@@ -73,7 +73,7 @@
            !                  if there is.
            !-------------------------------------------------
            
-           REAL(MK)                           :: chi
+           REAL(MK)                           :: chi1, chi2
            INTEGER                            :: multiscale_shape
            INTEGER                            :: num_dim 
            REAL(MK), DIMENSION(:), POINTER    :: min_phys
@@ -118,7 +118,8 @@
            REAL(MK)                           :: m
            ! largest and smallest particle mass, 
            ! useful for multi-resolution and multi-scale.
-           REAL(MK)                           :: m1, m2 
+           REAL(MK)                           :: m1, m2
+           REAL(MK)                           :: dx1,dx2
            REAL(MK)                           :: h1, h2
            REAL(MK)                           :: cut_off1, cut_off2
            

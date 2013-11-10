@@ -56,7 +56,7 @@
         !this is particular usefull for multiscale        
         IF ( multiscale > 0 ) THEN
            
-           CALL particles_compute_mass(this%particles,stat_info_sub)
+           !CALL particles_compute_mass(this%particles,stat_info_sub)
            
            IF ( stat_info_sub /=0 ) THEN
               

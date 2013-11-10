@@ -80,6 +80,7 @@
         !----------------------------------------------------
         
         INTEGER                                 :: stat_info_sub
+        INTEGER                                 :: multiscale
         INTEGER                                 :: num_dim,i,j
         INTEGER                                 :: lattice_type
         REAL(MK), DIMENSION(:), POINTER         :: dx
@@ -192,12 +193,14 @@
         NULLIFY(ide)
         
         !----------------------------------------------------
-        ! Get physics variables,
+        ! Get control and physics variables,
         ! dimension and which lattice.
         ! number of solid walls;
         ! number of colloids.
         !----------------------------------------------------
         
+        multiscale   = &
+             control_get_multiscale(this%ctrl,stat_info_sub)
         num_dim      = this%num_dim
         lattice_type = &
              physics_get_lattice_type(this%phys,stat_info_sub)
@@ -226,8 +229,14 @@
               
            CASE ( mcf_lattice_type_square )
               
-              CALL particles_init_global_inter_square(this,&
-                   stat_info_sub)
+              IF ( multiscale > 0 ) THEN
+                 
+                 CALL particles_init_global_inter_square_multiscale(this,&
+                      stat_info_sub)
+              ELSE
+                 CALL particles_init_global_inter_square(this,&
+                      stat_info_sub)
+              END IF
               
               IF ( stat_info_sub /= 0 ) THEN
                  PRINT *, "particles_init_global_inter : ", &
@@ -847,3 +856,4 @@
 #include "particles_init_global_inter_staggered.F90"
 #include "particles_init_global_inter_cubic.F90"
 #include "particles_init_global_inter_hexagonal.F90"
+#include "particles_init_global_inter_square_multiscale.F90"

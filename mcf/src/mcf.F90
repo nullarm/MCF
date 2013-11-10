@@ -555,7 +555,6 @@
         
         num_dim  = physics_get_num_dim(mcf_phys,stat_info_sub)
         cut_off  = physics_get_cut_off(mcf_phys,stat_info_sub)
-        cut_off2 = physics_get_cut_off2(mcf_phys,stat_info_sub)
         num_colloid = physics_get_num_colloid(mcf_phys,stat_info_sub)
 
         !----------------------------------------------------
@@ -579,18 +578,6 @@
         CALL physics_set_h(mcf_phys,h,stat_info_sub)
         
         !----------------------------------------------------
-        ! Compute particle mass in Class physics
-        !----------------------------------------------------
-        
-        CALL physics_compute_mass(mcf_phys,stat_info_sub)
-        
-        IF( stat_info_sub /= 0 ) THEN
-           PRINT *, __FILE__, __LINE__, &
-                "Computing physics mass has problem !"
-           stat_info = -1
-           GOTO 9999
-        END IF
-        !----------------------------------------------------
         ! Adjust and calculate physics parameters, such as dt.
         !----------------------------------------------------
         
@@ -606,7 +593,8 @@
         CALL physics_get_min_phys_t(mcf_phys,min_phys_t,stat_info_sub)
         CALL physics_get_max_phys_t(mcf_phys,max_phys_t,stat_info_sub)
         CALL physics_get_bcdef(mcf_phys,bcdef,stat_info_sub)
-
+        cut_off2 = physics_get_cut_off2(mcf_phys,stat_info_sub)
+        
         !----------------------------------------------------
         ! Adjusting IO parameters.
         !----------------------------------------------------
@@ -733,6 +721,13 @@
               CALL io_read_particles(mcf_io,rank,&
                    mcf_particles,stat_info_sub)
               
+              IF( stat_info_sub /=0 ) THEN
+                 PRINT *, __FILE__, __LINE__, &
+                      "Reading particles has problem !"
+                 stat_info = -1
+                 GOTO 9999
+              END IF
+              
               !----------------------------------------------
               ! In case of non-Newtonian viscoelastic
               ! oldroyd-B model fluid, read conformation 
@@ -747,6 +742,13 @@
                  
                  CALL io_read_conformation(mcf_io,rank,&
                       mcf_particles,stat_info_sub)
+                 
+                 IF( stat_info_sub /=0 ) THEN
+                    PRINT *, __FILE__, __LINE__, &
+                         "Reading conformation tensor has problem !"
+                    stat_info = -1
+                    GOTO 9999
+                 END IF
                  
               END IF
               
@@ -763,17 +765,26 @@
               
               CALL particles_init_global_inter(mcf_particles,&
                    rank,stat_info_sub)
+              
+              IF( stat_info_sub /=0 ) THEN
+                 PRINT *, __FILE__, __LINE__, &
+                      "Initializing inter has problem !"
+                 stat_info = -1
+                 GOTO 9999
+              END IF
+              
               CALL particles_init_global_assign_id(mcf_particles,&
                    rank,stat_info_sub)
               
-           END IF ! read_external
+              IF( stat_info_sub /=0 ) THEN
+                 PRINT *, __FILE__, __LINE__, &
+                      "Assigning id has problem !"
+                 stat_info = -1
+                 GOTO 9999
+              END IF
+              
+           END IF ! read externally and generate internally
            
-           IF( stat_info_sub /=0 ) THEN
-              PRINT *, __FILE__, __LINE__, &
-                   "Initializing particles has problem !"
-              stat_info = -1
-              GOTO 9999
-           END IF
            
            !-------------------------------------------------
            ! Display particles; parameters on root

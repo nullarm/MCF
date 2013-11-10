@@ -76,8 +76,8 @@
         ! New variables
         !----------------------------------------------------
 
-        REAL(MK)                                :: m, m1, m2, height
-        REAL(MK)                                :: chi, psi
+        REAL(MK)                                :: m0, m1, m2, height
+        REAL(MK)                                :: psi
         INTEGER                                 :: multiscale_shape
         INTEGER                                 :: i
         
@@ -99,12 +99,11 @@
         
         multiscale = &
              control_get_multiscale(this%ctrl,stat_info_sub)
-        chi = physics_get_chi(this%phys,stat_info_sub)
         multiscale_shape = &
              physics_get_multiscale_shape(this%phys,stat_info_sub)
         Call physics_get_min_phys(this%phys,min_phys,stat_info_sub)
         Call physics_get_max_phys(this%phys,max_phys,stat_info_sub)        
-        m = physics_get_m(this%phys,stat_info_sub)
+        m0 = physics_get_m(this%phys,stat_info_sub)
         
         IF ( multiscale > 0 ) THEN
            
@@ -133,39 +132,137 @@
                  GOTO 9999
                  
               CASE (2)
-                 ! linear Hat size distribution.
-                 ! and assume the middle has maximum size particle
-                 height = max_phys(2)/2.0_MK 
-                 ! slope of the mass change
-                 psi  = (m2-m1)/height 
+                 ! square hat size distribution
+                 
+                 height = max_phys(2)-min_phys(2)
                  
                  DO i=1, this%num_part_real
                     
-                    IF (this%x(2,i) < (min_phys(2) + max_phys(2))/2.0_MK) THEN
-                       ! first half of the domain
-                       this%m(i) = m1 + psi*(this%x(2,i) - min_phys(2))
+                    IF (this%x(2,i) > min_phys(2) + height/4.0_MK .AND. &
+                         this%x(2,i) < max_phys(2) - height/4.0_MK ) THEN
+                       ! middle half of the domain
+                       this%m(i) = m2
                     ELSE
-                       ! second half of the domain
-                       this%m(i) = m1 + psi*(max_phys(2) - this%x(2,i))
+                       ! first 1/4 and last 1/4 of the domain
+                       this%m(i) = m1
                     END IF
                     
                  END DO
+             
+                 ! linear Hat size distribution.
+                 ! and assume the middle has maximum size particle
+                 !height = (max_phys(2)-min_phys(2))/2.0_MK 
+                 ! slope of the mass change
+                 !psi  = (m2-m1)/height 
+                 
+                 !DO i=1, this%num_part_real
+                    
+                 !   IF (this%x(2,i) < (min_phys(2) + max_phys(2))/2.0_MK) THEN
+                       ! first half of the domain
+                 !      this%m(i) = m1 + psi*(this%x(2,i) - min_phys(2))
+                 !   ELSE
+                       ! second half of the domain
+                 !      this%m(i) = m1 + psi*(max_phys(2) - this%x(2,i))
+                 !   END IF
+                    
+                 !END DO
                  
               CASE (-2)
+                 ! inverse square hat size distribution
+                 
+                 height = max_phys(2)-min_phys(2)
+                 
+                 DO i=1, this%num_part_real
+                    
+                    IF (this%x(2,i) > min_phys(2) + height/4.0_MK .AND. &
+                         this%x(2,i) < max_phys(2) - height/4.0_MK ) THEN
+                       ! middle half of the domain
+                       this%m(i) = m1
+                    ELSE
+                       ! first 1/4 and last 1/4 of the domain
+                       this%m(i) = m2
+                    END IF
+                    
+                 END DO
                  ! inverse of linear hat for size distribution
-                 PRINT *, __FILE__, __LINE__, "multiscale shape not supported !"
-                 stat_info = -1
-                 GOTO 9999
+                 ! and assume the middle has minimum size particle
+                 ! height = (max_phys(2)-min_phys(2))/2.0_MK 
+                 ! slope of the mass change
+                 !psi  = (m2-m1)/height 
+                 
+                 !DO i=1, this%num_part_real
+                    
+                 !  IF (this%x(2,i) < (min_phys(2) + max_phys(2))/2.0_MK) THEN
+                 ! first half of the domain
+                 !     this%m(i) = m2 - psi*(this%x(2,i) - min_phys(2))
+                 !ELSE
+                       ! second half of the domain
+                 !     this%m(i) = m2 - psi*(max_phys(2) - this%x(2,i))
+                 !  END IF
+                    
+                 !END DO
                  
               END SELECT ! multiscale shape
               
            CASE (2)
               
               ! Parabolic functions of size distribution.
-              PRINT *, __FILE__, __LINE__, "multiscale type not supported!"
-              stat_info = -1
-              GOTO 9999
+              SELECT CASE ( multiscale_shape )
+                 
+              CASE (1)
+                 ! monotonic linear increase of size
+                 PRINT *, __FILE__, __LINE__, "multiscale shape not supported !"
+                 stat_info = -1
+                 GOTO 9999
+                 
+              CASE (-1)
+                 ! monotonic linear decrease of size
+                 PRINT *, __FILE__, __LINE__, "multiscale shape not supported !"
+                 stat_info = -1
+                 GOTO 9999
+                 
+              CASE (2)
+                
+                 ! linear Hat size distribution.
+                 ! and assume the middle has maximum size particle
+                 !height = (max_phys(2)-min_phys(2))/2.0_MK 
+                 ! slope of the mass change
+                 !psi  = (m2-m1)/height**2
+                 
+                 !DO i=1, this%num_part_real
+                 !   IF (this%x(2,i) < (min_phys(2) + max_phys(2))/2.0_MK) THEN
+                       ! first half of the domain
+                 !      this%m(i) = m1 + psi*(this%x(2,i) - min_phys(2))**2
+                 !   ELSE
+                       ! second half of the domain
+                 !      this%m(i) = m1 + psi*(max_phys(2) - this%x(2,i))**2
+                 !   END IF
+                    
+                 !END DO
+                 
+              CASE (-2)
+
+                 ! inverse of linear hat for size distribution
+                 ! and assume the middle has minimum size particle
+                 !height = (max_phys(2)-min_phys(2))/2.0_MK 
+                 ! slope of the mass change
+                 !psi  = (m2-m1)/height**2
+                 
+                 !DO i=1, this%num_part_real
+                    
+                 !   IF (this%x(2,i) < (min_phys(2) + max_phys(2))/2.0_MK) THEN
+                       ! first half of the domain
+                 !      this%m(i) = m2 - psi*(this%x(2,i) - min_phys(2))**2
+                 !   ELSE
+                       ! second half of the domain
+                 !      this%m(i) = m2 - psi*(max_phys(2) - this%x(2,i))**2
+                 !   END IF
+                    
+                 !END DO
               
+                 
+              END SELECT ! multiscale shape
+
            CASE DEFAULT
               PRINT *, __FILE__, __LINE__, "multiscale type not supported!"
               stat_info = -1
@@ -175,7 +272,7 @@
            
         ELSE
            
-           this%m(1:this%num_part_real) = m
+           this%m(1:this%num_part_real) = m0
            
         ENDIF ! multiscale
         

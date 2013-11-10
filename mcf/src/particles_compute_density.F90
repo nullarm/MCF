@@ -84,22 +84,23 @@
         !----------------------------------------------------
         ! Physics parameters :
         !
-        ! num_dim      : physics dimension.
-        ! cut_off      : compact support domain length.
-        ! cut_off2     : cut_off * cut_off.
+        ! num_dim        : physics dimension.
+        ! cut_off        : compact support domain length.
+        ! cut_off2       : maximum compact support domain length.
+        ! cut_off_square : cut_off2 * cut_off2.
         ! init_density : initial density.
         !----------------------------------------------------
         
         
         INTEGER                         :: num_dim
         REAL(MK)                        :: cut_off
+        REAL(MK)                        :: cut_off_square
         REAL(MK)                        :: cut_off2
         REAL(MK), DIMENSION(:),POINTER  :: dx
         REAL(MK)                        :: init_density
         REAL(MK)                        :: kappa
         REAL(MK)                        :: dx1,dx2
         REAL(MK)                        :: rc1,rc2,rc
-        
         !----------------------------------------------------
         ! Boundary parameters :
         !
@@ -213,6 +214,8 @@
         
         REAL(MK)                        :: rhoi
         REAL(MK)                        :: rhoj
+        REAL(MK)                        :: t_rhoi
+        REAL(MK)                        :: t_rhoj
         
         !----------------------------------------------------
       	! Initialization of variables.
@@ -241,7 +244,6 @@
         ! symmetry         : indication if we use symmetry
         !                    inter-process communication.
         !----------------------------------------------------
-        
         multiscale       = &
              control_get_multiscale(this%ctrl,stat_info_sub)
         rhs_density_type = &
@@ -260,10 +262,13 @@
         num_dim      = this%num_dim
         cut_off      = &
              physics_get_cut_off(this%phys,stat_info_sub)
-        cut_off2     = cut_off * cut_off
+        cut_off2      = &
+             physics_get_cut_off2(this%phys,stat_info_sub)
+        cut_off_square = cut_off2 * cut_off2
         NULLIFY(dx)
         CALL physics_get_dx(this%phys,dx,stat_info_sub)
-        kappa = cut_off / dx(1)        
+        kappa = cut_off / dx(1)
+        
         init_density = &
              physics_get_rho(this%phys,stat_info_sub)
         
@@ -329,7 +334,7 @@
            this%rho(1:this%num_part_real) = 0.0_MK
            
         END IF
-        
+
         !----------------------------------------------------
         ! Reset
         !
@@ -374,10 +379,12 @@
         
         !----------------------------------------------------
         ! Get value of kernel at zero distance.
+        ! For constant resolution, it is ok.
+        ! For multi-resolution, it is different on different
+        ! particle.
         !----------------------------------------------------
         
-        CALL kernel_kernel(this%kern,0.0_MK,w,stat_info_sub)
-        
+        !CALL kernel_kernel(this%kern,0.0_MK,w,stat_info_sub)
         !----------------------------------------------------
         ! Initialize density contribution of fluid particle
         ! from itself to itself and set constant density to
@@ -407,12 +414,17 @@
            
            DO j = 1, this%num_part_real
               
+              !for 2D  now
+              dx1 = SQRT(this%m(j))/init_density
+              rc  = dx1 * kappa
+              CALL kernel_set_cut_off(this%kern,rc,stat_info_sub)
+              CALL kernel_kernel(this%kern,0.0_MK,w,stat_info_sub)
+              
               IF ( this%id(this%sid_idx,j) == 0 ) THEN
                  
                  !-------------------------------------------
                  ! Fluid particle.
                  !-------------------------------------------
-                 
                  this%rho(j) = w * this%m(j)
                  
               ELSE IF ( this%id(this%sid_idx,j) < 0 ) THEN
@@ -489,6 +501,12 @@
            
            DO j = 1, this%num_part_real
               
+              !for 2D  now
+              dx1 = SQRT(this%m(j))/init_density
+              rc  = dx1 * kappa
+              CALL kernel_set_cut_off(this%kern,rc,stat_info_sub)
+              CALL kernel_kernel(this%kern,0.0_MK,w,stat_info_sub)              
+       
               IF ( this%id(this%sid_idx,j) == 0 ) THEN
               
                  !-------------------------------------------
@@ -568,7 +586,6 @@
            END DO ! j
            
         END SELECT ! rhs_density_type
-        
         
         !----------------------------------------------------
         ! Get the cell list etc. 
@@ -699,39 +716,6 @@
                           
                           ip = cell_list(idom)%lpdx(ipart)
                           
-                          
-                          !----------------------------------
-                          ! If ip wall boundary particle
-                          ! with constant density,
-                          ! for non-symmetric inteaction,
-                          ! cycle the loop.
-                          !----------------------------------
-                          
-                          IF( this%id(this%sid_idx,ip) < 0 .AND. &
-                               wall_rho_type==&
-                               mcf_wall_rho_type_constant .AND. &
-                               ( .NOT. symmetry) ) THEN
-                             
-                             CYCLE
-                             
-                          END IF
-                          
-                          !----------------------------------
-                          ! If ip colloidal boundary particle
-                          ! with constant density,
-                          ! for non-symmetric inteaction,
-                          ! cycle the loop.
-                          !----------------------------------
-                          
-                          IF( this%id(this%sid_idx,ip) > 0 .AND. &
-                               coll_rho_type==&
-                               mcf_colloid_rho_type_constant .AND. &
-                               ( .NOT. symmetry) ) THEN
-                             
-                             CYCLE
-                             
-                          END IF
-                          
                           !----------------------------------
                           ! For symmetry case:
                           ! if icell and jcell are the
@@ -741,8 +725,8 @@
                           ! comes after first particle.
                           !----------------------------------
                           
-                          IF ( jcell == icell .AND. &
-                               symmetry ) THEN
+                          IF ( symmetry .AND. &
+                               jcell == icell ) THEN
                              
                              jstart = ipart + 1 
                              
@@ -755,7 +739,7 @@
                           Do jpart = jstart, jend
                              
                              !-------------------------------
-                             ! Exclude two same particle.
+                             ! Exclude two same particles.
                              !-------------------------------
                              
                              IF( jcell == icell .AND. &
@@ -766,19 +750,6 @@
                              END IF
                              
                              jp = cell_list(idom)%lpdx(jpart) 
-                             
-                             !-------------------------------
-                             ! boundary particles has constant
-                             ! rho, no contribution to each
-                             ! other.
-                             !-------------------------------
-                             
-                             IF ( this%id(this%sid_idx,ip) /= 0 .AND. &
-                                  this%id(this%sid_idx,jp) /= 0 .AND. &
-                                  wall_rho_type==mcf_wall_rho_type_constant .AND. &
-                                  coll_rho_type==mcf_colloid_rho_type_constant ) THEN
-                                CYCLE
-                             END IF
                              
                              !-------------------------------
                              ! Dist. of particles ip and jp.
@@ -795,7 +766,7 @@
                              ! Skip 2 particles beyond cut off.
                              !-------------------------------
                              
-                             IF ( dij >= cut_off2 ) THEN
+                             IF ( dij >= cut_off_square ) THEN
                                 CYCLE
                              ELSE
                                 dij = SQRT(dij)
@@ -808,25 +779,51 @@
                              
                              IF ( multiscale > 0 ) THEN
                                 
+                                !2D for now
                                 dx1 = SQRT(this%m(ip)/init_density)
                                 dx2 = SQRT(this%m(jp)/init_density)
                                 rc1 = kappa * dx1
                                 rc2 = kappa * dx2
-                                IF ( dij > rc1  .AND. dij > rc2 ) THEN
+                                
+                                IF ( dij >= rc1 .AND. dij >= rc2 ) THEN
                                    CYCLE
                                 END IF
+                                !rc = (rc1 + rc2)/2.0_MK
                                 
-                                rc = (rc1 + rc2)/2.0_MK
-                                CALL kernel_set_cut_off(this%kern,rc,stat_info_sub)
+                                rhoi   = 0.0_MK
+                                rhoj   = 0.0_MK
+                                t_rhoi = 0.0_MK
+                                t_rhoj = 0.0_MK
+                                IF ( dij < rc1 ) THEN
+
+                                   rc = rc1
+                                   CALL kernel_set_cut_off(this%kern,rc,stat_info_sub)
+                                   CALL kernel_kernel(this%kern,dij,w,stat_info_sub)
+                                   CALL rhs_density_ff(this%rhs, w,&
+                                        this%m(ip),this%m(jp), &
+                                        rhoi,t_rhoj,stat_info_sub)
+                                   
+                                END IF
+                                
+                                IF ( dij < rc2 ) THEN
+                                   
+                                   rc = rc2
+                                   CALL kernel_set_cut_off(this%kern,rc,stat_info_sub)
+                                   CALL kernel_kernel(this%kern,dij,w,stat_info_sub)
+                                   CALL rhs_density_ff(this%rhs, w,&
+                                        this%m(ip),this%m(jp), &
+                                        t_rhoi,rhoj,stat_info_sub)
+                                   
+                                END IF
+                                
+                             ELSE
+                                ! not multiscale
+                                CALL kernel_kernel(this%kern,dij,w,stat_info_sub)
+                                CALL rhs_density_ff(this%rhs, w,&
+                                     this%m(ip),this%m(jp), &
+                                     rhoi,rhoj,stat_info_sub)
                                 
                              END IF
-
-                            CALL kernel_kernel(this%kern,dij,w,stat_info_sub)
-                            
-                            CALL rhs_density_ff(this%rhs, w,&
-                                 this%m(ip),this%m(jp), &
-                                 rhoi,rhoj,stat_info_sub)
-                            
                             !-------------------------------
                             ! Density calculated for
                             ! fluid particles, or
@@ -834,45 +831,15 @@
                             ! constant density type.
                             !-------------------------------
                              
-                            IF ( this%id(this%sid_idx,ip) == 0 .OR. &
-                                 ( this%id(this%sid_idx,ip) < 0 .AND. &
-                                 wall_rho_type==mcf_wall_rho_type_dynamic ) .OR. &
-                                 ( this%id(this%sid_idx,ip) > 0 .AND. &
-                                 coll_rho_type==mcf_colloid_rho_type_dynamic ) ) THEN
-                               
-#if 0
-                                IF ( this%id(this%sid_idx,ip) /=0 .AND. &
-                                     this%id(this%sid_idx,jp) == &
-                                     this%id(this%sid_idx,ip) ) THEN
-                                   CYCLE
-                                END IF
-#endif
+                             this%rho(ip)= this%rho(ip) + rhoi
                                 
-                                this%rho(ip)= this%rho(ip) + rhoi
-                                
-                             END IF
-                             
                              !-------------------------------
                              ! For symmetry, jp also gets
                              ! calculated(if it is fluid).
                              !-------------------------------
                              
-                             IF ( symmetry .AND. &
-                                  ( this%id(this%sid_idx,jp) == 0 .OR. &
-                                  ( this%id(this%sid_idx,jp) < 0 .AND. &
-                                  wall_rho_type ==mcf_wall_rho_type_dynamic ) .OR. &
-                                  ( this%id(this%sid_idx,jp) > 0 .AND. &
-                                  coll_rho_type==mcf_colloid_rho_type_dynamic ) ) ) THEN
+                             IF ( symmetry ) THEN
                              
-#if 0   
-                                IF ( this%id(this%sid_idx,jp) /=0 .AND. &
-                                     this%id(this%sid_idx,ip) == &
-                                     this%id(this%sid_idx,jp) ) THEN
-                                   
-                                   CYCLE
-
-                                END IF
-#endif                           
                                 this%rho(jp)= this%rho(jp) + rhoj
                                 
                              END IF
@@ -895,7 +862,7 @@
       	!----------------------------------------------------
       	! Return.
       	!----------------------------------------------------
-        
+       
         
 9999	CONTINUE
         

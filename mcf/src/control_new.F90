@@ -196,24 +196,24 @@
         
         SELECT CASE(this%kernel_type)
            
-        CASE (1)
-           
-           CALL tool_print_msg(this%tool,&
-                "kernel_type", &
-                "Quintic Spline", stat_info_sub)
-           
         CASE (2)
            
            CALL tool_print_msg(this%tool,&
                 "kernel_type", &
                 "Lucy kernel", stat_info_sub)
+        
+        CASE (5)
            
-        CASE (3)
+           CALL tool_print_msg(this%tool,&
+                "kernel_type", &
+                "Quintic Spline", stat_info_sub)
+           
+        CASE (6)
            
            CALL tool_print_msg(this%tool,&
                 "kernel_type", &
                 "Quintic Spline, multiscale", stat_info_sub)
-
+           
         CASE DEFAULT
            
            CALL tool_print_msg(this%tool,&

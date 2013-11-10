@@ -105,7 +105,8 @@
         ! num_species    : number of species.
         ! num_dim        : number of dimension.
         ! cut_off        : compact support domain.
-        ! cut_off2       : cut_off * cut_off.
+        ! cut_off2       : maximum compact support domain.
+        ! cut_off_square : cut_off2 * cut_off2.
         !
         ! bcdef          : boundary condition definition.
         ! boundary       : boundary object pointer.
@@ -127,6 +128,7 @@
         INTEGER                         :: num_dim, num_dim2
         REAL(MK)                        :: cut_off
         REAL(MK)                        :: cut_off2
+        REAL(MK)                        :: cut_off_square
         REAL(MK), DIMENSION(:),POINTER  :: dx
         REAL(MK)                        :: init_density
         REAL(MK)                        :: eta
@@ -354,7 +356,9 @@
         num_dim2    = num_dim**2
         cut_off     = &
              physics_get_cut_off(this%phys,stat_info_sub)
-        cut_off2 = cut_off * cut_off
+        cut_off2    = &
+             physics_get_cut_off2(this%phys,stat_info_sub)
+        cut_off_square = cut_off2 * cut_off2
         NULLIFY(dx)
         CALL physics_get_dx(this%phys,dx,stat_info_sub)
         kappa = cut_off / dx(1)

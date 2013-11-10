@@ -80,15 +80,15 @@
         s3_5  = s3_4 * s3
         
         
-        IF ( s < 1.0_MK) THEN
+        IF ( s >= 0.0_MK .AND. s < 1.0_MK) THEN
            
            w = this%coef * (s3_5  + s2_5 +  s1_5)
            
-        ELSE IF ( s < 2.0_MK ) THEN
+        ELSE IF ( s >= 1.0_MK .AND. s < 2.0_MK ) THEN
 
            w = this%coef * (s3_5 + s2_5 )
            
-        ELSE IF( s < 3.0_MK ) THEN
+        ELSE IF( s >= 2.0_MK .AND. s < 3.0_MK ) THEN
            
            w = this%coef * s3_5
            
@@ -192,17 +192,17 @@
         s3_4  =  5.0_MK  * s3_4
         
         
-        IF ( s < 1.0_MK) THEN
+        IF ( s >= 0.0_MK .AND. s < 1.0_MK) THEN
            
            w     = this%coef * (s3_5  + s2_5 +  s1_5)
            gradW = this%coef_grad * (s3_4 + s2_4 + s1_4)
            
-        ELSE IF ( s < 2.0_MK ) THEN
+        ELSE IF ( s >= 1.0_MK .AND. s < 2.0_MK ) THEN
 
            w     = this%coef * (s3_5 + s2_5 )
            gradW = this%coef_grad * (s3_4 + s2_4 )
            
-        ELSE IF( s < 3.0_MK ) THEN
+        ELSE IF( s >= 2.0_MK .AND. s < 3.0_MK ) THEN
            
            w     = this%coef * s3_5
            gradW = this%coef_grad * s3_4

@@ -290,6 +290,20 @@
         CALL boundary_set_min_phys_t(this%boundary,min_phys_t,stat_info_sub)
         CALL boundary_set_max_phys_t(this%boundary,max_phys_t,stat_info_sub)
         
+
+        !----------------------------------------------------
+        ! Compute particle mass in Class physics
+        !----------------------------------------------------
+        
+        CALL physics_compute_mass(this,stat_info_sub)
+        
+        IF( stat_info_sub /= 0 ) THEN
+           PRINT *, __FILE__, __LINE__, &
+                "Computing physics mass has problem !"
+           stat_info = -1
+           GOTO 9999
+        END IF
+     
         !----------------------------------------------------
         ! Set the total physics boundary for colloid.
         ! Set the minimal distance of a fluid particle 
@@ -367,8 +381,12 @@
         ! Get absolute value of body force and record it.
         !----------------------------------------------------
         
-        this%fa_max = SQRT(DOT_PRODUCT(&
-             this%body_force(1:num_dim),this%body_force(1:num_dim)))
+        IF ( this%body_force_type > 0 ) THEN
+           this%fa_max = SQRT(DOT_PRODUCT(&
+                this%body_force(1:num_dim),this%body_force(1:num_dim)))
+        ELSE
+           this%fa_max = 0.0_MK
+        END IF
     
         
         !----------------------------------------------------
@@ -377,6 +395,12 @@
         
         CALL physics_initialize_dt(this,stat_info_sub)
         
+        IF ( stat_info_sub /= 0 ) THEN
+           PRINT *, __FILE__, __LINE__, &
+                "initializing dt failed!"
+           stat_info = -1
+           GOTO 9999
+        END IF
         !-------------------------------------------------
         ! IF step is given from input,
         ! set time end to be negative for adaptive dt.

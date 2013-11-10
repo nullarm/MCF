@@ -46,7 +46,8 @@
         this%ctrl => d_ctrl
         
         this%num_species = 2
-        this%chi         = 1.0_MK ! default constant mass
+        this%chi1        = 1.0_MK ! default constant mass
+        this%chi2        = 1.0_MK ! default constant mass
         this%multiscale_shape = 2.0_MK ! default hat
         this%num_dim     = 2
 
@@ -89,6 +90,8 @@
              (this%max_phys(1:2)-this%min_phys(1:2)) / &
              this%num_part_dim(1:2)
         
+        this%dx1           = this%dx(1)
+        this%dx2           = this%dx(1)
         this%cut_off       = 9.6e-3_MK
         this%cut_off1      = 9.6e-3_MK
         this%cut_off2      = 9.6e-3_MK
@@ -221,10 +224,12 @@
              "num_species", this%num_species, stat_info_sub)
         IF ( multiscale > 0 ) THEN
            CALL tool_print_msg(this%tool, &
-                "chi", this%chi, stat_info_sub)
+                "chi1", this%chi1, stat_info_sub)
+           CALL tool_print_msg(this%tool, &
+                "chi1", this%chi2, stat_info_sub)
+           CALL tool_print_msg(this%tool, &
+                "multiscale_shape", this%multiscale_shape, stat_info_sub)
         END IF
-        CALL tool_print_msg(this%tool, &
-             "multiscale_shape", this%multiscale_shape, stat_info_sub)
         CALL tool_print_msg(this%tool, &
              "num_dim", this%num_dim, stat_info_sub)
         CALL tool_print_msg(this%tool, &
@@ -278,7 +283,14 @@
              "cut_off", this%cut_off, stat_info_sub)
         CALL tool_print_msg(this%tool,&
              "smoothing length", this%h, stat_info_sub)
+        CALL tool_print_msg(this%tool,&
+             "m", this%m, stat_info_sub)
+        
         IF ( multiscale > 0 ) THEN
+           CALL tool_print_msg(this%tool,&
+                "dx 1", this%dx1, stat_info_sub)
+           CALL tool_print_msg(this%tool,&
+                "dx 2", this%dx2, stat_info_sub)         
            CALL tool_print_msg(this%tool,&
                 "cut_off 1", this%cut_off1, stat_info_sub)
            CALL tool_print_msg(this%tool,&
@@ -286,7 +298,11 @@
            CALL tool_print_msg(this%tool,&
                 "smoothing length 1", this%h1, stat_info_sub)     
            CALL tool_print_msg(this%tool,&
-                "smoothing length 2", this%h2, stat_info_sub)     
+                "smoothing length 2", this%h2, stat_info_sub)
+           CALL tool_print_msg(this%tool,&
+                "m1", this%m1, stat_info_sub)
+           CALL tool_print_msg(this%tool,&
+                "m2", this%m2, stat_info_sub)
         END IF
         CALL tool_print_msg(this%tool,&
              "dt", this%dt, stat_info_sub)

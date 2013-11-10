@@ -6,7 +6,7 @@
 ! Using Bian 2013 formulation for multi-resolution/scale.
 !----------------------------------------------------------------
       SUBROUTINE rhs_force_ff_Newtonian_Bian_multiscale(this,&
-           xi,xj,dij,vi,vj,numi,numj, pi,pj,&
+           xi,xj,dij,vi,vj,rhoi,rhoj,pi,pj,&
            mi,mj,w,gradw,fi,fj,auij,stat_info)
         !----------------------------------------------------
         ! Subroutine : rhs_force_ff_Newtonian_Bian_multiscale
@@ -45,8 +45,8 @@
         REAL(MK), INTENT(IN)                    :: dij
         REAL(MK), DIMENSION(:), INTENT(IN)      :: vi
         REAL(MK), DIMENSION(:), INTENT(IN)      :: vj
-        REAL(MK), INTENT(IN)                    :: numi
-        REAL(MK), INTENT(IN)                    :: numj
+        REAL(MK), INTENT(IN)                    :: rhoi
+        REAL(MK), INTENT(IN)                    :: rhoj
         REAL(MK), INTENT(IN)                    :: pi
         REAL(MK), INTENT(IN)                    :: pj
         REAL(MK), INTENT(IN)                    :: mi
@@ -100,12 +100,12 @@
         
         IF ( mi < mcf_machine_zero .OR. &
              mj < mcf_machine_zero .OR. &
-             numi < mcf_machine_zero .OR. &
-             numj < mcf_machine_zero ) THEN
+             rhoi < mcf_machine_zero .OR. &
+             rhoj < mcf_machine_zero ) THEN
            
            PRINT *,"xi,xj,dij : ",  xi,xj,dij
            PRINT *,"vi,vj : ", vi,vj
-           PRINT *,"numi,numj : ", numi,numj
+           PRINT *,"rhoi,rhoj : ", rhoi,rhoj
            PRINT *,"pi,pj : ", pi,pj
            PRINT *,"mi,mj : ", mi,mj
            PRINT *,"w, gradw : ", w, gradw          
@@ -141,10 +141,10 @@
 	! per unit mass (from pressure).
   	!----------------------------------------------------
         
-        f_c = ( pi/(numi**2.0_MK)+ pj/(numj**2.0_MK)) * gradw
+        f_c = ( pi/(rhoi**2.0_MK)+ pj/(rhoj**2.0_MK)) * gradw
         
-        fi(1:num_dim) = fi(1:num_dim) - f_c * eij(1:num_dim) / mi
-        fj(1:num_dim) = fj(1:num_dim) + f_c * eij(1:num_dim) / mj
+        fi(1:num_dim) = fi(1:num_dim) - f_c * eij(1:num_dim) * mj
+        fj(1:num_dim) = fj(1:num_dim) + f_c * eij(1:num_dim) * mi
         
         !----------------------------------------------------
         ! Calculate potential energy, if needed.
@@ -159,10 +159,10 @@
 	! per unit mass(from viscosity).
   	!----------------------------------------------------
         
-        f_d = 2.0_MK * eta * (1.0_MK/numi/numj) * gradw / dij
+        f_d = 2.0_MK * eta * (1.0_MK/rhoi/rhoj) * gradw / dij
         
-        fi(1:num_dim) = fi(1:num_dim) + f_d  * vij(1:num_dim) / mi
-        fj(1:num_dim) = fj(1:num_dim) - f_d  * vij(1:num_dim) / mj
+        fi(1:num_dim) = fi(1:num_dim) + f_d  * vij(1:num_dim) * mj
+        fj(1:num_dim) = fj(1:num_dim) - f_d  * vij(1:num_dim) * mi
         
         !----------------------------------------------------
         ! Calculate random force
@@ -226,7 +226,7 @@
               GOTO 9999
            END IF
            
-           f_r = SQRT(-15.0_MK / 4.0_MK * kt * f_d) / SQRT(dt)
+           f_r = SQRT(-15.0_MK / 4.0_MK * kt * f_d * mi * mj) / SQRT(dt)
            
            fi(1:num_dim)  = fi(1:num_dim) + &
                 f_r * We(1:num_dim) / mi 

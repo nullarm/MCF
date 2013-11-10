@@ -42,7 +42,7 @@
        
         INTEGER                         :: stat_info_sub
         LOGICAL                         :: relax_run
-        INTEGER                         :: smoothing_length
+        REAL(MK)                        :: smoothing_length
         
         !----------------------------------------------------
         ! Initialization of variables.
@@ -56,7 +56,7 @@
              control_get_relax_run(this%ctrl,stat_info_sub)
         
         !----------------------------------------------------
-        ! For multi-scale, h1 the smallest is used.
+        ! For multi-scale, h1 is the smallest smoothing length.
         !----------------------------------------------------
         
         smoothing_length = this%h1

@@ -78,7 +78,7 @@
         REAL(MK)                        :: f_c,f_d1,f_d2
         REAL(MK), DIMENSION(3)          :: f_r
         REAL(MK), DIMENSION(3,3)        :: dW
-        REAL(MK)                        :: trace, a,b,Zij,Aij,Bij
+        REAL(MK)                        :: a,Zij,Aij
         REAL(MK), DIMENSION(3)          :: We
         INTEGER                         :: i,j         
         
@@ -196,22 +196,18 @@
            !-------------------------------------------------
            ! Generate the 2*2(2D) or 3*3(3D) matrix
            ! dW with 4 or 9 random numbers.
-           ! Calculate the trace.
            !-------------------------------------------------
-           
-           trace = 0.0_MK
            
            DO i=1, num_dim
               DO j = 1, num_dim
                  dW(i,j) = random_random(this%random,stat_info_sub)
               END DO
-              trace = trace + dw(i,i)
            END DO
            
-           trace = trace / num_dim
            
            !-------------------------------------------------
-           ! Make the matrix dW symmetric and traceless.
+           ! Make the matrix dW symmetric.
+           ! Note the trace is maintained.
            !-------------------------------------------------
            
            DO i =1,num_dim
@@ -219,16 +215,12 @@
                  dW(i,j) = (dW(i,j) + dW(j,i)) / 2.0_MK
                  dW(j,i) = dW(i,j)
               END DO
-              dW(i,i) = dW(i,i) - trace
            END DO
            
            Zij = 4.0_MK*kt*gradW/dij/numi/numj
            a   = 5.0_MK *eta/3.0_MK
-           !b   = (DFLOAT(num_dim) + 2.0_MK)*eta/ 3.0_MK
            Aij = SQRT(-Zij * a)
-           !Bij = SQRT(-Zij*DFLOAT(num_dim)/2.0_MK * &
-           !     (b+a*(2.0_MK/DFLOAT(num_dim) -1.0_MK)))
-           Bij  = 0.0_MK ! for incompressible
+           !Bij  = Aij for incompressible
            !-------------------------------------------------
            ! Generate the vector by
            ! dot product of dW and eij.  
@@ -241,7 +233,7 @@
               END DO
            END DO
            
-           f_r(1:num_dim) = (Aij * We(1:num_dim) + Bij*trace*eij(1:num_dim)) / &
+           f_r(1:num_dim) = (Aij * We(1:num_dim)) / &
                 SQRT(dt)
            fi(1:num_dim) = fi(1:num_dim) + f_r(1:num_dim) / mi
            fj(1:num_dim) = fj(1:num_dim) - f_r(1:num_dim) / mj 

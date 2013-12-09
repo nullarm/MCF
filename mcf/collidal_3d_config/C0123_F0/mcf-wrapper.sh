@@ -19,16 +19,34 @@ function var2dirname() {
     awk -v FS="=" -v ORS="" 'NF{$1=$1; gsub(/ /, ""); print}'  $1
 }
 
-mcf=/scratch/work/MCF/mcf/src/mcf
-src=/scratch/work/MCF/
+function rundispatch() {
+    if [ $(whoami) = "lu79buz2" ]; then
+	local p=$(pwd)/${dname}
+	sed -e "s,M4_COMMAND,${mcf},g" \
+	    -e "s,M4_DNAME,${p},g" \
+	    -e "s,M4_JOB_NAME,${dname},g" run.m4.sh \
+	     > ${dname}/run.sh
+	#llsubmit ${dname}/run.sh
+    else
+	cd ${dname}
+	mpirun -np 1 ${mcf} &
+	cd ../
+    fi
+}
+
+if [ $(whoami) = "lu79buz2" ]; then
+    mcf=~/work/MCF/mcf/src/mcf
+    src=~/work/MCF/
+else
+    mcf=/scratch/work/MCF/mcf/src/mcf
+    src=/scratch/work/MCF/
+fi
 
 for b in $(seq 4.5 0.25 6.0); do
     echo "COLB=$b" > vars.mcf.${b}
     dname=$(var2dirname vars.mcf.${b})
     cpreplace vars.mcf.${b} ${dname} ctrl.mcf  io_config.mcf  physics_config.mcf
-    cd ${dname}
-    githead > git.commit.id
-    mpirun -np 1 ${mcf} &
-    cd ../
+    githead > ${dname}/git.commit.id
+    rundispatch
 done
 

@@ -79,7 +79,7 @@ output_particles_relax_freq_step  = 500
 #
 #---------------------------------------------------------------------
 
-output_particles_file       = mcf_particles
+output_particles_file       = particles/mcf_particles
 output_particles_fmt        = FORMATTED
 output_particles_freq_step  = 500
 output_particles_freq_time  = -1.0
@@ -116,7 +116,7 @@ output_conformation_freq_time  = -1.0
 #	   	       (in simulation time)
 #---------------------------------------------------------------------
 
-colloid_file       = mcf_colloid
+colloid_file       = colloid/mcf_colloid
 colloid_fmt        = FORMATTED
 colloid_freq_step  = 100
 colloid_freq_time  = -1.0
@@ -169,7 +169,7 @@ statistic_freq_time  = -1.0
 #	   	       (in simulation time steps)
 #---------------------------------------------------------------------
 
-boundary_file       = mcf_boundary.dat
+boundary_file       = boundary/mcf_boundary.dat
 boundary_fmt        = FORMATTED
 boundary_freq_step  = 10
 boundary_freq_time  = -1.0

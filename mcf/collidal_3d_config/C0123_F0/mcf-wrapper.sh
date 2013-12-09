@@ -7,6 +7,10 @@ function githead() {
 function cpreplace() {
     local varfile=$1
     local dname=$2
+    if [ $(whoami) = "lu79buz2" ]; then
+	mkdir -p ${SCRATCH}/${dname}
+	ln -s ${SCRATCH}/${dname} ${dname} 
+    fi
     mkdir -p ${dname}/particles ${dname}/boundary ${dname}/colloid
     shift 2
     for f in $*; do
@@ -26,7 +30,7 @@ function rundispatch() {
 	    -e "s,M4_DNAME,${p},g" \
 	    -e "s,M4_JOB_NAME,${dname},g" run.m4.sh \
 	     > ${dname}/run.sh
-	#llsubmit ${dname}/run.sh
+	llsubmit ${dname}/run.sh
     else
 	cd ${dname}
 	mpirun -np 1 ${mcf} &

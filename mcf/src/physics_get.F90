@@ -33,7 +33,21 @@
         
       END FUNCTION physics_get_num_species
       
-      
+
+      INTEGER FUNCTION physics_get_chi_level(this,stat_info)
+        
+        TYPE(Physics), INTENT(IN)       :: this
+        INTEGER, INTENT(OUT)            :: stat_info
+        
+        stat_info = 0
+        
+        physics_get_chi_level = this%chi_level
+        
+        RETURN
+        
+      END FUNCTION physics_get_chi_level
+
+
       REAL(MK) FUNCTION physics_get_chi1(this,stat_info)
         
         TYPE(Physics), INTENT(IN)       :: this

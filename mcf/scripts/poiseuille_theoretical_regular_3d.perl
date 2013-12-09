@@ -11,7 +11,7 @@ $epsilon = 1.0e-30;
 $pi      = 3.14159265359;
 
 $nmax  = 1000;
-$npart = 20;
+$npart = 40;
 $t     = 0.1;
 $step  = $ARGV[0];
 $dt    = $ARGV[1];
@@ -21,12 +21,10 @@ $npart = $ARGV[2];
 #print $t, "  ", $dt, " ", $step, "\n";
 
 $mu  = 8.46;
-$L   = 1.5;
-#$L   = 3;
+$L   = 4;
 $d   = $L/2.0;
 $rho = 1.0;
-$F   = 750;#force per unit mass
-#$F   = 187.5;
+$F   = 1;#force per unit mass
 $dh   = $L/$npart;
 $temp = 0;
 $n    = 0;

@@ -12,5 +12,4 @@ for d in $(ls -d COLB*); do
     cd ..
 done
 
-
 # punto -bg white -r -z 1:2:3:4 -B 0:0:0:8:8:8 punto.dat

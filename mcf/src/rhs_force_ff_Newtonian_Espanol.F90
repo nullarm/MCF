@@ -19,9 +19,8 @@
         !              Physical Review E paper.
 
         !
-        ! Reference  : Hu and Adams 
-        !              Journal of Computational Physics 213 
-        !              844-861, 2006.
+        ! Reference  : Espanol, P. and Revenga, M.,
+        !              Phys.Rev. E, 2003
         !
         ! Remark     :
         !

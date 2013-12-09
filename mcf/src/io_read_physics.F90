@@ -46,6 +46,7 @@
         !----------------------------------------------------
         
         INTEGER                         :: num_species
+        INTEGER                         :: chi_level
         REAL(MK)                        :: chi1,chi2
         INTEGER                         :: multiscale_shape
         INTEGER                         :: num_dim
@@ -408,21 +409,31 @@
              
              CALL physics_set_num_species(phys,num_species,stat_info_sub)
              
+          ELSE IF (carg == 'CHI_LEVEL') THEN
+             
+             !-----------------------------------------------
+             ! Get number of relative coarse-graining level
+             !-----------------------------------------------
+             
+             READ(cvalue,*,IOSTAT=ios,ERR=200) chi_level
+             
+             CALL physics_set_chi_level(phys,chi_level,stat_info_sub)       
+             
           ELSE IF (carg == 'CHI1') THEN
              
              !-----------------------------------------------
-             ! Get relative coarse-graining level
+             ! Get the minimum relative coarse-graining level
              !-----------------------------------------------
              
              READ(cvalue,*,IOSTAT=ios,ERR=200) chi1
              
              CALL physics_set_chi1(phys,chi1,stat_info_sub)       
-          
+       
 
           ELSE IF (carg == 'CHI2') THEN
              
              !-----------------------------------------------
-             ! Get relative coarse-graining level
+             ! Get the maximum relative coarse-graining level
              !-----------------------------------------------
              
              READ(cvalue,*,IOSTAT=ios,ERR=200) chi2

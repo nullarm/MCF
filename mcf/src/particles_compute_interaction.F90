@@ -134,7 +134,7 @@
         REAL(MK)                        :: eta
         REAL(MK)                        :: kappa
         REAL(MK)                        :: dx1,dx2
-        REAL(MK)                        :: rc1,rc2,rc
+        REAL(MK)                        :: rc1,rc2,rc12
         
         !----------------------------------------------------
         ! Boundary parameters :
@@ -234,8 +234,8 @@
         ! kernel parameters.
         !----------------------------------------------------
         
-        REAL(MK)                        :: w 
-        REAL(MK)                        :: gradW
+        REAL(MK)                        :: w, w1, w2
+        REAL(MK)                        :: gradW, gradw1, gradw2
         
         
         !----------------------------------------------------

@@ -243,6 +243,12 @@
                 "rhs_density_type", &
                 "Summation of number density", stat_info_sub)
            
+        CASE (3)
+           
+           CALL tool_print_msg(this%tool,&
+                "rhs_density_type", &
+                "Summation of number density, multiscale", stat_info_sub)
+    
         CASE DEFAULT
            
            CALL tool_print_msg(this%tool,&
@@ -325,16 +331,23 @@
            
            CALL tool_print_msg(this%tool,&
                 "rhs_force_type", &
-                "Bian, unpublished 2013", &
+                "Bian, number density, unpublished 2013", &
                 stat_info_sub)
     
         CASE (6)
            
            CALL tool_print_msg(this%tool,&
                 "rhs_force_type", &
-                "Bian, multiscale, unpublished 2013", &
+                "Bian, mass density, unpublished 2013", &
                 stat_info_sub)
            
+        CASE (7)
+           
+           CALL tool_print_msg(this%tool,&
+                "rhs_force_type", &
+                "Bian, number density multiscale, unpublished 2013", &
+                stat_info_sub)
+    
         CASE DEFAULT
 
            CALL tool_print_msg(this%tool,&

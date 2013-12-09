@@ -100,7 +100,7 @@
         REAL(MK)                        :: init_density
         REAL(MK)                        :: kappa
         REAL(MK)                        :: dx1,dx2
-        REAL(MK)                        :: rc1,rc2,rc
+        REAL(MK)                        :: rc,rc1,rc2,rc12
         !----------------------------------------------------
         ! Boundary parameters :
         !
@@ -206,7 +206,7 @@
         ! kernel parameters :
         !----------------------------------------------------
         
-        REAL(MK)                        :: w 
+        REAL(MK)                        :: w, w1,w2
         
         !----------------------------------------------------
         ! Density contribution on particle i or j :
@@ -497,7 +497,7 @@
            END DO ! j
            
            
-        CASE (2) ! number density
+        CASE (2:3) ! number density
            
            DO j = 1, this%num_part_real
               
@@ -584,6 +584,13 @@
               END IF ! id(sid_idx,j)
               
            END DO ! j
+           
+        CASE DEFAULT
+           
+           PRINT *, __FILE__, __LINE__, &
+                "No such density type!"
+           stat_info = -1
+           GOTO 9999
            
         END SELECT ! rhs_density_type
         
@@ -788,33 +795,22 @@
                                 IF ( dij >= rc1 .AND. dij >= rc2 ) THEN
                                    CYCLE
                                 END IF
-                                !rc = (rc1 + rc2)/2.0_MK
                                 
                                 rhoi   = 0.0_MK
                                 rhoj   = 0.0_MK
-                                t_rhoi = 0.0_MK
-                                t_rhoj = 0.0_MK
-                                IF ( dij < rc1 ) THEN
-
-                                   rc = rc1
-                                   CALL kernel_set_cut_off(this%kern,rc,stat_info_sub)
-                                   CALL kernel_kernel(this%kern,dij,w,stat_info_sub)
-                                   CALL rhs_density_ff(this%rhs, w,&
-                                        this%m(ip),this%m(jp), &
-                                        rhoi,t_rhoj,stat_info_sub)
-                                   
-                                END IF
                                 
-                                IF ( dij < rc2 ) THEN
-                                   
-                                   rc = rc2
-                                   CALL kernel_set_cut_off(this%kern,rc,stat_info_sub)
-                                   CALL kernel_kernel(this%kern,dij,w,stat_info_sub)
-                                   CALL rhs_density_ff(this%rhs, w,&
-                                        this%m(ip),this%m(jp), &
-                                        t_rhoi,rhoj,stat_info_sub)
-                                   
-                                END IF
+                                ! average kernel values.
+                                CALL kernel_set_cut_off(this%kern,rc1,stat_info_sub)
+                                CALL kernel_kernel(this%kern,dij,w1,stat_info_sub)
+                                CALL kernel_set_cut_off(this%kern,rc2,stat_info_sub)
+                                CALL kernel_kernel(this%kern,dij,w2,stat_info_sub)
+                                
+                                !use averaged kernel values to calculate density.
+                                
+                                w = (w1+w2)/2.0_MK
+                                CALL rhs_density_ff(this%rhs, w,&
+                                     this%m(ip),this%m(jp), &
+                                     rhoi,rhoj,stat_info_sub)
                                 
                              ELSE
                                 ! not multiscale

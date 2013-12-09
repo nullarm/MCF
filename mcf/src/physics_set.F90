@@ -35,6 +35,21 @@
       END SUBROUTINE physics_set_num_species
       
       
+      SUBROUTINE physics_set_chi_level(this,d_level,stat_info)
+        
+        TYPE(Physics), INTENT(INOUT)            :: this
+        INTEGER, INTENT(IN)                     :: d_level
+        INTEGER, INTENT(OUT)                    :: stat_info
+        
+        stat_info = 0
+        
+        this%chi_level = d_level
+        
+        RETURN
+        
+      END SUBROUTINE physics_set_chi_level
+
+
       SUBROUTINE physics_set_chi1(this,d_chi,stat_info)
         
         TYPE(Physics), INTENT(INOUT)    :: this

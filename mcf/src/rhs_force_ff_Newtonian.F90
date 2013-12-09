@@ -173,7 +173,7 @@
         CASE (5)
            ! for now, no efficiency for multiscale
            ! we use the biggest cut off.           
-           CALL  rhs_force_ff_Newtonian_Bian(this,&
+           CALL  rhs_force_ff_Newtonian_Bian_num_density(this,&
                 xi,xj,dij,vi,vj,rhoi,rhoj,pi,pj,&
                 mi,mj,w,gradw,fi,fj,auij,stat_info_sub)
           
@@ -181,10 +181,17 @@
            
            ! for now, no efficiency for multiscale
            ! we use the biggest cut off.      
-           CALL  rhs_force_ff_Newtonian_Bian_multiscale(this,&
+           CALL  rhs_force_ff_Newtonian_Bian_mass_density(this,&
                 xi,xj,dij,vi,vj,rhoi,rhoj,pi,pj,&
                 mi,mj,w,gradw,fi,fj,auij,stat_info_sub)
-           
+     
+        CASE (7)
+           ! for now, no efficiency for multiscale
+           ! we use the biggest cut off.           
+           CALL  rhs_force_ff_Newtonian_Bian_num_density_multiscale(this,&
+                xi,xj,dij,vi,vj,rhoi,rhoj,pi,pj,&
+                mi,mj,w,gradw,fi,fj,auij,stat_info_sub)
+          
            
         CASE DEFAULT
            
@@ -214,5 +221,6 @@
 #include "rhs_force_ff_Newtonian_Espanol.F90"
 #include "rhs_force_ff_Newtonian_HuAdams.F90"
 #include "rhs_force_ff_Newtonian_HuAdams_angular.F90"
-#include "rhs_force_ff_Newtonian_Bian.F90"
-#include "rhs_force_ff_Newtonian_Bian_multiscale.F90"
+#include "rhs_force_ff_Newtonian_Bian_num_density.F90"
+#include "rhs_force_ff_Newtonian_Bian_mass_density.F90"
+#include "rhs_force_ff_Newtonian_Bian_num_density_multiscale.F90"

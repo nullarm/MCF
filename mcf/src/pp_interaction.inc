@@ -43,7 +43,7 @@
   ! Skip 2 particles beyond cuf off.
   !----------------------------------------------------------
   
-  IF ( dij >= cut_off2 ) THEN
+  IF ( dij >= cut_off_square ) THEN
      CYCLE
   ELSE
      dij = SQRT(dij)
@@ -64,12 +64,20 @@
         CYCLE
      END IF
      
-     rc = (rc1 + rc2)/2.0_MK
-     CALL kernel_set_cut_off(this%kern,rc,stat_info_sub)
+     CALL kernel_set_cut_off(this%kern,rc1,stat_info_sub)
+     CALL kernel_kernel(this%kern,dij,w1,gradw1,stat_info_sub)
+     CALL kernel_set_cut_off(this%kern,rc2,stat_info_sub)
+     CALL kernel_kernel(this%kern,dij,w2,gradw2,stat_info_sub)
      
+     w     = (w1+w2)/2.0_MK
+     gradw = (gradw1+gradw2)/2.0_MK
+     
+  ELSE
+
+   CALL kernel_kernel(this%kern,dij,w,gradw,stat_info_sub)
+
   END IF
   
-  CALL kernel_kernel(this%kern,dij,w,gradw,stat_info_sub)
   
   !----------------------------------------------------------
   ! Check type of particle ip.

@@ -76,10 +76,12 @@
         ! New variables
         !----------------------------------------------------
 
-        REAL(MK)                                :: m0, m1, m2, height
+        INTEGER                                 :: chi_level
+        REAL(MK)                                :: m0, m1, m2
+        REAL(MK)                                :: height, m_increment
         REAL(MK)                                :: psi
         INTEGER                                 :: multiscale_shape
-        INTEGER                                 :: i
+        INTEGER                                 :: i, j
         
         !----------------------------------------------------
         ! Initialization of variables.
@@ -99,6 +101,8 @@
         
         multiscale = &
              control_get_multiscale(this%ctrl,stat_info_sub)
+        chi_level        = &
+             physics_get_chi_level(this%phys,stat_info_sub)
         multiscale_shape = &
              physics_get_multiscale_shape(this%phys,stat_info_sub)
         Call physics_get_min_phys(this%phys,min_phys,stat_info_sub)
@@ -133,19 +137,26 @@
                  
               CASE (2)
                  ! square hat size distribution
+                 ! this means symmetry, therefore, 
+                 ! height is half of the box divided by chi_level
                  
-                 height = max_phys(2)-min_phys(2)
+                 height = (max_phys(2)-min_phys(2))/2.0_MK/chi_level
+                 m_increment = (m2-m1)/(chi_level-1)
                  
                  DO i=1, this%num_part_real
                     
-                    IF (this%x(2,i) > min_phys(2) + height/4.0_MK .AND. &
-                         this%x(2,i) < max_phys(2) - height/4.0_MK ) THEN
-                       ! middle half of the domain
-                       this%m(i) = m2
-                    ELSE
-                       ! first 1/4 and last 1/4 of the domain
-                       this%m(i) = m1
-                    END IF
+                    DO j=0, chi_level-1
+                       
+                       IF ((this%x(2,i) >= min_phys(2)  + j * height .AND. &
+                            this%x(2,i) < min_phys(2)  + (j+1) * height ) .OR. & 
+                            (this%x(2,i) < max_phys(2) - j * height .AND. &
+                            this%x(2,i) >= max_phys(2) - (j+1) * height) ) THEN
+                          ! middle half of the domain
+                       this%m(i) = m1 + m_increment*j
+                       
+                       END IF
+                       
+                    END DO
                     
                  END DO
              
@@ -169,21 +180,30 @@
                  
               CASE (-2)
                  ! inverse square hat size distribution
+                 ! this means symmetry, therefore, 
+                 ! height is half of the box divided by chi_level
                  
-                 height = max_phys(2)-min_phys(2)
+                 
+                 height = (max_phys(2)-min_phys(2))/2.0_MK/chi_level
+                 m_increment = (m2-m1)/(chi_level-1)
                  
                  DO i=1, this%num_part_real
                     
-                    IF (this%x(2,i) > min_phys(2) + height/4.0_MK .AND. &
-                         this%x(2,i) < max_phys(2) - height/4.0_MK ) THEN
-                       ! middle half of the domain
-                       this%m(i) = m1
-                    ELSE
-                       ! first 1/4 and last 1/4 of the domain
-                       this%m(i) = m2
-                    END IF
+                    DO j=0, chi_level-1
+                       
+                       IF ((this%x(2,i) >= min_phys(2)  + j * height .AND. &
+                            this%x(2,i) < min_phys(2)  + (j+1) * height) .OR. & 
+                            (this%x(2,i) < max_phys(2) - j * height .AND. &
+                            this%x(2,i) >= max_phys(2) - (j+1) * height)) THEN
+                          ! middle half of the domain
+                       this%m(i) = m2 - m_increment*j
+                       
+                       END IF
+                       
+                    END DO
                     
                  END DO
+                 
                  ! inverse of linear hat for size distribution
                  ! and assume the middle has minimum size particle
                  ! height = (max_phys(2)-min_phys(2))/2.0_MK 

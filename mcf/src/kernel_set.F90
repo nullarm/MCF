@@ -46,7 +46,7 @@
               
            CASE (1)
               
-              this%coef = 120.0_MK/this%h
+              this%coef = 1.0_MK/120.0_MK/this%h
               
            CASE (2)
               

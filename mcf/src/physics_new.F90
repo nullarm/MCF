@@ -48,6 +48,7 @@
         this%num_species = 2
         this%chi1        = 1.0_MK ! default constant mass
         this%chi2        = 1.0_MK ! default constant mass
+        this%chi_level   = 2
         this%multiscale_shape = 2.0_MK ! default hat
         this%num_dim     = 2
 
@@ -223,6 +224,8 @@
         CALL tool_print_msg(this%tool, &
              "num_species", this%num_species, stat_info_sub)
         IF ( multiscale > 0 ) THEN
+           CALL tool_print_msg(this%tool, &
+                "chi_level", this%chi_level, stat_info_sub)
            CALL tool_print_msg(this%tool, &
                 "chi1", this%chi1, stat_info_sub)
            CALL tool_print_msg(this%tool, &

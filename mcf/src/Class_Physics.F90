@@ -72,7 +72,8 @@
            !                  domain, including solid wall,
            !                  if there is.
            !-------------------------------------------------
-           
+
+           INTEGER                            :: chi_level           
            REAL(MK)                           :: chi1, chi2
            INTEGER                            :: multiscale_shape
            INTEGER                            :: num_dim 

@@ -5,7 +5,7 @@
 ! dissipative(viscous) force and random(thermal noise) force.
 ! Using Bian 2013 formulation.
 !----------------------------------------------------------------
-      SUBROUTINE rhs_force_ff_Newtonian_Bian(this,&
+      SUBROUTINE rhs_force_ff_Newtonian_Bian_num_density(this,&
            xi,xj,dij,vi,vj,numi,numj, pi,pj,&
            mi,mj,w,gradw,fi,fj,auij,stat_info)
         !----------------------------------------------------
@@ -240,6 +240,6 @@
         
         RETURN
         
-      END SUBROUTINE rhs_force_ff_Newtonian_Bian
+      END SUBROUTINE rhs_force_ff_Newtonian_Bian_num_density
       
       

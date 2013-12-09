@@ -115,8 +115,6 @@ mpich_clean:
 	-rm -rf ${WRKDIR}/mpich2-$(MPICH_VERSION)
 
 
-
-
 fftw_fetch: 
 	cd $(DISTDIR); \
 	ftp $(FFTW_SITE)/fftw-$(FFTW_VERSION).tar.gz
@@ -126,10 +124,10 @@ fftw_extract: $(DISTDIR)/fftw-$(FFTW_VERSION).tar.gz
 
 fftw_compile: 
 	cd ${WRKDIR}/fftw-$(FFTW_VERSION); \
-	./configure --prefix=$(PREFIX) CC=$(CC) FC=$(FC) F77=$(FC) F90=$(FC) FCFLAGS="$(FCFLAGS)" \
+	./configure --prefix=$(PREFIX) CC=$(CC) FC=$(FC) F77=$(FC) F90=$(FC) \
 	--enable-fortran --enable-float; \
 	make ${BUILD_MAKE_FLAGS} && make install; \
-	./configure --prefix=$(PREFIX) CC=$(CC) FC=$(FC) F77=$(FC) F90=$(FC) FCFLAGS="$(FCFLAGS)" \
+	./configure --prefix=$(PREFIX) CC=$(CC) FC=$(FC) F77=$(FC) F90=$(FC) \
 	--enable-fortran; \
 	make ${BUILD_MAKE_FLAGS} && make install
 
@@ -145,7 +143,7 @@ ppm_configure:
 	./configure --prefix=$(PREFIX) --enable-mpi \
 	FC=$(MPIFC) \
 	MPIFC=$(MPIFC) LDFLAGS=-L$(PREFIX)/lib \
-	MAKEDEPF90=$(MAKEDEPF90) FCFLAGS="-I$(PREFIX)/include -g"
+	MAKEDEPF90=$(MAKEDEPF90) FCFLAGS="-I$(PREFIX)/include -g -O2"
 
 ppm_compile:
 	cd ${WRKDIR}/libppm-$(PPM_VERSION); \
@@ -202,19 +200,23 @@ makedepf90_install:
 metis_extract: $(DISTDIR)/metis-$(METIS_VERSION).tar.gz
 	${EXTRACT_COMAND} -d ${WRKDIR} $<
 
+# https://trac.macports.org/browser/trunk/dports/math/metis/files/patch-GKlib_GKlibSystem.cmake.diff?rev=105190
+#metis_patch:
+#	cp files/GKlibSystem.cmake ${WRKDIR}/metis-$(METIS_VERSION)/GKlib/GKlibSystem.cmake
+
 metis_patch: 
 	cp files/rename.h ${WRKDIR}/metis-$(METIS_VERSION)/src/
 
 metis_configure:
-	cd ${WRKDIR}/metis-*; \
+	cd ${WRKDIR}/metis-$(METIS_VERSION); \
 	./configure --prefix=${PREFIX} CC=$(CC)
 
 metis_compile:
-	cd ${WRKDIR}/metis-*; \
+	cd ${WRKDIR}/metis-$(METIS_VERSION); \
 	make ${BUILD_MAKE_FLAGS}
 
 metis_install:
-	cd ${WRKDIR}/metis-*; \
+	cd ${WRKDIR}/metis-$(METIS_VERSION); \
 	make install
 
 

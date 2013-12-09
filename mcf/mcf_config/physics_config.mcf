@@ -30,11 +30,22 @@
 #                      Remark :		       
 #                      wall boundary are not considered as one different
 #		       species.
+#      chi           : relative coarse-graining level in length of
+#                      one direciton.
+#                      So for mass/volume, chi^D, D=1, 2, or 3.
+#                      
+#      multiscale_shape: size distribution shape
 #----------------------------------------------------------------------
 	
-num_species = 2
+num_species = 1
+
+chi_level = 4
+
+chi1 = 1.0
+
+chi2 = 2.0
 		
-		
+multiscale_shape = 2
 #----------------------------------------------------------------------
 #	< Spatial Definition >
 #
@@ -57,10 +68,10 @@ num_species = 2
 	
 num_dim   = 2
 min_phys  = 0.0, 0.0
-max_phys  = 0.1, 0.1
+max_phys  = 2.0, 4.0
 lattice   = 1
-num_part  = 50, 50
-cut_off   = 9.6e-3
+num_part  = 80, 160
+cut_off   = 0.075
 
 
 #----------------------------------------------------------------------
@@ -90,10 +101,10 @@ cut_off   = 9.6e-3
 #----------------------------------------------------------------------
 
 dt           = -1.0
-step_start   = -1
-step_end     = -1
-time_start   = 0.0
-time_end     = 1000.0
+step_start   =  0
+step_end     =  50000
+time_start   = -1.0
+time_end     = -1.0
 
 #----------------------------------------------------------------------
 #  < Input parameters for fluid properties >
@@ -114,14 +125,14 @@ time_end     = 1000.0
 #            
 #----------------------------------------------------------------------
 
-rho      = 1.0e+3
-eta      = 0.1
-eta_coef = 4.0
+rho      = 1.0
+eta      = 8.46
+eta_coef = 5.0
 ksai     = 0.0
 kt       = 0.0
-c        = 2.0e-2
-rho_ref  = 9.0e+2
-gamma    = 7.0
+c        = 400.0
+rho_ref  = 0.0
+gamma    = 1.0
 
 
 #----------------------------------------------------------------------
@@ -204,8 +215,8 @@ evec_tolerance = 0.01
 #                      strategy is used.
 #----------------------------------------------------------------------
 	
-body_force_type = 1
-body_force      = 5.0e-5, 0.0
+body_force_type = 2
+body_force      = 750.0, 0.0
 body_force_d    = 0.0, 0.0
 
 #----------------------------------------------------------------------
@@ -454,7 +465,7 @@ flow_adjust_freq = 10
 #  coll_omega     : initial rotating velocity, always 3D vector.
 #----------------------------------------------------------------------
 
-num_colloid          = 1
+num_colloid          = 0
 coll_adapt_t_coef    = 1.0
 coll_sub_time_step   = 1
 coll_implicit_pair_num_sweep       = 1
@@ -483,7 +494,7 @@ cc_repul_F0      = 0.0
 cc_magnet_cut_off = 0.0
 cc_magnet_cut_on  = 0.0
 cc_magnet_F0      = 1.0		 
-cc_magnet_mom      = -1.0, 0.0 1.0
+cc_magnet_mom      = -1.0, 0.0, 1.0
 cc_magnet_rot_vector = 0.0,1.0,0.0, 0.0
 cc_magnet_rot_f      = 100.0
 

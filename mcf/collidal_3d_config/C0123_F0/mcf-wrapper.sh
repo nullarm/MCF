@@ -28,7 +28,7 @@ for b in $(seq 4.5 0.25 6.0); do
     cpreplace vars.mcf.${b} ${dname} ctrl.mcf  io_config.mcf  physics_config.mcf
     cd ${dname}
     githead > git.commit.id
-    mpirun -np 1 ./mcf &
+    mpirun -np 1 ${mcf} &
     cd ../
 done
 

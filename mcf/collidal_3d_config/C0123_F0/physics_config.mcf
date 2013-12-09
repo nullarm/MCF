@@ -402,7 +402,7 @@ cw_repul_F0      = 0.16863661
 
 coll_shape  = 2
 coll_radius = 1, 0.0, 0.0
-coll_x      = 4.0, 4.0, M4_COLB
+coll_x      = 4.0, 4.0, COLB
 
 coll_shape  = 2
 coll_radius = 1, 0.0, 0.0

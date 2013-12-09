@@ -23,7 +23,7 @@ mcf=/scratch/work/MCF/mcf/src/mcf
 src=/scratch/work/MCF/
 
 for b in $(seq 4.5 0.25 6.0); do
-    echo "M4_COLB=$b" > vars.mcf.${b}
+    echo "COLB=$b" > vars.mcf.${b}
     dname=$(var2dirname vars.mcf.${b})
     cpreplace vars.mcf.${b} ${dname} ctrl.mcf  io_config.mcf  physics_config.mcf
     cd ${dname}

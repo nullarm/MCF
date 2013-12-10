@@ -48,10 +48,10 @@ else
     src=/scratch/work/MCF/
 fi
 
-for b in 4.01   4.08   4.15   4.22   4.29   4.36   4.43; do
-    echo "COLB=$b" > vars.mcf.${b}
-    dname=$(var2dirname vars.mcf.${b})
-    cpreplace vars.mcf.${b} ${dname} ctrl.mcf  io_config.mcf  physics_config.mcf
+for n in 1 2 3 4 5; do
+    octave gen.m ${n}
+    dname=$(var2dirname vars.mcf.${n})
+    cpreplace vars.mcf.${n} ${dname} ctrl.mcf  io_config.mcf  physics_config.mcf
     githead > ${dname}/git.commit.id
     rundispatch
 done

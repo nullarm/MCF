@@ -3,10 +3,16 @@
 set -e
 set -u
 
-for d in $(ls -d COLB*); do
+for d in $(ls -d COLR*); do
     cd ${d}
     for c in $(ls colloid/mcf*); do
-	awk '{print $1, $3, $2, 1.0}' ${c}
+	r1=1
+	r2=$(awk -v FS="=" '$1=="COLR"{print $2}' vars.mcf)
+	if [ -n "${r2}" ]; then
+	    awk -v r1=${r1} -v r2=${r2} 'NR%2==0{print $1, $3, $2, r1} NR%2==1{print $1, $3, $2, r2}' ${c}
+	else
+	    awk '{print $1, $3, $2, 1.0}' ${c}
+	fi
 	printf "\n"
     done > punto.dat
     cd ..

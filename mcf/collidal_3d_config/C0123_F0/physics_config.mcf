@@ -401,12 +401,12 @@ cw_repul_cut_on  = 1.0e-6
 cw_repul_F0      = 0.16863661
 
 coll_shape  = 2
-coll_radius = 1, 0.0, 0.0
-coll_x      = 4.0, 4.0, COLB
+coll_radius = COLR, 0.0, 0.0
+coll_x      = 4.0,  4.0, COLZ
 
 coll_shape  = 2
 coll_radius = 1, 0.0, 0.0
-coll_x      = 6.0, 4.0, 4.0
+coll_x      = 4.0, 4.0, 4.0
 
 #----------------------------------------------------------------------
 #       < Boundary condition of physical domain >

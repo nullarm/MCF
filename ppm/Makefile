@@ -1,7 +1,7 @@
 # prefix to install libraries locally
-# libarieris go to $PREFIX/lib 
+# libarieris go to $PREFIX/lib
 # binaries go to  $PREFIX/bin
-# headers go to $PREFIX/bin 
+# headers go to $PREFIX/include
 PREFIX=$(PWD)/local_mpich_ifort121_o0_g
 BUILD_MAKE_FLAGS=-j 8
 
@@ -27,6 +27,14 @@ MPIFC=mpif90
 # ppm
 PPM_VERSION=1.1.1
 PPM_DISTR_FILE=libppm-$(PPM_VERSION).tar.gz
+
+# sdl
+SDL_VERSION=1.2.15
+SDL_DISTR_FILE=SDL-${SDL_VERSION}.tar.gz
+
+# punto
+PUNTO_VERSION=0.1.1
+PUNTO_DISTR_FILE=punto-${PUNTO_VERSION}.tar.gz
 
 # a place to fetch fftw library
 FFTW_SITE=ftp://ftp.netbsd.org/pub/NetBSD/packages/distfiles
@@ -57,25 +65,26 @@ all:
 # compile and install 
 install_all_but_mpi: install_fftw \
 	install_vizing install_metis \
-	install_makedepf90 install_ppm
-
+	install_makedepf90 install_ppm \
+	install_sdl install_punto
 
 # install mpich localy
-install_mpi: mpich_extract mpich_configure mpich_compile mpich_install 
+install_mpi: mpich_extract mpich_configure mpich_build mpich_install 
 
 install_all: install_mpi install_all_but_mpi
 
-install_metis: metis_extract metis_configure metis_compile metis_install
-install_vizing: vizing_extract vizing_configure vizing_compile vizing_install
-install_ppm: ppm_extract ppm_configure ppm_compile ppm_install
+install_metis: metis_extract metis_configure metis_build metis_install
+install_vizing: vizing_extract vizing_configure vizing_build vizing_install
+install_ppm: ppm_extract ppm_configure ppm_build ppm_install
+install_sdl: sdl_extract sdl_configure sdl_build sdl_install
 
-install_fftw: fftw_extract fftw_compile
+install_fftw: fftw_extract fftw_build
 
-install_pse: ppm-pse_extract  ppm-pse_compile 
+install_pse: ppm-pse_extract  ppm-pse_build 
 
-install_sph: ppm-sph_extract ppm-sph_compile 
+install_sph: ppm-sph_extract ppm-sph_build 
 
-install_makedepf90: makedepf90_extract makedepf90_configure makedepf90_compile makedepf90_install
+install_makedepf90: makedepf90_extract makedepf90_configure makedepf90_build makedepf90_install
 
 
 
@@ -99,7 +108,7 @@ mpich_configure:
         --disable-romio --enable-f90 --disable-cxx --enable-fast=O3 \
         --prefix=$(PREFIX)
 
-mpich_compile:
+mpich_build:
 	cd ${WRKDIR}/mpich2-$(MPICH_VERSION) ; \
 	make ${BUILD_MAKE_FLAGS}
 
@@ -111,9 +120,6 @@ mpich_install:
 mpich_clean:
 	-rm -rf ${WRKDIR}/mpich2-$(MPICH_VERSION)
 
-
-
-
 fftw_fetch: 
 	cd $(DISTDIR); \
 	ftp $(FFTW_SITE)/fftw-$(FFTW_VERSION).tar.gz
@@ -121,17 +127,49 @@ fftw_fetch:
 fftw_extract: $(DISTDIR)/fftw-$(FFTW_VERSION).tar.gz
 	${EXTRACT_COMAND} -d ${WRKDIR} $<
 
-fftw_compile: 
+fftw_build: 
 	cd ${WRKDIR}/fftw-$(FFTW_VERSION); \
-	./configure --prefix=$(PREFIX) CC=$(CC) FC=$(FC) F77=$(FC) F90=$(FC) FCFLAGS="$(FCFLAGS)" \
+	./configure --prefix=$(PREFIX) CC=$(CC) FC=$(FC) F77=$(FC) F90=$(FC) FCFLAGS=$(FCFLAGS) \
 	--enable-fortran --enable-float; \
 	make ${BUILD_MAKE_FLAGS} && make install; \
-	./configure --prefix=$(PREFIX) CC=$(CC) FC=$(FC) F77=$(FC) F90=$(FC) FCFLAGS="$(FCFLAGS)" \
+	./configure --prefix=$(PREFIX) CC=$(CC) FC=$(FC) F77=$(FC) F90=$(FC) FCFLAGS=$(FCFLAGS) \
 	--enable-fortran; \
 	make ${BUILD_MAKE_FLAGS} && make install
 
 fftw_clean:
 	-rm -rf ${WRKDIR}/fftw-$(FFTW_VERSION)
+
+punto_extract: $(DISTDIR)/$(PUNTO_DISTR_FILE)
+	${EXTRACT_COMAND} -d ${WRKDIR} $<
+
+punto_configure:
+	cd ${WRKDIR}/punto-$(PUNTO_VERSION); \
+	./configure --prefix=$(PREFIX) CC=$(CC) --with-sdl-prefix=${PREFIX}
+
+punto_build:
+	cd ${WRKDIR}/punto-$(PUNTO_VERSION); \
+	make ${BUILD_MAKE_FLAGS}
+
+punto_install:
+	cd ${WRKDIR}/punto-$(PUNTO_VERSION); \
+	make install
+
+sdl_extract: $(DISTDIR)/$(SDL_DISTR_FILE)
+	${EXTRACT_COMAND} -d ${WRKDIR} $<
+
+sdl_configure:
+	cd ${WRKDIR}/SDL-$(SDL_VERSION); \
+	./configure --prefix=$(PREFIX) CC=$(CC) \
+	--enable-audio=no --enable-video=no \
+	--enable-joystick=no --enable-cdrom=no
+
+sdl_build:
+	cd ${WRKDIR}/SDL-$(SDL_VERSION); \
+	make ${BUILD_MAKE_FLAGS}
+
+sdl_install:
+	cd ${WRKDIR}/SDL-$(SDL_VERSION); \
+	make install
 
 
 ppm_extract: $(DISTDIR)/$(PPM_DISTR_FILE)
@@ -143,7 +181,7 @@ ppm_configure:
 	MPIFC=$(MPIFC) LDFLAGS=-L$(PREFIX)/lib \
 	MAKEDEPF90=$(MAKEDEPF90) FCFLAGS="-I$(PREFIX)/include -g"
 
-ppm_compile:
+ppm_build:
 	cd ${WRKDIR}/libppm-$(PPM_VERSION); \
 	make ${BUILD_MAKE_FLAGS}
 
@@ -167,7 +205,7 @@ vizing_configure:
 	cd ${WRKDIR}/vizing-*; \
 	./configure --prefix=${PREFIX} CXX=$(CXX)
 
-vizing_compile:
+vizing_build:
 	cd ${WRKDIR}/vizing-*; \
 	make ${BUILD_MAKE_FLAGS}
 
@@ -186,7 +224,7 @@ makedepf90_configure:
 	cd ${WRKDIR}/makedepf90-*; \
 	./configure --prefix=${PREFIX} CC=$(CC)
 
-makedepf90_compile:
+makedepf90_build:
 	cd ${WRKDIR}/makedepf90-*; \
 	make ${BUILD_MAKE_FLAGS}
 
@@ -202,7 +240,7 @@ metis_configure:
 	cd ${WRKDIR}/metis-*; \
 	./configure --prefix=${PREFIX} CC=$(CC)
 
-metis_compile:
+metis_build:
 	cd ${WRKDIR}/metis-*; \
 	make ${BUILD_MAKE_FLAGS}
 
@@ -215,7 +253,7 @@ ppm-pse_extract: $(DISTDIR)/ppm-pse.tar.gz
 	${EXTRACT_COMAND} -d ${WRKDIR} $<
 
 
-ppm-pse_compile:
+ppm-pse_build:
 	cd ${WRKDIR}/ppm-pse; \
 	LD=$(MPIFC)  FC=$(MPIFC) PREFIX=$(PREFIX) FCFLAGS="$(FCFLAGS)" make  
 
@@ -223,7 +261,7 @@ ppm-sph_extract: $(DISTDIR)/ppm-sph.tar.gz
 	${EXTRACT_COMAND} -d ${WRKDIR} $<
 
 
-ppm-sph_compile:
+ppm-sph_build:
 	cd ${WRKDIR}/ppm-sph; \
 	FC=$(MPIFC) FCFLAGS=$(FCFLAGS) LD=$(MPIFC) PREFIX=$(PREFIX) make  
 
@@ -231,7 +269,7 @@ ppm-sph_compile:
 ppm-dpd_extract: $(DISTDIR)/ppm-dpd.tar.gz
 	${EXTRACT_COMAND} -d ${WRKDIR} $< 
 
-ppm-dpd_compile:
+ppm-dpd_build:
 	cd ${WRKDIR}/ppm-dpd; \
 	LD=$(MPIFC)  FC=$(MPIFC) PREFIX=$(PREFIX) LDFLAGS=-L$(PREFIX)/lib FCFLAGS="$(FCFLAGS)" make  
 

@@ -75,7 +75,7 @@ install_mpi: mpich_extract mpich_configure mpich_build mpich_install
 
 install_all: install_mpi install_all_but_mpi
 
-install_metis: metis_extract metis_configure metis_build metis_install
+install_metis: metis_extract metis_patch metis_configure metis_build metis_install
 install_vizing: vizing_extract vizing_configure vizing_build vizing_install
 install_ppm: ppm_extract ppm_configure ppm_build ppm_install
 install_sdl: sdl_extract sdl_configure sdl_build sdl_install

@@ -28,9 +28,10 @@ function rundispatch() {
 	local p=$(pwd)/${dname}
 	sed -e "s,M4_COMMAND,${mcf},g" \
 	    -e "s,M4_DNAME,${p},g" \
+	    -e "s,M4_NP,${nproc},g" \
 	    -e "s,M4_JOB_NAME,${dname},g" run.m4.sh \
 	     > ${dname}/run.sh
-	llsubmit ${dname}/run.sh
+	# llsubmit ${dname}/run.sh
     else
 	cd ${dname}
 	mpirun -np 1 ${mcf} &
@@ -41,12 +42,13 @@ function rundispatch() {
 if [ $(whoami) = "lu79buz2" ]; then
     mcf=~/work/MCF/mcf/src/mcf
     src=~/work/MCF/
+    nproc=32
 else
     mcf=/scratch/work/MCF/mcf/src/mcf
     src=/scratch/work/MCF/
 fi
 
-for b in $(seq 4.5 0.25 6.0); do
+for b in 4.01   4.08   4.15   4.22   4.29   4.36   4.43; do
     echo "COLB=$b" > vars.mcf.${b}
     dname=$(var2dirname vars.mcf.${b})
     cpreplace vars.mcf.${b} ${dname} ctrl.mcf  io_config.mcf  physics_config.mcf

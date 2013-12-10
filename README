@@ -34,11 +34,3 @@ which calls PPM regularly to handle communication
 between processors.
 All the physics or numerical parts are done
 in this client for a fluid simulation.
-
-
-
-
-
-
-
-

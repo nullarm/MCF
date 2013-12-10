@@ -29,7 +29,7 @@ PPM_VERSION=1.1.1
 PPM_DISTR_FILE=libppm-$(PPM_VERSION).tar.gz
 
 # sdl
-SDL_VERSION=1.2.15
+SDL_VERSION=1.2.15p
 SDL_DISTR_FILE=SDL-${SDL_VERSION}.tar.gz
 
 # punto
@@ -79,6 +79,7 @@ install_metis: metis_extract metis_configure metis_build metis_install
 install_vizing: vizing_extract vizing_configure vizing_build vizing_install
 install_ppm: ppm_extract ppm_configure ppm_build ppm_install
 install_sdl: sdl_extract sdl_configure sdl_build sdl_install
+install_punto: punto_extract punto_configure punto_build punto_install
 
 install_fftw: fftw_extract fftw_build
 
@@ -162,8 +163,10 @@ sdl_extract: $(DISTDIR)/$(SDL_DISTR_FILE)
 
 sdl_configure:
 	cd ${WRKDIR}/SDL-$(SDL_VERSION); \
-	./configure --prefix=$(PREFIX) CC=$(CC) \
-	--enable-audio=no --enable-video=no \
+	./configure --prefix=$(PREFIX) CC=$(CC) CPPFLAGS=-DPREFIX="\"${PREFIX}\"" \
+	--disable-video-directfb --enable-static \
+	--enable-sdl-dlopen=no \
+	--enable-audio=no --disable-nasm \
 	--enable-joystick=no --enable-cdrom=no
 
 sdl_build:

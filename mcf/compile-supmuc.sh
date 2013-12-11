@@ -12,7 +12,7 @@ suffix=4.4.5
 PREFIX=${HOME}/mcf-${fortrancomp}${suffix}
 
 ./configure --prefix=${PREFIX} FC=gfortran MPIFC=mpif90 \
-    LDFLAGS=-L${PREFIX}/lib/ FCFLAGS="-I${PREFIX}/include -g" \
+    LDFLAGS=-L${PREFIX}/lib/ FCFLAGS="-I${PREFIX}/include -g -O2" \
     MAKEDEPF90=${PREFIX}/bin/makedepf90 
 
 make -j 8

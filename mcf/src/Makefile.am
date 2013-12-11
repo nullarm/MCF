@@ -1,4 +1,4 @@
-AM_FCFLAGS   = -O2 -D__MPI -I ${top_srcdir}/src
+AM_FCFLAGS   = -D__MPI -I ${top_srcdir}/src
 bin_PROGRAMS = mcf
 mcf_SOURCES  = mcf.F90\
 	       mcf_header.F90\

@@ -13,7 +13,7 @@ contains
     use mod_unit
     use ppm_module_mktopo
     use ppm_module_data, only : ppm_kind_double, ppm_char, ppm_param_decomp_bisection, &
-         ppm_param_assign_internal, ppm_param_bcdef_periodic
+         ppm_param_assign_internal, ppm_param_bcdef_periodic, ppm_debug
     use ppm_module_init, only : ppm_init
     implicit none
 
@@ -26,13 +26,13 @@ contains
     integer, parameter :: tolexp = INT(LOG10(EPSILON(cutoff)))+1
     integer, dimension(:), allocatable                        :: bcdef 
 
-    real(MK), dimension(:  ), pointer  :: sub_cost => null()
-    integer , dimension(:  ), pointer  :: sub2proc => null()
+    real(MK), dimension(:), pointer  :: sub_cost => null()
+    integer , dimension(:), pointer  :: sub2proc => null()
 
     !> NOTE: fortran 95 features
     real(MK), dimension(:,:), pointer  :: min_sub => null() 
     real(MK), dimension(:,:), pointer  :: max_sub => null() 
-    integer , dimension(:  ), pointer  :: isublist => null()
+    integer , dimension(:), pointer  :: isublist => null()
     !>  Number of subdomains on local processor
     integer                                       :: nsublist
     integer                            :: nsubs
@@ -64,6 +64,8 @@ contains
     min_phys = (/ 0.0_MK, 0.0_MK /)
     max_phys = (/ 1.0_MK, 2.0_MK /)
 
+    ppm_debug = 2
+    topo_id = 1
     call ppm_topo_mkgeom_d(decomp, ppm_param_assign_internal, min_phys, max_phys, bcdef,  &
          cutoff,topo_id, min_sub, max_sub, sub_cost, sub2proc, nsubs, isublist, &
          nsublist, info)

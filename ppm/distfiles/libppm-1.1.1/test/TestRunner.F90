@@ -3,6 +3,7 @@ program TestRunner
   use ppm_module_mktopo_test
   use ppm_module_map_part_ghost_test
   use ppm_module_get_revision_test
+  use ppm_module_alloc_test
   implicit none
 
   integer          :: i
@@ -27,6 +28,8 @@ program TestRunner
      call ppm_module_map_part_ghost_run
   case(4)
      call ppm_module_get_revision_run
+  case(5)
+     call ppm_module_alloc_run
   case default
      print *, __FILE__, __LINE__, "Unknown test case"
   end select

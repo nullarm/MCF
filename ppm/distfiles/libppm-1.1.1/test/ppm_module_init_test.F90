@@ -23,7 +23,6 @@ contains
     
     info = 0 
 #ifdef HAVE_MPI
-
     call unit_init(4)
     call MPI_Init(info)
     print *, 'preved'

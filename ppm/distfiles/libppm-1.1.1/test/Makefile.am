@@ -9,7 +9,7 @@ endif
 
 TestRunner_SOURCES=TestRunner.F90 mod_unit.F90 ppm_module_init_test.F90 \
 	ppm_module_mktopo_test.F90 ppm_module_map_part_ghost_test.F90 \
-	ppm_module_get_revision_test.F90
+	ppm_module_get_revision_test.F90 ppm_module_alloc_test.F90
 
 AM_FCFLAGS=-I${top_srcdir}/src
 

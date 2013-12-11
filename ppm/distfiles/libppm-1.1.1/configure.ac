@@ -12,6 +12,7 @@ AC_PROG_FC
 AC_LANG(Fortran)
 
 # use mpi in any case (probably fakempi.h)
+m4_pattern_allow([AC_MSG_ERROR])
 AC_DEFINE([USE_MPI], [1], [use mpi])
 AC_ARG_ENABLE(mpi, [AC_HELP_STRING([--enable-mpi],[compile  with mpi])], have_mpi=$enableval, have_mpi=no)
 if test "$have_mpi" = "yes"; then

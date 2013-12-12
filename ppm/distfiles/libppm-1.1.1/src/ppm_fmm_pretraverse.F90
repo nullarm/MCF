@@ -155,12 +155,12 @@
       
       ! auxiliary variables
       LOGICAL                              :: drct
-      LOGICAL,DIMENSION(:),   POINTER      :: flagcoeff,flagpart
+      LOGICAL,DIMENSION(:),   POINTER      :: flagcoeff=>null(),flagpart=>null()
       INTEGER                              :: i,j,cnt,level
       INTEGER                              :: root,iopt,istat
       REAL(MK)                             :: dx,dy,dz,dist,rad,t0 
       INTEGER                              :: stackpointer,curbox,cursub
-      INTEGER,DIMENSION(:),   POINTER      :: stack
+      INTEGER,DIMENSION(:),   POINTER      :: stack=>null()
       INTEGER,DIMENSION(1)                 :: ldu1
       INTEGER,DIMENSION(2)                 :: ldu2
       CHARACTER(LEN=256)                   :: cbuf
@@ -168,12 +168,12 @@
       ! parallelisation
       INTEGER                              :: curtopoid,in_topoid
       INTEGER                              :: topoid
-      INTEGER,DIMENSION(:),   POINTER      :: lpart_subtop
-      INTEGER,DIMENSION(:,:), POINTER      :: lcoeff_subtop
+      INTEGER,DIMENSION(:),   POINTER      :: lpart_subtop=>null()
+      INTEGER,DIMENSION(:,:), POINTER      :: lcoeff_subtop=>null()
       
       ! fmm
-      REAL(MK),DIMENSION(:),  POINTER      :: radius      
-      REAL(MK),DIMENSION(:,:),POINTER      :: centerofbox
+      REAL(MK),DIMENSION(:),  POINTER      :: radius      =>null()
+      REAL(MK),DIMENSION(:,:),POINTER      :: centerofbox=>null()
         
 
       !-------------------------------------------------------------------------

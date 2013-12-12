@@ -126,13 +126,13 @@
       REAL(MK)                          :: t0,mincost,maxcost
       INTEGER, DIMENSION(ppm_dim)       :: ldl,ldu
       INTEGER, DIMENSION(3,1), TARGET   :: ndummy
-      INTEGER, DIMENSION(:,:), POINTER  :: nnodes
+      INTEGER, DIMENSION(:,:), POINTER  :: nnodes=>null()
       INTEGER                           :: i,meshid,topoid,proc
       INTEGER                           :: iopt,minproc,maxproc
       LOGICAL                           :: valid
       CHARACTER(LEN=ppm_char)           :: mesg
 #ifdef USE_MPI
-      REAL(MK), DIMENSION(:), POINTER   :: sendcost, proccost
+      REAL(MK), DIMENSION(:), POINTER   :: sendcost=>null(), proccost=>null()
 #endif
       !-------------------------------------------------------------------------
       !  Externals 

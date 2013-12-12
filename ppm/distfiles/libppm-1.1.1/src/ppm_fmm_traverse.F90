@@ -153,20 +153,20 @@
       REAL(MK)                             :: sine,cosine,val,prod
       REAL(MK)                             :: angle,reci,t0
       REAL(MK)                             :: dx,dy,dz,tmp  
-      REAL(MK),DIMENSION(:  ),POINTER      :: box_rho,box_theta,box_phi
+      REAL(MK),DIMENSION(:  ),POINTER      :: box_rho=>null(),box_theta=>null(),box_phi=>null()
       COMPLEX(MK)                          :: csum
       COMPLEX(MK),PARAMETER                :: CI=(0.0_MK,1.0_MK)
       CHARACTER(LEN=ppm_char)              :: cbuf
       
       ! fmm 
-      REAL(MK),DIMENSION(:  ),POINTER      :: fracfac,totalmass,radius
-      REAL(MK),DIMENSION(:,:),POINTER      :: Pnm,Anm,sqrtfac,centerofbox
-      COMPLEX(MK),DIMENSION(:,:),POINTER   :: Inner,Ynm
+      REAL(MK),DIMENSION(:  ),POINTER      :: fracfac=>null(),totalmass=>null(),radius=>null()
+      REAL(MK),DIMENSION(:,:),POINTER      :: Pnm=>null(),Anm=>null(),sqrtfac=>null(),centerofbox=>null()
+      COMPLEX(MK),DIMENSION(:,:),POINTER   :: Inner=>null(),Ynm=>null()
       
 #if   __DIM == __SFIELD
-      COMPLEX(MK),DIMENSION(:,:,:)  ,POINTER :: expansion
+      COMPLEX(MK),DIMENSION(:,:,:)  ,POINTER :: expansion=>null()
 #else
-      COMPLEX(MK),DIMENSION(:,:,:,:),POINTER :: expansion
+      COMPLEX(MK),DIMENSION(:,:,:,:),POINTER :: expansion=>null()
 #endif
       
       !-------------------------------------------------------------------------

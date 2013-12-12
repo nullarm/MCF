@@ -117,7 +117,7 @@
       REAL(MK)                       :: t0
       INTEGER                        :: ipart,idom,j,ison,topoid
       LOGICAL                        :: valid
-      INTEGER, DIMENSION(:), POINTER :: bcdef
+      INTEGER, DIMENSION(:), POINTER :: bcdef=>null()
       !-------------------------------------------------------------------------
       !  Externals 
       !-------------------------------------------------------------------------

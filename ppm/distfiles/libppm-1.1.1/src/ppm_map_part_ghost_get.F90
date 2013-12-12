@@ -223,8 +223,8 @@
         INTEGER               :: nghost,nghostplus
         INTEGER               :: ipart,sendrank,recvrank
         INTEGER               :: iopt,iset,ibuffer
-        REAL(MK),DIMENSION(:,:),POINTER :: xt
-        INTEGER, DIMENSION(:),POINTER :: tlist
+        REAL(MK),DIMENSION(:,:),POINTER :: xt=>null()
+        INTEGER, DIMENSION(:),POINTER :: tlist=>null()
         REAL(MK)              :: xminf,yminf,zminf 
         REAL(MK)              :: xmaxf,ymaxf,zmaxf
         REAL(MK)              :: xmini,ymini,zmini

@@ -41,8 +41,8 @@
          !----------------------------------------------------------------------
          !  Work lists
          !----------------------------------------------------------------------
-         INTEGER, DIMENSION(:), POINTER :: ilist1,ilist2,ighost
-         LOGICAL, DIMENSION(:), POINTER :: lghost
+         INTEGER, DIMENSION(:), POINTER :: ilist1=>null(),ilist2=>null(),ighost=>null()
+         LOGICAL, DIMENSION(:), POINTER :: lghost=>null()
 
          PRIVATE :: ilist1,ilist2,ighost,lghost
 

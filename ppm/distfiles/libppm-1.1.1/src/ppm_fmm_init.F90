@@ -214,32 +214,32 @@
       INTEGER                             :: maxlevels
       REAL(MK),DIMENSION(3,2)             :: weights
       REAL(MK),DIMENSION(3  )             :: minboxsize
-      REAL(MK),DIMENSION(:,:), POINTER    :: min_box,max_box
-      REAL(MK),DIMENSION(:),   POINTER    :: boxcost       
-      REAL(MK),DIMENSION(:)  , POINTER    :: fac,fracfac
-      REAL(MK),DIMENSION(:,:), POINTER    :: Anm,sqrtfac
+      REAL(MK),DIMENSION(:,:), POINTER    :: min_box=>null(),max_box=>null()
+      REAL(MK),DIMENSION(:),   POINTER    :: boxcost       =>null()
+      REAL(MK),DIMENSION(:)  , POINTER    :: fac=>null(),fracfac=>null()
+      REAL(MK),DIMENSION(:,:), POINTER    :: Anm=>null(),sqrtfac=>null()
        
       INTEGER                             :: n,m,level
-      INTEGER,DIMENSION(:),    POINTER    :: box2proc,boxid 
-      REAL(MK),DIMENSION(:),   POINTER    :: cost
+      INTEGER,DIMENSION(:),    POINTER    :: box2proc=>null(),boxid =>null()
+      REAL(MK),DIMENSION(:),   POINTER    :: cost=>null()
       REAL(MK)                            :: ghostsize
       INTEGER                             :: decomp,assig
       INTEGER,DIMENSION(6)                :: bcdef           
-      INTEGER,DIMENSION(:),    POINTER    :: subs2proc,isublist
+      INTEGER,DIMENSION(:),    POINTER    :: subs2proc=>null(),isublist=>null()
       INTEGER                             :: nsublist 
-      REAL(MK),DIMENSION(:,:), POINTER    :: min_sub,max_sub 
+      REAL(MK),DIMENSION(:,:), POINTER    :: min_sub=>null(),max_sub =>null()
       INTEGER                             :: nsubs,topoid  
-      INTEGER,DIMENSION(:),    POINTER    :: new_subs2proc
+      INTEGER,DIMENSION(:),    POINTER    :: new_subs2proc=>null()
       INTEGER                             :: mapt,Mpart
       INTEGER                             :: istat         
-      REAL(MK),DIMENSION(:  ), POINTER    :: radius,totalmass
-      REAL(MK),DIMENSION(:,:), POINTER    :: centerofbox      
-      REAL(MK),DIMENSION(:,:), POINTER    :: treepart
+      REAL(MK),DIMENSION(:  ), POINTER    :: radius=>null(),totalmass=>null()
+      REAL(MK),DIMENSION(:,:), POINTER    :: centerofbox      =>null()
+      REAL(MK),DIMENSION(:,:), POINTER    :: treepart=>null()
 
 #if   __DIM == __SFIELD              
-      REAL(MK),DIMENSION(:  ), POINTER    :: treewp
+      REAL(MK),DIMENSION(:  ), POINTER    :: treewp=>null()
 #elif __DIM == __VFIELD
-      REAL(MK),DIMENSION(:,:), POINTER    :: treewp
+      REAL(MK),DIMENSION(:,:), POINTER    :: treewp=>null()
 #endif
 
       !-------------------------------------------------------------------------

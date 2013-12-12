@@ -61,23 +61,23 @@
          ! switches for tree type: do we have particles and/or a mesh?
          LOGICAL                          :: have_particles,have_mesh
          ! Ranked particle lists in all tree boxes
-         INTEGER, DIMENSION(:,:), POINTER :: tree_lhbx
-         INTEGER, DIMENSION(:  ), POINTER :: tree_lpdx,lhbx_cut,lpdx_cut
+         INTEGER, DIMENSION(:,:), POINTER :: tree_lhbx=>null()
+         INTEGER, DIMENSION(:  ), POINTER :: tree_lpdx=>null(),lhbx_cut=>null(),lpdx_cut=>null()
 
          !----------------------------------------------------------------------
          !  Work arrays
          !----------------------------------------------------------------------
          ! list of all current tree boxes and number of subdivisions per box
-         INTEGER , DIMENSION(:  ), POINTER       :: boxlist,ndiv
+         INTEGER , DIMENSION(:  ), POINTER       :: boxlist=>null(),ndiv=>null()
          ! global number of mesh cells and local number of cells per box
-         INTEGER , DIMENSION(:,:), POINTER       :: Nmc,Nm_box
+         INTEGER , DIMENSION(:,:), POINTER       :: Nmc=>null(),Nm_box=>null()
          ! boxID for each particle and number of particles per box
-         INTEGER , DIMENSION(:), POINTER         :: cbox,npbx
+         INTEGER , DIMENSION(:), POINTER         :: cbox=>null(),npbx=>null()
          ! particle-based costs of all boxes
-         REAL(ppm_kind_double), DIMENSION(:), POINTER :: pcst_d
-         REAL(ppm_kind_single), DIMENSION(:), POINTER :: pcst_s
+         REAL(ppm_kind_double), DIMENSION(:), POINTER :: pcst_d=>null()
+         REAL(ppm_kind_single), DIMENSION(:), POINTER :: pcst_s=>null()
          ! accumulated costs from all processors
-         REAL(ppm_kind_double), DIMENSION(:), POINTER :: pcsum_d
-         REAL(ppm_kind_single), DIMENSION(:), POINTER :: pcsum_s
+         REAL(ppm_kind_double), DIMENSION(:), POINTER :: pcsum_d=>null()
+         REAL(ppm_kind_single), DIMENSION(:), POINTER :: pcsum_s=>null()
 
       END MODULE ppm_module_data_tree

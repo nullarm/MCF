@@ -193,16 +193,16 @@
       !  Local variables 
       !-------------------------------------------------------------------------
       INTEGER                           :: i,topoid,j,treetype,nbox,isub,iopt
-      INTEGER, DIMENSION(:,:), POINTER  :: ineigh,subs_bc
+      INTEGER, DIMENSION(:,:), POINTER  :: ineigh=>null(),subs_bc=>null()
       INTEGER, DIMENSION(1  )           :: Nmdummy,ldc
       INTEGER, DIMENSION(3,1)           :: nnodes
-      INTEGER, DIMENSION(:  ), POINTER  :: nneigh,nchld
+      INTEGER, DIMENSION(:  ), POINTER  :: nneigh=>null(),nchld=>null()
       REAL(MK)                          :: t0,parea,sarea,larea,lmyeps
       REAL(MK), DIMENSION(ppm_dim)      :: gsvec
       REAL(MK), DIMENSION(1,1)          :: xpdummy
       LOGICAL , DIMENSION(ppm_dim)      :: fixed
       REAL(MK), DIMENSION(3,2)          :: weights
-      REAL(MK), DIMENSION(:,:), POINTER :: min_box,max_box
+      REAL(MK), DIMENSION(:,:), POINTER :: min_box=>null(),max_box=>null()
       CHARACTER(LEN=ppm_char)           :: mesg
       !-------------------------------------------------------------------------
       !  Externals 

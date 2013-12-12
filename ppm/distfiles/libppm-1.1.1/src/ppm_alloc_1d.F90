@@ -132,8 +132,6 @@
       INTEGER                   , DIMENSION(:), POINTER :: adata
 #elif __KIND == __LOGICAL
       LOGICAL                   , DIMENSION(:), POINTER :: adata
-#elif __KIND == __LOGICAL
-      LOGICAL                   , DIMENSION(:), POINTER :: adata
 #endif
       INTEGER, DIMENSION(:)     , INTENT(IN)    :: lda
       INTEGER                   , INTENT(IN)    :: iopt

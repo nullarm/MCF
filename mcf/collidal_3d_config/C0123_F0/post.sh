@@ -3,8 +3,9 @@
 set -e
 set -u
 
-for d in $(ls -d COLR*); do
+for d in $(ls -d COL*); do
     cd ${d}
+    printf "processing: %s\n" ${d} > "/dev/stderr"
     for c in $(ls colloid/mcf*); do
 	r1=1
 	r2=$(awk -v FS="=" '$1=="COLR"{print $2}' vars.mcf)

@@ -41,10 +41,10 @@
          !----------------------------------------------------------------------
          !  Work memory
          !----------------------------------------------------------------------
-         INTEGER, DIMENSION(:  ), POINTER :: isendfromsub,isendtosub
-         INTEGER, DIMENSION(:,:), POINTER :: isendblkstart,isendblksize,ioffset
-         INTEGER, DIMENSION(:  ), POINTER :: irecvfromsub,irecvtosub
-         INTEGER, DIMENSION(:,:), POINTER :: irecvblkstart,irecvblksize
+         INTEGER, DIMENSION(:  ), POINTER :: isendfromsub=>null(),isendtosub=>null()
+         INTEGER, DIMENSION(:,:), POINTER :: isendblkstart=>null(),isendblksize=>null(),ioffset=>null()
+         INTEGER, DIMENSION(:  ), POINTER :: irecvfromsub=>null(),irecvtosub=>null()
+         INTEGER, DIMENSION(:,:), POINTER :: irecvblkstart=>null(),irecvblksize=>null()
 
          PRIVATE :: isendfromsub,isendtosub,isendblkstart,isendblksize
          PRIVATE :: ioffset,irecvfromsub,irecvtosub,irecvblkstart,irecvblksize

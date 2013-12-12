@@ -114,14 +114,14 @@
       
       ! Accumulators
       ! Need double precision for the inner products
-      REAL(KIND(1.0D0)),DIMENSION(:)  ,POINTER :: tmphd
-      REAL(KIND(1.0D0)),DIMENSION(:,:),POINTER :: ghd
+      REAL(KIND(1.0D0)),DIMENSION(:)  ,POINTER :: tmphd=>null()
+      REAL(KIND(1.0D0)),DIMENSION(:,:),POINTER :: ghd=>null()
       REAL(KIND(1.0D0))                        :: lnorm,gnorm,groti,grotip1
-      REAL(KIND(1.0D0)),DIMENSION(:),POINTER   :: s,y
-      REAL(KIND(1.0D0)),DIMENSION(:,:),POINTER :: cossin
+      REAL(KIND(1.0D0)),DIMENSION(:),POINTER   :: s=>null(),y=>null()
+      REAL(KIND(1.0D0)),DIMENSION(:,:),POINTER :: cossin=>null()
       
-      REAL(MK), DIMENSION(:), POINTER       :: w
-      REAL(MK), DIMENSION(:,:), POINTER     :: v
+      REAL(MK), DIMENSION(:), POINTER       :: w=>null()
+      REAL(MK), DIMENSION(:,:), POINTER     :: v=>null()
       INTEGER                               :: i,j,k,l,throwaway, iopt
       INTEGER, DIMENSION(3)                 :: ldl,ldu
       LOGICAL                               :: breakdown

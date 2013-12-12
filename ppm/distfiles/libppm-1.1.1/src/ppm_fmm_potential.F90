@@ -230,34 +230,34 @@
       INTEGER                              :: pexp,isymm
       INTEGER ,DIMENSION(1)                :: ldu1
       INTEGER ,DIMENSION(2)                :: ldu2 
-      INTEGER ,DIMENSION(:  ), POINTER     :: newlpdx,stack
+      INTEGER ,DIMENSION(:  ), POINTER     :: newlpdx=>null(),stack=>null()
       REAL(MK)                             :: thetap,eps,angle,reci 
       REAL(MK)                             :: sine,cosine,val,prod 
       REAL(MK),DIMENSION(1)                :: curboxrho,curboxphi,curboxtheta
-      REAL(MK),DIMENSION(:,:),     POINTER :: min_box,max_box
-      REAL(MK),DIMENSION(:,:),     POINTER :: min_sub,max_sub
+      REAL(MK),DIMENSION(:,:),     POINTER :: min_box=>null(),max_box=>null()
+      REAL(MK),DIMENSION(:,:),     POINTER :: min_sub=>null(),max_sub=>null()
       COMPLEX(MK),PARAMETER                :: CI=(0.0_MK,1.0_MK)
       CHARACTER(LEN=ppm_char)              :: cbuf
       REAL(MK)                             :: dx,dy,dz,dist,rad
       ! parallelisation
       REAL(MK)                             :: t0,ghostsize,cutoff
       INTEGER                              :: topoid
-      INTEGER ,DIMENSION(:  ), POINTER     :: part_subtop
+      INTEGER ,DIMENSION(:  ), POINTER     :: part_subtop=>null()
             
       ! fmm 
-      REAL(MK),DIMENSION(:  ),     POINTER :: fracfac,boxcost
-      REAL(MK),DIMENSION(:,:),     POINTER :: sqrtfac,xp,Anm
-      REAL(MK),DIMENSION(:  ), POINTER     :: radius
-      REAL(MK),DIMENSION(:,:), POINTER     :: Pnm,centerofbox 
-      COMPLEX(MK),DIMENSION(:,:),  POINTER :: Ynm 
-      COMPLEX(MK),DIMENSION(:,:),  POINTER :: Outer             
+      REAL(MK),DIMENSION(:  ),     POINTER :: fracfac=>null(),boxcost=>null()
+      REAL(MK),DIMENSION(:,:),     POINTER :: sqrtfac=>null(),xp=>null(),Anm=>null()
+      REAL(MK),DIMENSION(:  ), POINTER     :: radius=>null()
+      REAL(MK),DIMENSION(:,:), POINTER     :: Pnm=>null(),centerofbox =>null()
+      COMPLEX(MK),DIMENSION(:,:),  POINTER :: Ynm =>null()
+      COMPLEX(MK),DIMENSION(:,:),  POINTER :: Outer             =>null()
 
 #if   __DIM == __SFIELD
-      REAL ,DIMENSION(:  ), POINTER        :: wp      
-      COMPLEX(MK),DIMENSION(:,:,:),POINTER :: expansion
+      REAL ,DIMENSION(:  ), POINTER        :: wp      =>null()
+      COMPLEX(MK),DIMENSION(:,:,:),POINTER :: expansion=>null()
 #else 
-      REAL ,DIMENSION(:,:), POINTER          :: wp
-      COMPLEX(MK),DIMENSION(:,:,:,:),POINTER :: expansion           
+      REAL ,DIMENSION(:,:), POINTER          :: wp=>null()
+      COMPLEX(MK),DIMENSION(:,:,:,:),POINTER :: expansion           =>null()
 #endif     
       
       

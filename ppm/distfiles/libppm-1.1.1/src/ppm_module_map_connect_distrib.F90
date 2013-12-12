@@ -38,9 +38,9 @@
          !----------------------------------------------------------------------
          !  Work lists
          !----------------------------------------------------------------------
-         INTEGER, DIMENSION(:)  , POINTER :: id_temp,id_inv
-         INTEGER, DIMENSION(:)  , POINTER :: sendbuffer,recvbuffer,tempbuffer
-         INTEGER, DIMENSION(:,:), POINTER :: cd_local
+         INTEGER, DIMENSION(:)  , POINTER :: id_temp=>null(),id_inv=>null()
+         INTEGER, DIMENSION(:)  , POINTER :: sendbuffer=>null(),recvbuffer=>null(),tempbuffer=>null()
+         INTEGER, DIMENSION(:,:), POINTER :: cd_local=>null()
 
          PRIVATE :: id_temp,id_inv,sendbuffer,recvbuffer,tempbuffer,cd_local
 

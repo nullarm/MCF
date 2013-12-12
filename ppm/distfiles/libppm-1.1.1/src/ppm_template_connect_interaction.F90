@@ -159,17 +159,17 @@
       INTEGER                           :: itarget,isource,hops,Lpart,nproc,rank
       INTEGER                           :: lda
       INTEGER , DIMENSION(ldc)          :: p
-      INTEGER , DIMENSION(:)  , POINTER :: id2
-      INTEGER , DIMENSION(:,:), POINTER :: cd_local,pmap
-      REAL(MK), DIMENSION(:,:), POINTER :: xp_con,vp_con,fp_con
+      INTEGER , DIMENSION(:)  , POINTER :: id2=>null()
+      INTEGER , DIMENSION(:,:), POINTER :: cd_local=>null(),pmap=>null()
+      REAL(MK), DIMENSION(:,:), POINTER :: xp_con=>null(),vp_con=>null(),fp_con=>null()
       ! USER: if allocation of the following varaibles fails due to stack 
       ! size limitations, try putting them in a module and add a USE
       ! statement for it above.
-      REAL(MK), DIMENSION(:,:), POINTER :: xp2,vp2
+      REAL(MK), DIMENSION(:,:), POINTER :: xp2=>null(),vp2=>null()
       !-------------------------------------------------------------------------
       !  USER CODE HERE
       !  Add the variable names for the copies here, e.g.
-      !  REAL(MK), DIMENSION(:,:), POINTER :: mp2,sp2
+      !  REAL(MK), DIMENSION(:,:), POINTER :: mp2=>null(),sp2=>null()
       !  ...
       !-------------------------------------------------------------------------
       

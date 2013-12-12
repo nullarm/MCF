@@ -239,7 +239,7 @@
       ! start and end particle in a box
       INTEGER                                    :: istart,iend,jstart,jend
       ! cell neighbor lists
-      INTEGER, DIMENSION(:,:), POINTER           :: inp,jnp
+      INTEGER, DIMENSION(:,:), POINTER           :: inp=>null(),jnp=>null()
       ! number of interactions for each cell
       INTEGER, SAVE                              :: nnp
       ! cell offsets for box index

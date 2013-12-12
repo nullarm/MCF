@@ -377,13 +377,13 @@
       INTEGER                           :: i,topoid,ul,iopt,j,treetype,nbox
       INTEGER                           :: isub,minbox
       INTEGER, DIMENSION(1)             :: ldc
-      INTEGER, DIMENSION(:,:), POINTER  :: ineigh,subs_bc
-      INTEGER, DIMENSION(:  ), POINTER  :: nneigh,nchld
+      INTEGER, DIMENSION(:,:), POINTER  :: ineigh=>null(),subs_bc=>null()
+      INTEGER, DIMENSION(:  ), POINTER  :: nneigh=>null(),nchld=>null()
       REAL(MK)                          :: t0,parea,sarea,larea,lmyeps,maxvar
       REAL(MK), DIMENSION(ppm_dim)      :: gsvec,meshdx
       LOGICAL , DIMENSION(ppm_dim)      :: fixed
       REAL(MK), DIMENSION(3,2)          :: weights
-      REAL(MK), DIMENSION(:,:), POINTER :: min_box,max_box
+      REAL(MK), DIMENSION(:,:), POINTER :: min_box=>null(),max_box=>null()
       CHARACTER(LEN=ppm_char)           :: mesg
       !-------------------------------------------------------------------------
       !  Externals 

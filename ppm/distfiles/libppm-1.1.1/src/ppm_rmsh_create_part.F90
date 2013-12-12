@@ -247,15 +247,15 @@
       INTEGER                                          :: isub, isubl
       INTEGER                                          :: dim
       INTEGER                                          :: meshid, topoid
-      INTEGER ,  DIMENSION(:,:),        POINTER        :: istart
-      INTEGER ,  DIMENSION(:,:),        POINTER        :: ndata
+      INTEGER ,  DIMENSION(:,:),        POINTER        :: istart=>null()
+      INTEGER ,  DIMENSION(:,:),        POINTER        :: ndata=>null()
       LOGICAL                                          :: reset
       INTEGER ,  DIMENSION(2  )                        :: ldu, ldl
       INTEGER                                          :: iopt
-      REAL(mk) , DIMENSION(:,:,:),      POINTER        :: min_sub
-      REAL(mk) , DIMENSION(:,:  ),      POINTER        :: min_phys, max_phys
+      REAL(mk) , DIMENSION(:,:,:),      POINTER        :: min_sub=>null()
+      REAL(mk) , DIMENSION(:,:  ),      POINTER        :: min_phys=>null(), max_phys=>null()
       REAL(mk)                                         :: dx,dy,dz
-      INTEGER,   DIMENSION(:  ),        POINTER        :: nm
+      INTEGER,   DIMENSION(:  ),        POINTER        :: nm=>null()
       INTEGER                                          :: inp, nnx, nny, nnz
       INTEGER                                          :: i,j,k
       REAL(mk)                                         :: strength

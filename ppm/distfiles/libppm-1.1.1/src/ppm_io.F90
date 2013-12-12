@@ -304,13 +304,13 @@
       INTEGER                          :: i,iopt,ndata,ishift
       LOGICAL                          :: lchar
 #if   __KIND == __SINGLE_PRECISION | __KIND == __DOUBLE_PRECISION
-      REAL(MK)   , DIMENSION(:), POINTER :: abuf
+      REAL(MK)   , DIMENSION(:), POINTER :: abuf=>null()
 #elif __KIND == __SINGLE_PRECISION_COMPLEX| __KIND == __DOUBLE_PRECISION_COMPLEX
-      COMPLEX(MK), DIMENSION(:), POINTER :: abuf
+      COMPLEX(MK), DIMENSION(:), POINTER :: abuf=>null()
 #elif __KIND == __INTEGER | __KIND == __CHARACTER
-      INTEGER    , DIMENSION(:), POINTER :: abuf
+      INTEGER    , DIMENSION(:), POINTER :: abuf=>null()
 #elif __KIND == __LOGICAL
-      LOGICAL    , DIMENSION(:), POINTER :: abuf
+      LOGICAL    , DIMENSION(:), POINTER :: abuf=>null()
 #endif
       !-------------------------------------------------------------------------
       !  Externals 

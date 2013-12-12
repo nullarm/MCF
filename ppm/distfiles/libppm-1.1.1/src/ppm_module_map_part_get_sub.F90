@@ -41,7 +41,7 @@
          !  Work lists
          !----------------------------------------------------------------------
          INTEGER                         :: nlist1,nlist2,nlist3,nlist4
-         INTEGER , DIMENSION(:), POINTER :: ilist1,ilist2,ilist3,ilist4
+         INTEGER , DIMENSION(:), POINTER :: ilist1=>null(),ilist2=>null(),ilist3=>null(),ilist4=>null()
 
          !----------------------------------------------------------------------
          !  Define interfaces to the ppm_map_part

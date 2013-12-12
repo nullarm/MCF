@@ -147,13 +147,13 @@
 #endif
       
       ! fmm      
-      REAL(MK),DIMENSION(:  ),     POINTER :: radius,recvrad,sendrad
-      REAL(MK),DIMENSION(:,:),     POINTER :: recvcen,sendcen,centerofbox 
+      REAL(MK),DIMENSION(:  ),     POINTER :: radius=>null(),recvrad=>null(),sendrad=>null()
+      REAL(MK),DIMENSION(:,:),     POINTER :: recvcen=>null(),sendcen=>null(),centerofbox =>null()
 
 #if   __DIM == __SFIELD       
-      COMPLEX(MK),DIMENSION(:,:,:),POINTER :: expansion,recvexp,sendexp
+      COMPLEX(MK),DIMENSION(:,:,:),POINTER :: expansion=>null(),recvexp=>null(),sendexp=>null()
 #else
-      COMPLEX(MK),DIMENSION(:,:,:,:),POINTER :: expansion,recvexp,sendexp
+      COMPLEX(MK),DIMENSION(:,:,:,:),POINTER :: expansion=>null(),recvexp=>null(),sendexp=>null()
 #endif
 
       

@@ -232,14 +232,14 @@
       ! box size for helper cell list
       REAL(MK), DIMENSION(3)                     :: bsize
       ! cell neighbor lists
-      INTEGER, DIMENSION(:,:), POINTER           :: inp,jnp
+      INTEGER, DIMENSION(:,:), POINTER           :: inp=>null(),jnp=>null()
       ! number of interactions for each cell
       INTEGER                                    :: nnp
       ! for allocate
       INTEGER, DIMENSION(2)                      :: lda
       INTEGER                                    :: iopt
       ! number of cells in all directions
-      INTEGER, DIMENSION(:,:), POINTER           :: Nm
+      INTEGER, DIMENSION(:,:), POINTER           :: Nm=>null()
       ! cell offsets for box index
       INTEGER                                    :: n1,n2,nz,lb
       CHARACTER(LEN=ppm_char)                    :: mesg

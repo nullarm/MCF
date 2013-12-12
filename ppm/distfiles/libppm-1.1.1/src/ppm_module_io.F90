@@ -80,12 +80,12 @@
          !----------------------------------------------------------------------
          !  Work arrays
          !----------------------------------------------------------------------
-         REAL(ppm_kind_single)   , DIMENSION(:), POINTER :: abuf_s
-         REAL(ppm_kind_double)   , DIMENSION(:), POINTER :: abuf_d
-         COMPLEX(ppm_kind_single), DIMENSION(:), POINTER :: abuf_sc
-         COMPLEX(ppm_kind_double), DIMENSION(:), POINTER :: abuf_dc
-         INTEGER                 , DIMENSION(:), POINTER :: abuf_i
-         LOGICAL                 , DIMENSION(:), POINTER :: abuf_l
+         REAL(ppm_kind_single)   , DIMENSION(:), POINTER :: abuf_s=>null()
+         REAL(ppm_kind_double)   , DIMENSION(:), POINTER :: abuf_d=>null()
+         COMPLEX(ppm_kind_single), DIMENSION(:), POINTER :: abuf_sc=>null()
+         COMPLEX(ppm_kind_double), DIMENSION(:), POINTER :: abuf_dc=>null()
+         INTEGER                 , DIMENSION(:), POINTER :: abuf_i=>null()
+         LOGICAL                 , DIMENSION(:), POINTER :: abuf_l=>null()
 
          !----------------------------------------------------------------------
          !  Define interface to ppm_io

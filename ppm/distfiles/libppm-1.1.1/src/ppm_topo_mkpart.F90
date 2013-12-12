@@ -352,13 +352,13 @@
       !-------------------------------------------------------------------------
       !  Local variables 
       !-------------------------------------------------------------------------
-      INTEGER , DIMENSION(:,:), POINTER :: ineigh,subs_bc
-      INTEGER , DIMENSION(  :), POINTER :: nneigh,nchld
+      INTEGER , DIMENSION(:,:), POINTER :: ineigh=>null(),subs_bc=>null()
+      INTEGER , DIMENSION(  :), POINTER :: nneigh=>null(),nchld=>null()
       INTEGER , DIMENSION(3,1)          :: nnodes
       INTEGER , DIMENSION(3)            :: ldc
       REAL(MK), DIMENSION(3,2)          :: weights
       REAL(MK), DIMENSION(ppm_dim)      :: gsvec
-      REAL(MK), DIMENSION(:,:), POINTER :: min_box,max_box
+      REAL(MK), DIMENSION(:,:), POINTER :: min_box=>null(),max_box=>null()
       LOGICAL , DIMENSION(ppm_dim)      :: fixed
       INTEGER                           :: i,j,k,Ntot,iopt,treetype
       INTEGER                           :: istat,topoid,nbox,isub

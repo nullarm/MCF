@@ -197,29 +197,29 @@
 #if __DIM == __SFIELD
 #if __MESH_DIM == __2D
 #if __KIND == __SINGLE_PRECISION
-         TYPE(mg_field_2d_sca_s),DIMENSION(:,:),POINTER :: mgfield
+         TYPE(mg_field_2d_sca_s),DIMENSION(:,:),POINTER :: mgfield=>null()
 #elif __KIND == __DOUBLE_PRECISION
-         TYPE(mg_field_2d_sca_d),DIMENSION(:,:),POINTER :: mgfield
+         TYPE(mg_field_2d_sca_d),DIMENSION(:,:),POINTER :: mgfield=>null()
 #endif
 #elif __MESH_DIM == __3D
 #if __KIND == __SINGLE_PRECISION
-         TYPE(mg_field_3d_sca_s),DIMENSION(:,:),POINTER :: mgfield
+         TYPE(mg_field_3d_sca_s),DIMENSION(:,:),POINTER :: mgfield=>null()
 #elif __KIND == __DOUBLE_PRECISION
-         TYPE(mg_field_3d_sca_d),DIMENSION(:,:),POINTER :: mgfield
+         TYPE(mg_field_3d_sca_d),DIMENSION(:,:),POINTER :: mgfield=>null()
 #endif
 #endif
 #elif __DIM == __VFIELD
 #if __MESH_DIM == __2D
 #if __KIND == __SINGLE_PRECISION
-         TYPE(mg_field_2d_vec_s),DIMENSION(:,:),POINTER :: mgfield
+         TYPE(mg_field_2d_vec_s),DIMENSION(:,:),POINTER :: mgfield=>null()
 #elif __KIND == __DOUBLE_PRECISION
-         TYPE(mg_field_2d_vec_d),DIMENSION(:,:),POINTER :: mgfield
+         TYPE(mg_field_2d_vec_d),DIMENSION(:,:),POINTER :: mgfield=>null()
 #endif
 #elif __MESH_DIM == __3D
 #if __KIND == __SINGLE_PRECISION
-         TYPE(mg_field_3d_vec_s),DIMENSION(:,:),POINTER :: mgfield
+         TYPE(mg_field_3d_vec_s),DIMENSION(:,:),POINTER :: mgfield=>null()
 #elif __KIND == __DOUBLE_PRECISION
-         TYPE(mg_field_3d_vec_d),DIMENSION(:,:),POINTER :: mgfield
+         TYPE(mg_field_3d_vec_d),DIMENSION(:,:),POINTER :: mgfield=>null()
 #endif
 #endif
 #endif
@@ -227,30 +227,30 @@
 
 #if __DIM == __SFIELD
 #if __MESH_DIM == __2D
-         REAL(MK),DIMENSION(:,:,:),POINTER :: uc_dummy
+         REAL(MK),DIMENSION(:,:,:),POINTER :: uc_dummy=>null()
 #elif __MESH_DIM == __3D
-         REAL(MK),DIMENSION(:,:,:,:),POINTER :: uc_dummy
+         REAL(MK),DIMENSION(:,:,:,:),POINTER :: uc_dummy=>null()
 #endif
 #elif __DIM == __VFIELD
 #if __MESH_DIM == __2D
-         REAL(MK),DIMENSION(:,:,:,:),POINTER :: uc_dummy
+         REAL(MK),DIMENSION(:,:,:,:),POINTER :: uc_dummy=>null()
 #elif __MESH_DIM == __3D
-         REAL(MK),DIMENSION(:,:,:,:,:),POINTER :: uc_dummy
+         REAL(MK),DIMENSION(:,:,:,:,:),POINTER :: uc_dummy=>null()
 #endif
 #endif
 
 
 #if __DIM == __SFIELD
 #if __MESH_DIM == __2D
-     REAL(MK),DIMENSION(:,:),POINTER :: tuc
+     REAL(MK),DIMENSION(:,:),POINTER :: tuc=>null()
 #elif __MESH_DIM == __3D
-     REAL(MK),DIMENSION(:,:,:),POINTER :: tuc
+     REAL(MK),DIMENSION(:,:,:),POINTER :: tuc=>null()
 #endif
 #elif __DIM == __VFIELD
 #if __MESH_DIM == __2D
-     REAL(MK),DIMENSION(:,:,:),POINTER :: tuc
+     REAL(MK),DIMENSION(:,:,:),POINTER :: tuc=>null()
 #elif __MESH_DIM == __3D
-     REAL(MK),DIMENSION(:,:,:,:),POINTER :: tuc
+     REAL(MK),DIMENSION(:,:,:,:),POINTER :: tuc=>null()
 #endif
 #endif
          !----------------------------------------------------------------------

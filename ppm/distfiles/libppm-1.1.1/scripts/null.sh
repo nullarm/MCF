@@ -19,7 +19,7 @@ for f in *.F90; do
                             next
                       } 1' ${f}.bak > ${f}
 	# try to build
-	make
+	make > make.log
 	# if fail restore from a backup
 	if [ $? -ne 0 ]; then
 	    cp ${f}.bak ${f}

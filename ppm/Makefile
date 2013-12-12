@@ -177,7 +177,7 @@ sdl_install:
 	cd ${WRKDIR}/SDL-$(SDL_VERSION); \
 	make install
 
-ppm_extract: $(DISTDIR)/$(PPM_DISTR_FILE)
+ppm_extract:
 	mkdir -p ${WRKDIR}; \
 	cp -r ${DISTDIR}/libppm-$(PPM_VERSION) ${WRKDIR}/
 

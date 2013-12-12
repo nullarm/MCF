@@ -156,29 +156,29 @@
 #if __DIM == __SFIELD
 #if __MESH_DIM == __2D
 #if __KIND ==__SINGLE_PRECISION
-      TYPE(mg_field_2d_sca_s), DIMENSION(:,:), POINTER :: work_field
+      TYPE(mg_field_2d_sca_s), DIMENSION(:,:), POINTER :: work_field=>null()
 #elif __KIND == __DOUBLE_PRECISION
-      TYPE(mg_field_2d_sca_d), DIMENSION(:,:), POINTER :: work_field
+      TYPE(mg_field_2d_sca_d), DIMENSION(:,:), POINTER :: work_field=>null()
 #endif
 #elif __MESH_DIM == __3D
 #if __KIND ==__SINGLE_PRECISION
-      TYPE(mg_field_3d_sca_s), DIMENSION(:,:), POINTER :: work_field
+      TYPE(mg_field_3d_sca_s), DIMENSION(:,:), POINTER :: work_field=>null()
 #elif __KIND == __DOUBLE_PRECISION
-      TYPE(mg_field_3d_sca_d), DIMENSION(:,:), POINTER :: work_field
+      TYPE(mg_field_3d_sca_d), DIMENSION(:,:), POINTER :: work_field=>null()
 #endif
 #endif
 #elif __DIM == __VFIELD
 #if __MESH_DIM == __2D
 #if __KIND ==__SINGLE_PRECISION
-      TYPE(mg_field_2d_vec_s), DIMENSION(:,:), POINTER :: work_field
+      TYPE(mg_field_2d_vec_s), DIMENSION(:,:), POINTER :: work_field=>null()
 #elif __KIND == __DOUBLE_PRECISION
-      TYPE(mg_field_2d_vec_d), DIMENSION(:,:), POINTER :: work_field
+      TYPE(mg_field_2d_vec_d), DIMENSION(:,:), POINTER :: work_field=>null()
 #endif
 #elif __MESH_DIM == __3D
 #if __KIND ==__SINGLE_PRECISION
-      TYPE(mg_field_3d_vec_s), DIMENSION(:,:), POINTER :: work_field
+      TYPE(mg_field_3d_vec_s), DIMENSION(:,:), POINTER :: work_field=>null()
 #elif __KIND == __DOUBLE_PRECISION
-      TYPE(mg_field_3d_vec_d), DIMENSION(:,:), POINTER :: work_field
+      TYPE(mg_field_3d_vec_d), DIMENSION(:,:), POINTER :: work_field=>null()
 #endif
 #endif
 #endif

@@ -216,9 +216,9 @@
      !-------------------------------------------------------------------------!
      ! Local variables 
      !-------------------------------------------------------------------------!
-     INTEGER,  DIMENSION(:,:)     , POINTER :: istart, ndata
-     INTEGER,  DIMENSION(:)       , POINTER :: ilist1,ilist2
-     REAL(mk), DIMENSION(:,:)     , POINTER :: min_phys,max_phys
+     INTEGER,  DIMENSION(:,:)     , POINTER :: istart=>null(), ndata=>null()
+     INTEGER,  DIMENSION(:)       , POINTER :: ilist1=>null(),ilist2=>null()
+     REAL(mk), DIMENSION(:,:)     , POINTER :: min_phys=>null(),max_phys=>null()
      REAL(mk), DIMENSION(ppm_dim)           :: dxi,dx
      REAL(mk)                               :: dxx,dxy,dxz,dxxi,dxyi,dxzi
      REAL(mk), DIMENSION(ppm_dim)           :: len_phys
@@ -238,7 +238,7 @@
      INTEGER                                :: topoid, meshid, iq
      LOGICAL                                :: internal_weights,lok
      ! aliases
-     REAL(mk), DIMENSION(:,:,:),    POINTER :: min_sub, max_sub
+     REAL(mk), DIMENSION(:,:,:),    POINTER :: min_sub=>null(), max_sub=>null()
      REAL(mk)                               :: myeps
      REAL(mk)                               :: tim1s, tim1e
      REAL(mk)                               :: xp1,xp2,xp3

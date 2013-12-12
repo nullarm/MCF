@@ -191,11 +191,11 @@
       INTEGER                              :: ll,lu,rl,ru
       INTEGER                              :: Lpart,iopt
       INTEGER    , DIMENSION(2)            :: ldu
-      REAL(MK)   , DIMENSION(:,:), POINTER :: xp2
+      REAL(MK)   , DIMENSION(:,:), POINTER :: xp2=>null()
 #if   __KIND == __SINGLE_PRECISION | __KIND == __DOUBLE_PRECISION
-      REAL(MK)   , DIMENSION(:,:), POINTER :: pdata2,dpd2
+      REAL(MK)   , DIMENSION(:,:), POINTER :: pdata2=>null(),dpd2=>null()
 #elif __KIND == __SINGLE_PRECISION_COMPLEX | __KIND == __DOUBLE_PRECISION_COMPLEX
-      COMPLEX(MK), DIMENSION(:,:), POINTER :: pdata2,dpd2
+      COMPLEX(MK), DIMENSION(:,:), POINTER :: pdata2=>null(),dpd2=>null()
 #endif
       REAL(MK)                             :: t0
       !-------------------------------------------------------------------------

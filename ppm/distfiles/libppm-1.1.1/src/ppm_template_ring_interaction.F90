@@ -155,11 +155,11 @@
       ! USER: if allocation of the following three varaibles fails due to stack 
       ! size limitations, try putting them in a module and add a USE
       ! statement for it above.
-      REAL(MK), DIMENSION(:,:), POINTER :: xp2,vp2,fp2
+      REAL(MK), DIMENSION(:,:), POINTER :: xp2=>null(),vp2=>null(),fp2=>null()
       !-------------------------------------------------------------------------
       !  USER CODE HERE
       !  Add the variable names for the copies here, e.g.
-      !  REAL(MK), DIMENSION(:,:), POINTER :: mp2,sp2
+      !  REAL(MK), DIMENSION(:,:), POINTER :: mp2=>null(),sp2=>null()
       !  ...
       !-------------------------------------------------------------------------
 

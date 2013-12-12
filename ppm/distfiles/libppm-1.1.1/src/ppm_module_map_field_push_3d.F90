@@ -53,7 +53,7 @@
          !----------------------------------------------------------------------
          !  Work lists
          !----------------------------------------------------------------------
-         INTEGER, DIMENSION(:), POINTER :: invsublist,sublist
+         INTEGER, DIMENSION(:), POINTER :: invsublist=>null(),sublist=>null()
     
          PRIVATE :: invsublist,sublist
 

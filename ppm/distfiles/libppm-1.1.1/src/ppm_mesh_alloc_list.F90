@@ -89,7 +89,7 @@
       !-------------------------------------------------------------------------
       INTEGER            :: i,ldc
       REAL(ppm_kind_double) :: t0
-      TYPE(ppm_type_mesh_list), DIMENSION(:), POINTER :: work_list
+      TYPE(ppm_type_mesh_list), DIMENSION(:), POINTER :: work_list=>null()
       LOGICAL            :: lcopy,lalloc,lrealloc,ldealloc
       !-------------------------------------------------------------------------
       !  Externals 

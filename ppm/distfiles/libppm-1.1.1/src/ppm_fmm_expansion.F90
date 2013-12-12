@@ -179,8 +179,8 @@
       REAL(MK)                              :: angle,reci 
       REAL(MK)                              :: t0,x0,y0,z0
       REAL(MK)                              :: dx,dy,dz,dist
-      REAL(MK),DIMENSION(:,:), POINTER      :: min_box,max_box
-      REAL(MK),DIMENSION(:,:), POINTER      :: min_sub,max_sub
+      REAL(MK),DIMENSION(:,:), POINTER      :: min_box=>null(),max_box=>null()
+      REAL(MK),DIMENSION(:,:), POINTER      :: min_sub=>null(),max_sub=>null()
       COMPLEX(MK),PARAMETER                 :: CI=(0.0_MK,1.0_MK)
       COMPLEX(MK)                           :: temp
       CHARACTER(LEN=ppm_char)               :: cbuf
@@ -188,21 +188,21 @@
       ! parallelisation
       INTEGER                               :: isub,topoid
       INTEGER                               :: nsublist,in_topoid
-      REAL(MK),DIMENSION(:)  , POINTER      :: boxcost 
+      REAL(MK),DIMENSION(:)  , POINTER      :: boxcost =>null()
       
       ! traversing
       INTEGER                               :: root
       
       ! fmm
-      REAL(MK),DIMENSION(:)  , POINTER      :: rho,theta,phi,radius 
-      REAL(MK),DIMENSION(:)  , POINTER      :: fac,fracfac
-      REAL(MK),DIMENSION(:,:), POINTER      :: Anm,Pnm,sqrtfac,xp 
-      REAL(MK),DIMENSION(:,:), POINTER      :: centerofbox
-      COMPLEX(MK),DIMENSION(:,:)  ,POINTER  :: Ynm
+      REAL(MK),DIMENSION(:)  , POINTER      :: rho=>null(),theta=>null(),phi=>null(),radius =>null()
+      REAL(MK),DIMENSION(:)  , POINTER      :: fac=>null(),fracfac=>null()
+      REAL(MK),DIMENSION(:,:), POINTER      :: Anm=>null(),Pnm=>null(),sqrtfac=>null(),xp =>null()
+      REAL(MK),DIMENSION(:,:), POINTER      :: centerofbox=>null()
+      COMPLEX(MK),DIMENSION(:,:)  ,POINTER  :: Ynm=>null()
       
 #if   __DIM == __SFIELD
-      COMPLEX(MK),DIMENSION(:,:)  ,POINTER  :: Cnm  
-      COMPLEX(MK),DIMENSION(:,:,:),POINTER  :: expansion    
+      COMPLEX(MK),DIMENSION(:,:)  ,POINTER  :: Cnm  =>null()
+      COMPLEX(MK),DIMENSION(:,:,:),POINTER  :: expansion    =>null()
 
 #else
       COMPLEX(MK),DIMENSION(:,:,:)  ,POINTER:: Cnm    

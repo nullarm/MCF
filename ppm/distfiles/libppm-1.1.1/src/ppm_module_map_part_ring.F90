@@ -41,8 +41,8 @@
          !----------------------------------------------------------------------
          !  Work lists
          !----------------------------------------------------------------------
-         INTEGER, DIMENSION(:), POINTER :: plist_des,plist_act,plist_exc
-         INTEGER, DIMENSION(:), POINTER :: srlist1,srlist2
+         INTEGER, DIMENSION(:), POINTER :: plist_des=>null(),plist_act=>null(),plist_exc=>null()
+         INTEGER, DIMENSION(:), POINTER :: srlist1=>null(),srlist2=>null()
 
          PRIVATE :: plist_des,plist_act,plist_exc,srlist1,srlist2
 

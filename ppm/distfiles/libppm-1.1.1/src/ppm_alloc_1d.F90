@@ -140,17 +140,17 @@
       !  Local variables 
       !-------------------------------------------------------------------------
 #if   __KIND == __SINGLE_PRECISION
-      REAL(ppm_kind_single)   , DIMENSION(:), POINTER :: work
+      REAL(ppm_kind_single)   , DIMENSION(:), POINTER :: work=>null()
 #elif __KIND == __DOUBLE_PRECISION
-      REAL(ppm_kind_double)   , DIMENSION(:), POINTER :: work
+      REAL(ppm_kind_double)   , DIMENSION(:), POINTER :: work=>null()
 #elif __KIND == __SINGLE_PRECISION_COMPLEX
-      COMPLEX(ppm_kind_single), DIMENSION(:), POINTER :: work
+      COMPLEX(ppm_kind_single), DIMENSION(:), POINTER :: work=>null()
 #elif __KIND == __DOUBLE_PRECISION_COMPLEX
-      COMPLEX(ppm_kind_double), DIMENSION(:), POINTER :: work
+      COMPLEX(ppm_kind_double), DIMENSION(:), POINTER :: work=>null()
 #elif __KIND == __INTEGER
-      INTEGER                 , DIMENSION(:), POINTER :: work
+      INTEGER                 , DIMENSION(:), POINTER :: work=>null()
 #elif __KIND == __LOGICAL
-      LOGICAL                 , DIMENSION(:), POINTER :: work
+      LOGICAL                 , DIMENSION(:), POINTER :: work=>null()
 #endif
       INTEGER               :: i,ldb,ldc
       LOGICAL               :: lcopy,lalloc,lrealloc

@@ -47,12 +47,12 @@ MODULE ppm_module_data_fieldsolver
 
       ! MATHKEISAN variables for MathKeisan FFTs
       ! working storage
-      REAL(ppm_kind_single), DIMENSION(:),POINTER :: table_fd_s,   table_bd_s
-      REAL(ppm_kind_double), DIMENSION(:),POINTER :: table_fd_d,   table_bd_d
-      REAL(ppm_kind_single), DIMENSION(:),POINTER :: table_fd_c_y, table_bd_c_y
-      REAL(ppm_kind_double), DIMENSION(:),POINTER :: table_fd_cc_y,table_bd_cc_y
-      REAL(ppm_kind_single), DIMENSION(:),POINTER :: table_fd_c_z, table_bd_c_z
-      REAL(ppm_kind_double), DIMENSION(:),POINTER :: table_fd_cc_z,table_bd_cc_z
+      REAL(ppm_kind_single), DIMENSION(:),POINTER :: table_fd_s=>null(),   table_bd_s=>null()
+      REAL(ppm_kind_double), DIMENSION(:),POINTER :: table_fd_d=>null(),   table_bd_d=>null()
+      REAL(ppm_kind_single), DIMENSION(:),POINTER :: table_fd_c_y=>null(), table_bd_c_y=>null()
+      REAL(ppm_kind_double), DIMENSION(:),POINTER :: table_fd_cc_y=>null(),table_bd_cc_y=>null()
+      REAL(ppm_kind_single), DIMENSION(:),POINTER :: table_fd_c_z=>null(), table_bd_c_z=>null()
+      REAL(ppm_kind_double), DIMENSION(:),POINTER :: table_fd_cc_z=>null(),table_bd_cc_z=>null()
 
       ! the size of the working storage
       INTEGER, DIMENSION(1)              :: lda_table, lda_table_y, lda_table_z

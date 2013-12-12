@@ -51,22 +51,22 @@
         DATA ppm_rmsh_kernelsize /1,2,2,3/
 
         !  internal weights
-        REAL(ppm_kind_single),   DIMENSION(:,:,:)      , POINTER :: wx1_s
-        REAL(ppm_kind_double),   DIMENSION(:,:,:)      , POINTER :: wx1_d
-        REAL(ppm_kind_single),   DIMENSION(:,:,:)      , POINTER :: wx2_s
-        REAL(ppm_kind_double),   DIMENSION(:,:,:)      , POINTER :: wx2_d
-        REAL(ppm_kind_single),   DIMENSION(:,:,:)      , POINTER :: wx3_s
-        REAL(ppm_kind_double),   DIMENSION(:,:,:)      , POINTER :: wx3_d    
+        REAL(ppm_kind_single),   DIMENSION(:,:,:)      , POINTER :: wx1_s=>null()
+        REAL(ppm_kind_double),   DIMENSION(:,:,:)      , POINTER :: wx1_d=>null()
+        REAL(ppm_kind_single),   DIMENSION(:,:,:)      , POINTER :: wx2_s=>null()
+        REAL(ppm_kind_double),   DIMENSION(:,:,:)      , POINTER :: wx2_d=>null()
+        REAL(ppm_kind_single),   DIMENSION(:,:,:)      , POINTER :: wx3_s=>null()
+        REAL(ppm_kind_double),   DIMENSION(:,:,:)      , POINTER :: wx3_d    =>null()
 
         !  internal fields
-        REAL(ppm_kind_single),   DIMENSION(:,:,:,:)    , POINTER :: tuc_2ds
-        REAL(ppm_kind_double),   DIMENSION(:,:,:,:)    , POINTER :: tuc_2dd
-        REAL(ppm_kind_single),   DIMENSION(:,:,:,:,:)  , POINTER :: tuc_3ds
-        REAL(ppm_kind_double),   DIMENSION(:,:,:,:,:)  , POINTER :: tuc_3dd
+        REAL(ppm_kind_single),   DIMENSION(:,:,:,:)    , POINTER :: tuc_2ds=>null()
+        REAL(ppm_kind_double),   DIMENSION(:,:,:,:)    , POINTER :: tuc_2dd=>null()
+        REAL(ppm_kind_single),   DIMENSION(:,:,:,:,:)  , POINTER :: tuc_3ds=>null()
+        REAL(ppm_kind_double),   DIMENSION(:,:,:,:,:)  , POINTER :: tuc_3dd=>null()
 
         !  internal particle lists
-        INTEGER          ,       DIMENSION(:,:)        , POINTER :: list_sub
-        INTEGER          ,       DIMENSION(:  )        , POINTER :: store_info
+        INTEGER          ,       DIMENSION(:,:)        , POINTER :: list_sub=>null()
+        INTEGER          ,       DIMENSION(:  )        , POINTER :: store_info=>null()
 
 
         !  fill data

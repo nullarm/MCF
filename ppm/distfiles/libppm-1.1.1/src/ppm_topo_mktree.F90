@@ -257,11 +257,11 @@
       !-------------------------------------------------------------------------
       INTEGER                           :: i,topoid,j,nbox,iopt,isub
       INTEGER, DIMENSION(2  )           :: ldc
-      INTEGER, DIMENSION(:,:), POINTER  :: ineigh,subs_bc
-      INTEGER, DIMENSION(:  ), POINTER  :: nneigh,nchld
+      INTEGER, DIMENSION(:,:), POINTER  :: ineigh=>null(),subs_bc=>null()
+      INTEGER, DIMENSION(:  ), POINTER  :: nneigh=>null(),nchld=>null()
       REAL(MK)                          :: t0,parea,sarea,larea,lmyeps
       REAL(MK), DIMENSION(ppm_dim)      :: gsvec
-      REAL(MK), DIMENSION(:,:), POINTER :: min_box,max_box
+      REAL(MK), DIMENSION(:,:), POINTER :: min_box=>null(),max_box=>null()
       CHARACTER(LEN=ppm_char)           :: mesg
       LOGICAL                           :: have_particles,have_mesh
       !-------------------------------------------------------------------------

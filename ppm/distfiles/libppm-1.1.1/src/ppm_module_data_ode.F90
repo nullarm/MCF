@@ -81,33 +81,33 @@
         !-----------------------------------------------------------------------
         ! what scheme for which mode
         !-----------------------------------------------------------------------
-        INTEGER, DIMENSION(:), POINTER :: ppm_ode_ischeme
-        INTEGER, DIMENSION(:), POINTER :: ppm_ode_kscheme
+        INTEGER, DIMENSION(:), POINTER :: ppm_ode_ischeme=>null()
+        INTEGER, DIMENSION(:), POINTER :: ppm_ode_kscheme=>null()
         !-----------------------------------------------------------------------
         ! use an adaptive timestep
         !-----------------------------------------------------------------------
-        LOGICAL, DIMENSION(:), POINTER :: ppm_ode_adaptive
+        LOGICAL, DIMENSION(:), POINTER :: ppm_ode_adaptive=>null()
         !-----------------------------------------------------------------------
         ! number of stages a mode uses
         !-----------------------------------------------------------------------
-        INTEGER, DIMENSION(:), POINTER :: ppm_ode_stages
+        INTEGER, DIMENSION(:), POINTER :: ppm_ode_stages=>null()
         !-----------------------------------------------------------------------
         ! state of a mode
         !-----------------------------------------------------------------------
-        INTEGER, DIMENSION(:), POINTER :: ppm_ode_state
+        INTEGER, DIMENSION(:), POINTER :: ppm_ode_state=>null()
         !-----------------------------------------------------------------------
         ! number of sent stages
         !-----------------------------------------------------------------------
-        INTEGER, DIMENSION(:), POINTER :: ppm_ode_sent
+        INTEGER, DIMENSION(:), POINTER :: ppm_ode_sent=>null()
         !-----------------------------------------------------------------------
         ! size of the buffer
         !-----------------------------------------------------------------------
-        INTEGER, DIMENSION(:), POINTER :: ppm_ode_bfrsize
+        INTEGER, DIMENSION(:), POINTER :: ppm_ode_bfrsize=>null()
         !-----------------------------------------------------------------------
         ! id lists
         !-----------------------------------------------------------------------
-        INTEGER, DIMENSION(:), POINTER :: ppm_user_mid
-        INTEGER, DIMENSION(:), POINTER :: ppm_internal_mid
+        INTEGER, DIMENSION(:), POINTER :: ppm_user_mid=>null()
+        INTEGER, DIMENSION(:), POINTER :: ppm_internal_mid=>null()
         
 
         !-----------------------------------------------------------------------

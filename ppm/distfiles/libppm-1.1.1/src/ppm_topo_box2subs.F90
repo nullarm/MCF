@@ -123,7 +123,7 @@
       REAL(MK)                                :: t0
       INTEGER                                 :: iopt,i,j,istack
       INTEGER, DIMENSION(2)                   :: ldc
-      INTEGER, DIMENSION(:), POINTER          :: subbox,boxstack
+      INTEGER, DIMENSION(:), POINTER          :: subbox=>null(),boxstack=>null()
       !-------------------------------------------------------------------------
       !  Externals 
       !-------------------------------------------------------------------------

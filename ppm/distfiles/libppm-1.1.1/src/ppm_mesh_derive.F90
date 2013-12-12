@@ -109,7 +109,7 @@
       INTEGER                :: nsubs,i,j,iopt
       INTEGER, DIMENSION(2)  :: ldc
       INTEGER, DIMENSION(ppm_dim)  :: Nm
-      INTEGER, DIMENSION(:,:), POINTER :: nno,ist
+      INTEGER, DIMENSION(:,:), POINTER :: nno=>null(),ist=>null()
       CHARACTER(LEN=ppm_char) :: mesg
       LOGICAL                 :: valid
       !-------------------------------------------------------------------------

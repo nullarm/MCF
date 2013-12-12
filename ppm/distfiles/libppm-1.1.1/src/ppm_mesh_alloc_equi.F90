@@ -94,7 +94,7 @@
       INTEGER            :: i,j
       INTEGER, DIMENSION(2) :: ldc
       REAL(ppm_kind_double) :: t0
-      TYPE(ppm_type_equi_mesh), DIMENSION(:,:), POINTER :: work_mesh
+      TYPE(ppm_type_equi_mesh), DIMENSION(:,:), POINTER :: work_mesh=>null()
       LOGICAL            :: lcopy,lalloc,lrealloc,ldealloc
       !-------------------------------------------------------------------------
       !  Externals 

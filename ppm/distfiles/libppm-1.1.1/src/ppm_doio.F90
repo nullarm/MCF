@@ -214,27 +214,27 @@
       INTEGER                          :: i,iopt,mdata,ndata,nrec
       INTEGER                          :: ibuffer,jbuffer
 #if   __KIND == __SINGLE_PRECISION | __KIND == __DOUBLE_PRECISION
-      REAL(MK)   , DIMENSION(:)       , POINTER :: rbuf
+      REAL(MK)   , DIMENSION(:)       , POINTER :: rbuf=>null()
 #elif __KIND == __SINGLE_PRECISION_COMPLEX | __KIND == __DOUBLE_PRECISION_COMPLEX
-      COMPLEX(MK), DIMENSION(:)       , POINTER :: rbuf
+      COMPLEX(MK), DIMENSION(:)       , POINTER :: rbuf=>null()
 #elif __KIND == __INTEGER
-      INTEGER    , DIMENSION(:)       , POINTER :: rbuf
+      INTEGER    , DIMENSION(:)       , POINTER :: rbuf=>null()
 #elif __KIND == __LOGICAL
-      LOGICAL    , DIMENSION(:)       , POINTER :: rbuf
+      LOGICAL    , DIMENSION(:)       , POINTER :: rbuf=>null()
 #endif
 #ifdef USE_MPI
       INTEGER, DIMENSION(MPI_STATUS_SIZE) :: mpstat
       INTEGER                          :: MPTYPE,iproc,rem
       INTEGER                          :: mpreq,jproc
-      INTEGER, DIMENSION(:  ), POINTER :: asize
+      INTEGER, DIMENSION(:  ), POINTER :: asize=>null()
 #if   __KIND == __SINGLE_PRECISION | __KIND == __DOUBLE_PRECISION
-      REAL(MK)   , DIMENSION(:)       , POINTER :: abuffer,bbuffer
+      REAL(MK)   , DIMENSION(:)       , POINTER :: abuffer=>null(),bbuffer=>null()
 #elif __KIND == __SINGLE_PRECISION_COMPLEX | __KIND == __DOUBLE_PRECISION_COMPLEX
-      COMPLEX(MK), DIMENSION(:)       , POINTER :: abuffer,bbuffer
+      COMPLEX(MK), DIMENSION(:)       , POINTER :: abuffer=>null(),bbuffer=>null()
 #elif __KIND == __INTEGER
-      INTEGER    , DIMENSION(:)       , POINTER :: abuffer,bbuffer
+      INTEGER    , DIMENSION(:)       , POINTER :: abuffer=>null(),bbuffer=>null()
 #elif __KIND == __LOGICAL
-      LOGICAL    , DIMENSION(:)       , POINTER :: abuffer,bbuffer
+      LOGICAL    , DIMENSION(:)       , POINTER :: abuffer=>null(),bbuffer=>null()
 #endif
 #endif
       !-------------------------------------------------------------------------

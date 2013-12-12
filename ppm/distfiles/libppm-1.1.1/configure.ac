@@ -8,9 +8,6 @@ AC_CONFIG_HEADER([config.h])
 AM_INIT_AUTOMAKE(libppm, 1.1.1)
 
 # Checks for programs.
-AC_PROG_FC
-AC_LANG(Fortran)
-
 # use mpi in any case (probably fakempi.h)
 m4_pattern_allow([AC_MSG_ERROR])
 AC_DEFINE([USE_MPI], [1], [use mpi])
@@ -22,8 +19,10 @@ if test "$have_mpi" = "yes"; then
    LIBS="$MPILIBS $LIBS"
 fi
 
-AM_CONDITIONAL([HAVE_MPI], [test x$have_mpi = xyes])
+AC_PROG_FC
+AC_LANG(Fortran)
 
+AM_CONDITIONAL([HAVE_MPI], [test x$have_mpi = xyes])
 
 AC_PROG_RANLIB
 AC_CHECK_PROG(MAKEDEPF90, [makedepf90], [makedepf90], [not found], [$PATH])
@@ -65,13 +64,9 @@ AC_CHECK_LIB(fftw3f,
 	     [],
 	     [AC_MSG_ERROR([cannot link against fftw library, please set LDFLAGS])])
 
-AX_WITH_PROG([FUNIT],[funit],[not])
-AM_CONDITIONAL([HAVE_FUNIT], [! test x$FUNIT = xnot])
-
 # Checks for library functions.
 AC_CONFIG_FILES([Makefile src/Makefile test/Makefile])
 AC_OUTPUT
-
 
 AC_MSG_NOTICE([================================================])
 AC_MSG_NOTICE([FC=$FC])
@@ -82,10 +77,4 @@ if test "$have_mpi" = "yes"; then
    AC_MSG_NOTICE([using mpi])
 else 
    AC_MSG_NOTICE([not using mpi])
-fi
-if test x$FUNIT = xnot; then
-   AC_MSG_NOTICE([not using funit])
-else 
-   AC_MSG_NOTICE([using funit])
-   AC_MSG_NOTICE([FUNIT=$FUNIT])
 fi

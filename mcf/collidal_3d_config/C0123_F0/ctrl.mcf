@@ -194,11 +194,11 @@ pp_interact_cw = T
 
 cc_lub_type = 1
 
-cc_repul_type = 2
+cc_repul_type = 0
 
 cw_lub_type = 0
 
-cw_repul_type = 2
+cw_repul_type = 0
 
 stress_tensor = F
 
@@ -208,7 +208,7 @@ flow_v_fixed = F
 
 integrate_type = 2
 
-integrate_colloid_type = -2
+integrate_colloid_type = 2
 
 integrate_colloid_RK = 1
 

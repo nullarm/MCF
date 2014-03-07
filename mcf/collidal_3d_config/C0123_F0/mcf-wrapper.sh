@@ -31,7 +31,7 @@ function rundispatch() {
 	    -e "s,M4_NP,${nproc},g" \
 	    -e "s,M4_JOB_NAME,${dname},g" run.m4.sh \
 	     > ${dname}/run.sh
-	# llsubmit ${dname}/run.sh
+	llsubmit ${dname}/run.sh
     else
 	cd ${dname}
 	mpirun -np 1 ${mcf} &

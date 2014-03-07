@@ -10,10 +10,10 @@ module unload mpi.ibm
 module load mpi.intel
 
 module unload fortran
-module load fortran/intel
+module load fortran/intel/14.0
 
 fortrancomp=ifort
-suffix=
+suffix=14.0
 CXX=mpiCC
 
 make MPIFC=mpif90 FC=mpif90 CC=mpicc CXX=${CXX} \

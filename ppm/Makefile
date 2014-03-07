@@ -67,8 +67,7 @@ all:
 # compile and install 
 install_all_but_mpi: install_fftw \
 	install_vizing install_metis \
-	install_makedepf90 install_ppm \
-	install_sdl install_punto
+	install_makedepf90 install_ppm
 
 # install mpich localy
 install_mpi: mpich_extract mpich_configure mpich_build mpich_install 
@@ -88,9 +87,6 @@ install_pse: ppm-pse_extract  ppm-pse_build
 install_sph: ppm-sph_extract ppm-sph_build 
 
 install_makedepf90: makedepf90_extract makedepf90_configure makedepf90_build makedepf90_install
-
-
-
 
 # get all 'tarbars'
 fetch_all: mpich_fetch fftw_fetch

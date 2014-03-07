@@ -57,7 +57,7 @@ num_species = 2
 
 num_dim = 3
 min_phys = 0.0, 0.0, 0.0
-max_phys = 8.0, 8.0, 8.0
+max_phys = DOMAIN_SIZE, DOMAIN_SIZE, DOMAIN_SIZE
 lattice = 1
 num_part = 40, 40, 40
 cut_off = 0.8
@@ -369,7 +369,7 @@ flow_adjust_freq = 10
 # coll_omega : initial rotating velocity, always 3D vector.
 #----------------------------------------------------------------------
 
-num_colloid = 2
+num_colloid = NUM_COLLOID
 coll_adapt_t_coef = 0.25
 coll_sub_time_step = 1
 coll_implicit_pair_num_sweep = 1
@@ -400,13 +400,7 @@ cw_repul_cut_off = 1.0e-2
 cw_repul_cut_on = 1.0e-6
 cw_repul_F0 = 0.16863661
 
-coll_shape = 2
-coll_radius = COLR, 0.0, 0.0
-coll_x = 4.0, 4.0, COLZ
-
-coll_shape = 2
-coll_radius = 1, 0.0, 0.0
-coll_x = 4.0, 4.0, 4.0
+COLL_SHAPE
 
 #----------------------------------------------------------------------
 # < Boundary condition of physical domain >

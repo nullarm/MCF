@@ -3,7 +3,7 @@
 set +e
 set +u
 
-PREFIX=${HOME}/prefix-mcf/
+PREFIX=/scratch/prefix-mcf/
 
 ./configure --prefix=${PREFIX} FC=gfortran MPIFC=${PREFIX}/bin/mpif90 \
     LDFLAGS=-L${PREFIX}/lib/ FCFLAGS="-I${PREFIX}/include -pg -g -O2" \

@@ -118,7 +118,7 @@ output_conformation_freq_time  = -1.0
 
 colloid_file       = colloid/mcf_colloid
 colloid_fmt        = FORMATTED
-colloid_freq_step  = 100
+colloid_freq_step  = 1000
 colloid_freq_time  = -1.0
 
 #---------------------------------------------------------------------

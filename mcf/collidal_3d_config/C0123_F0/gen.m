@@ -8,7 +8,7 @@ else
   n = 1; 
 endif
 
-ycenter = 4.0;
+ycenter = 8.0;
 a       = 1.0;
 # add some noise
 fuzzy = 1e-3

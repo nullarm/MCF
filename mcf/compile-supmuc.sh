@@ -6,9 +6,13 @@ source /etc/profile
 source /etc/profile.d/modules.sh
 
 module unload mpi.ibm
-module load mpi.mpich2/1.4/gcc
-fortrancomp=gfortran
-suffix=4.4.5
+module load mpi.intel
+
+module unload fortran
+module load fortran/intel/14.0
+
+fortrancomp=ifort
+suffix=14.0
 PREFIX=${HOME}/mcf-${fortrancomp}${suffix}
 
 ./configure --prefix=${PREFIX} FC=gfortran MPIFC=mpif90 \

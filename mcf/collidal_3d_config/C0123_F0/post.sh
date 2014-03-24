@@ -3,9 +3,9 @@
 set -e
 set -u
 
-root=$(pwd)
-for d in $(ls -d supermuc-data/COLR*); do
-    cd "${d}"
+for d in $(ls -d COL*); do
+    cd ${d}
+    printf "processing: %s\n" ${d} > "/dev/stderr"
     for c in $(ls colloid/mcf*); do
 	r1=1
 	r2=$(awk -v FS="=" '$1=="COLR"{print $2}' vars.mcf)

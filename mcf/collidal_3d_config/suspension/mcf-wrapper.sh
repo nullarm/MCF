@@ -34,7 +34,7 @@ function rundispatch() {
 	# llsubmit ${dname}/run.sh
     else
 	cd ${dname}
-	mpirun -np 8 ${mcf} &
+	mpirun -np 8 ${mcf}
 	cd ../
     fi
 }

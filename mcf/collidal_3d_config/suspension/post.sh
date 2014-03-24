@@ -4,9 +4,9 @@ set -e
 set -u
 
 root=$(pwd)
-for d in $(ls -d supermuc-data/NUM*); do
-    cd "${d}"
-    for c in $(ls colloid/mcf*); do
+for d in $(ls -d NUM*); do
+    cd ${d}
+    for c in $(ls -f colloid/mcf*); do
 	awk '{print $1, $3, $2, 0.95}' ${c}
 	printf "\n"
     done > punto.dat

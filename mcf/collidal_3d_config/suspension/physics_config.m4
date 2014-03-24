@@ -59,7 +59,7 @@ num_dim = 3
 min_phys = 0.0, 0.0, 0.0
 max_phys = DOMAIN_SIZE, DOMAIN_SIZE, DOMAIN_SIZE
 lattice = 1
-num_part = 40, 40, 40
+num_part = NUM_PART, NUM_PART, NUM_PART
 cut_off = 0.8
 
 

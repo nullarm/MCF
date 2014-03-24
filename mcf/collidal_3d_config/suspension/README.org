@@ -1,0 +1,27 @@
+gprof output
+#+BEGIN_EXAMPLE
+Each sample counts as 0.01 seconds.
+  %   cumulative   self              self     total           
+ time   seconds   seconds    calls  ms/call  ms/call  name    
+ 36.87    102.27   102.27                             __class_particles_MOD_particles_compute_interaction
+ 26.18    174.90    72.63                             __class_particles_MOD_particles_compute_density
+ 18.09    225.09    50.19                             __class_rhs_MOD_rhs_force_ff_newtonian_huadams_angular
+  3.70    235.35    10.26                             __class_rhs_MOD_rhs_force_ff_newtonian
+  3.54    245.17     9.82                             __class_kernel_MOD_kernel_kernel_quintic_spline_w_gradw
+  2.94    253.32     8.15                             __class_colloid_MOD_colloid_noslip_morris_sphere
+  2.38    259.93     6.61                             __class_kernel_MOD_kernel_kernel_quintic_spline_w
+  1.25    263.41     3.48                             __class_colloid_MOD_colloid_in_nearest_image
+  0.79    265.61     2.20                             __class_boundary_MOD_boundary_get_shear_v
+  0.76    267.71     2.10                             __class_boundary_MOD_boundary_get_shear_length
+  0.62    269.42     1.71                             __class_boundary_MOD_boundary_noslip_solid_morris
+  0.61    271.12     1.70                             __class_colloid_MOD_colloid_noslip_morris
+  0.51    272.54     1.42                             __class_colloid_MOD_colloid_noslip
+  0.47    273.84     1.30                             __class_tool_MOD_tool_cross_product
+  0.39    274.91     1.07                             __class_boundary_MOD_boundary_noslip_solid
+  0.32    275.79     0.88                             __class_kernel_MOD_kernel_kernel_w_gradw
+  0.22    276.39     0.60                             __class_kernel_MOD_kernel_kernel_w
+  0.16    276.83     0.44                             __class_rhs_MOD_rhs_density_ff
+  0.03    276.90     0.07                             __class_boundary_MOD_boundary_get_num_le
+  0.02    276.96     0.06                             __class_colloid_MOD_colloid_nearest_image
+  0.02    277.02     0.06                             __ppm_module_find_duplicates_MOD_ppm_find_duplicates_d
+#+END_EXAMPLE

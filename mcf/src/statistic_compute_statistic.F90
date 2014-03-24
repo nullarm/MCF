@@ -26,6 +26,7 @@
         ! Faculty of Mechanical Engineering,
         ! Technische Universitaet Muenchen, Germany.
         !----------------------------------------------------
+
         
         !----------------------------------------------------
         ! Arguments
@@ -457,8 +458,9 @@
            
         END IF
         
-#endif !__MPI
-        
+#endif
+!__MPI
+       
         !----------------------------------------------------
         ! Add extra kinetic energy and momentum.
         !----------------------------------------------------

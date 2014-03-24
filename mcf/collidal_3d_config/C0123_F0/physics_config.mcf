@@ -57,9 +57,9 @@ num_species = 2
 
 num_dim = 3
 min_phys = 0.0, 0.0, 0.0
-max_phys = 8.0, 8.0, 8.0
+max_phys = 8.0, 8.0, 16.0
 lattice = 1
-num_part = 40, 40, 40
+num_part = 40, 40, 80
 cut_off = 0.8
 
 
@@ -406,7 +406,7 @@ coll_x = 4.0, 4.0, COLZ
 
 coll_shape = 2
 coll_radius = 1, 0.0, 0.0
-coll_x = 4.0, 4.0, 4.0
+coll_x = 4.0, 4.0, 8.0
 
 #----------------------------------------------------------------------
 # < Boundary condition of physical domain >

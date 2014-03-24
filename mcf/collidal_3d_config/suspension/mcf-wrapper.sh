@@ -31,11 +31,12 @@ function rundispatch() {
 	    -e "s,M4_NP,${nproc},g" \
 	    -e "s,M4_JOB_NAME,${dname},g" run.m4.sh \
 	     > ${dname}/run.sh
-	# llsubmit ${dname}/run.sh
-    else
+	llsubmit ${dname}/run.sh
+    elif [ $(hostname) = "kana" ]; then
+	local root=$(pwd)
 	cd ${dname}
-	mpirun -np 8 ${mcf} &
-	cd ../
+	mpirun -np 8 nice -n 15 ${mcf}
+	cd ${root}
     fi
 }
 
@@ -43,16 +44,17 @@ if [ $(whoami) = "lu79buz2" ]; then
     mcf=~/work/MCF/mcf/src/mcf
     src=~/work/MCF/
     nproc=32
-else
+elif [ $(hostname) = "kana" ]; then 
     mcf=/scratch/work/MCF/mcf/src/mcf
     src=/scratch/work/MCF/
 fi
 
 n=1
-SIZE=8.0
+SIZE=4.0
+NUM_PART=20
 # generate a grid of colloid
-awk --lint=fatal -v r=0.95 -v step=1.95 -v size=${SIZE} -f simplegrid.awk   > xyz.tmp
-awk -v step=0.95 -v r=0.9 -v nfail=1000 -v ncol=1000 -v size=${SIZE} -f randomgrid.awk       > xyz.tmp
+#awk --lint=fatal -v r=0.95 -v step=1.95 -v size=${SIZE} -f simplegrid.awk   > xyz.tmp
+awk -v step=0.95 -v r=0.9 -v nfail=1000 -v ncol=10000 -v size=${SIZE} -f randomgrid.awk       > xyz.tmp
 
 NUM_COLLOID=$(wc -l < xyz.tmp)
 awk -f xyz2col.awk xyz.tmp > col.tmp
@@ -61,11 +63,9 @@ awk -v tmpfile=col.tmp -v line=COLL_SHAPE -f line2file.awk physics_config.m4 > p
 
 echo "NUM_COLLOID=${NUM_COLLOID}" > vars.mcf.${n}
 echo "DOMAIN_SIZE=${SIZE}" >> vars.mcf.${n}
-
+echo "NUM_PART=${NUM_PART}" >> vars.mcf.${n}
 
 dname=$(var2dirname vars.mcf.${n})
 cpreplace vars.mcf.${n} ${dname} ctrl.mcf  io_config.mcf  physics_config.mcf
 githead > ${dname}/git.commit.id
 rundispatch
-
-

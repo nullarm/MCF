@@ -59,7 +59,7 @@ num_dim = 3
 min_phys = 0.0, 0.0, 0.0
 max_phys = DOMAIN_SIZE, DOMAIN_SIZE, DOMAIN_SIZE
 lattice = 1
-num_part = 40, 40, 40
+num_part = NUM_PART, NUM_PART, NUM_PART
 cut_off = 0.8
 
 
@@ -442,7 +442,7 @@ COLL_SHAPE
 
 bcdef = 1,1,1,1,9,9
 shear_type = 1,1,1,1,1,1
-shear_v = 0.0,0.0, 0.0,0.0,0.0,0.0, 0.0,0.0,-0.423,0.0,0.423,0.0
+shear_v = 0.0,0.0, 0.0,0.0,0.0,0.0, 0.0,0.0,-0.223,0.0,0.223,0.0
 shear_freq = 0.0,0.0,0.0,0.0,0.0,0.0
 wall_rho_type = 0
 wall_noslip = 2

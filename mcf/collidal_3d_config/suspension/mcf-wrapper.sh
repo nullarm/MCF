@@ -11,7 +11,7 @@ function cpreplace() {
 	mkdir -p ${SCRATCH}/${dname}
 	ln -s ${SCRATCH}/${dname} ${dname} 
     fi
-    mkdir -p ${dname}/particles ${dname}/boundary ${dname}/colloid
+    mkdir -p ${dname}/particles ${dname}/boundary ${dname}/colloid ${dname}/restart
     shift 2
     for f in $*; do
 	./vars.awk ${varfile} ${f} > ${dname}/${f}
@@ -50,8 +50,8 @@ elif [ $(hostname) = "kana" ]; then
 fi
 
 n=1
-SIZE=4.0
-NUM_PART=20
+SIZE=16.0
+NUM_PART=80
 # generate a grid of colloid
 #awk --lint=fatal -v r=0.95 -v step=1.95 -v size=${SIZE} -f simplegrid.awk   > xyz.tmp
 awk -v step=0.95 -v r=0.9 -v nfail=1000 -v ncol=10000 -v size=${SIZE} -f randomgrid.awk       > xyz.tmp

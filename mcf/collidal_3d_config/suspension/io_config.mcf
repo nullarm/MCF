@@ -31,7 +31,7 @@
 #                             UNFORMATTED  (i.e. binary)
 #---------------------------------------------------------------------
 
-read_particles_file  = mcf_restart_particles.dat
+read_particles_file  = restart/mcf_restart_particles.dat
 read_particles_fmt   = FORMATTED
 
 #---------------------------------------------------------------------
@@ -45,7 +45,7 @@ read_particles_fmt   = FORMATTED
 #                             UNFORMATTED  (i.e. binary)
 #---------------------------------------------------------------------
 
-read_conformation_file  = mcf_restart_conformation.dat
+read_conformation_file  = restart/mcf_restart_conformation.dat
 read_conformation_fmt   = FORMATTED
 
 #---------------------------------------------------------------------
@@ -191,7 +191,7 @@ boundary_freq_time  = -1.0
 #
 #---------------------------------------------------------------------
 
-restart_particles_relax_file  = mcf_init_restart_particles
+restart_particles_relax_file  = restart/mcf_init_restart_particles
 restart_particles_relax_fmt   = FORMATTED
 
 #---------------------------------------------------------------------
@@ -241,16 +241,16 @@ restart_particles_relax_fmt   = FORMATTED
 #	   	       (in wall time)
 #---------------------------------------------------------------------
 
-restart_physics_file    = mcf_restart_physics
+restart_physics_file    = restart/mcf_restart_physics
 restart_physics_fmt     = FORMATTED
 
-restart_particles_file  = mcf_restart_particles
+restart_particles_file  = restart/mcf_restart_particles
 restart_particles_fmt   = FORMATTED
 
-restart_conformation_file = mcf_restart_conformation
+restart_conformation_file = restart/mcf_restart_conformation
 restart_conformation_fmt  = FORMATTED
 
-restart_freq_step      = 50000
+restart_freq_step      = 5
 restart_freq_time      = -1.0
 rsstart_freq_time_wall = -1.0
 

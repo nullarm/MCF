@@ -34,7 +34,7 @@ function rundispatch() {
 	llsubmit ${dname}/run.sh
     else
 	cd ${dname}
-	mpirun -np 1 ${mcf} &
+	mpirun -np 8 ${mcf}
 	cd ../
     fi
 }
@@ -43,13 +43,16 @@ if [ $(whoami) = "lu79buz2" ]; then
     mcf=~/work/MCF/mcf/src/mcf
     src=~/work/MCF/
     nproc=32
-else
+elif [ $(whoami) = "litvinov" ]; then
     mcf=/scratch/work/MCF/mcf/src/mcf
-    src=/scratch/work/MCF/
+    src=/scratch/work/MCF/n
+else
+    mcf=~/work/MCF/mcf/src/mcf
+    src=~/work/MCF/
 fi
 
-for n in 1 2 3 4 5; do
-    octave gen.m ${n}
+maxima -b gen.mac
+for n in $(seq 1 25); do
     dname=$(var2dirname vars.mcf.${n})
     cpreplace vars.mcf.${n} ${dname} ctrl.mcf  io_config.mcf  physics_config.mcf
     githead > ${dname}/git.commit.id

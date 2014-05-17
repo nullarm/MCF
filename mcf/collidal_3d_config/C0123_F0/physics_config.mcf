@@ -121,7 +121,7 @@ ksai = 0.0
 kt = 0.0
 c = 30.0
 rho_ref = 0.9
-gamma = 1.0
+gamma = 7.0
 
 
 #----------------------------------------------------------------------
@@ -402,7 +402,7 @@ cw_repul_F0 = 0.16863661
 
 coll_shape = 2
 coll_radius = COLR, 0.0, 0.0
-coll_x = 4.0, 4.0, COLZ
+coll_x = COLX, COLY, COLZ
 
 coll_shape = 2
 coll_radius = 1, 0.0, 0.0

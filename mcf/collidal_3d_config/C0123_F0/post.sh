@@ -3,6 +3,7 @@
 set -e
 set -u
 
+root=$(pwd)
 for d in $(ls -d COL*); do
     cd ${d}
     printf "processing: %s\n" ${d} > "/dev/stderr"

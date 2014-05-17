@@ -1,0 +1,26 @@
+x0: 4.0;
+y0: 4.0;
+z0: 4.0;
+R: 1.0;
+
+linspace(a, b, n):= block([h: (b-a)/(n-1)], makelist( a + h*i, i, 0, n-1));
+cp(a, b):=xreduce(append, makelist(makelist([i, j], i, a), j, b));
+
+dr: linspace(1.01*2*R, 2.5*R, 5);
+phi: linspace(0, %pi/2, 5);
+
+P_list: create_list([x0 + r*cos(p), y0, z0 + r*sin(p)], r, dr, p, phi);
+
+write_data(float(P_list), "p.dat");
+
+for n thru length(P_list) do block([P: part(P_list, n), colx, coly, colz, colr],
+  colx: part(P, 1),
+  coly: part(P, 2),
+  colz: part(P, 3),
+  colr: R,
+  fname: printf(false, "vars.mcf.~d", n),
+  with_stdout(fname,
+    printf(true, "COLX=~12,4e~%", colx),
+    printf(true, "COLY=~12,4e~%", coly),
+    printf(true, "COLZ=~12,4e~%", colz),
+    printf(true, "COLR=~12,4e~%", colr)));

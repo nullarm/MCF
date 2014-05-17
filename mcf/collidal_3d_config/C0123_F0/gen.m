@@ -1,6 +1,5 @@
 # generate parameters for the simulations
 
-
 arg_list = argv ();
 if length(arg_list)>0
   n= eval(arg_list{1})
@@ -19,7 +18,10 @@ filename = sprintf("vars.mcf.%i", n);
 disp(filename);
 fid = fopen (filename, "w");
 
-fprintf(fid, "COLR=%9.3e\n", colr(n));
+fprintf(fid, "COLX=%9.3e\n", 4.0);
+fprintf(fid, "COLY=%9.3e\n", 4.0);
 fprintf(fid, "COLZ=%9.3e\n", colz(n));
+fprintf(fid, "COLR=%9.3e\n", colr(n));
+
 
 fclose(fid);
